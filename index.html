@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0288)https://www.genspark.ai/api/code_sandbox_light_git/preview/6e8f498b-8874-4b9b-aa09-4bf4bacda4d1/%EC%82%BC%EC%84%B1%EB%9D%BC%EC%9D%B4%EC%98%A8%EC%A6%88_%EA%B8%B0%EB%8A%A5%EC%A0%95%EC%9D%98%EC%84%9C_%EC%88%98%EC%A0%95%EB%B3%B8.html?canvas_history_id=3c5d606cac378fce9fb262ba316823027d628baa -->
+<html lang="ko"><object id="jnobgabnnbdhjompaagbfbjiimplamll" width="0" height="0" style="display: none;"></object><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>삼성라이온즈 기능 정의 및 화면 설계서</title>
 <style>
@@ -271,7 +271,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 
 
 </style>
-</head>
+<script src="./삼성라이온즈 기능 정의 및 화면 설계서_files/diffDOM.js.다운로드"></script></head>
 <body>
 
 <div class="app">
@@ -281,11 +281,11 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     <span class="sp"></span>
     <span class="syncBlock" role="group" aria-label="서버 상태">
       <span class="syncDot" id="syncDot"></span>
-      <span id="syncChip">서버 연결 준비…</span>
+      <span id="syncChip" style="color: rgb(32, 107, 53);">서버 불러옴 · 세현 · 오후 8:25:41</span>
       <span class="sep"></span>
       <span class="data-menu"><span class="lbl">데이터</span>
         <select id="dataMenu" aria-label="데이터 관리 메뉴">
-          <option value="" selected>관리</option>
+          <option value="" selected="">관리</option>
           <option value="exp">JSON 내보내기</option>
           <option value="csv">CSV 내보내기</option>
           <option value="imp">JSON 가져오기</option>
@@ -295,43 +295,37 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     <input type="file" id="imp" accept=".json" style="display:none">
     <button type="button" id="btnSave" class="primary">저장</button>
     <button type="button" id="btnCfgS" style="display:none">Supabase 설정</button>
-    <span id="providerTag" style="display:none">로컬 only</span>
+    <span id="providerTag" style="display:none">Supabase 연결됨</span>
 </header>
 
   <div class="main">
     <div class="col">
-      <div class="col-h"><span class="info" id="treeInfo">전체 0</span>
+      <div class="col-h"><span class="info" id="treeInfo">전체 5</span>
         <button type="button" id="btnAddScr" class="primary">+ 화면</button>
         <button type="button" id="btnAddGrp">+ 그룹</button>
       </div>
-      <div class="col-b" id="tree"></div>
+      <div class="col-b" id="tree"><div class="grp-row" data-gid="grp_HM" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_HM">HM 홈</span><span class="n">4</span><span class="act"><span data-act="rename-grp" data-gid="grp_HM" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_HM" title="삭제">🗑</span></span></div><div class="scr-row " draggable="true" data-sid="001-SL-HM-01" data-act="sel-scr"><span class="sid">001-SL-HM-01</span><span class="nm">구매 미리보기</span><span class="act"><span data-act="del-scr" data-sid="001-SL-HM-01" title="삭제">🗑</span></span></div><div class="scr-row " draggable="true" data-sid="003-SL-HM-03" data-act="sel-scr"><span class="sid">003-SL-HM-03</span><span class="nm">용돈내놔</span><span class="act"><span data-act="del-scr" data-sid="003-SL-HM-03" title="삭제">🗑</span></span></div><div class="scr-row " draggable="true" data-sid="004-SL-HM-04" data-act="sel-scr"><span class="sid">004-SL-HM-04</span><span class="nm">새창</span><span class="act"><span data-act="del-scr" data-sid="004-SL-HM-04" title="삭제">🗑</span></span></div><div class="scr-row " draggable="true" data-sid="002-SL-HM-02" data-act="sel-scr"><span class="sid">002-SL-HM-02</span><span class="nm">테스트웅</span><span class="act"><span data-act="del-scr" data-sid="002-SL-HM-02" title="삭제">🗑</span></span></div><div class="grp-row" data-gid="grp_GM" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_GM">GM 게임</span><span class="n">0</span><span class="act"><span data-act="rename-grp" data-gid="grp_GM" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_GM" title="삭제">🗑</span></span></div><div class="empty" style="padding:14px 12px">빈 그룹 · "+ 화면"</div><div class="grp-row" data-gid="grp_TK" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_TK">TK 예매</span><span class="n">1</span><span class="act"><span data-act="rename-grp" data-gid="grp_TK" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_TK" title="삭제">🗑</span></span></div><div class="scr-row active" draggable="true" data-sid="006-SL-TK-01" data-act="sel-scr"><span class="sid">006-SL-TK-01</span><span class="nm">티케이</span><span class="act"><span data-act="del-scr" data-sid="006-SL-TK-01" title="삭제">🗑</span></span></div><div class="grp-row" data-gid="grp_LG" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_LG">LG 라운지</span><span class="n">0</span><span class="act"><span data-act="rename-grp" data-gid="grp_LG" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_LG" title="삭제">🗑</span></span></div><div class="empty" style="padding:14px 12px">빈 그룹 · "+ 화면"</div><div class="grp-row" data-gid="grp_MY" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_MY">MY 마이페이지</span><span class="n">0</span><span class="act"><span data-act="rename-grp" data-gid="grp_MY" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_MY" title="삭제">🗑</span></span></div><div class="empty" style="padding:14px 12px">빈 그룹 · "+ 화면"</div><div class="grp-row" data-gid="grp_AL" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_AL">AL 전체 메뉴</span><span class="n">0</span><span class="act"><span data-act="rename-grp" data-gid="grp_AL" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_AL" title="삭제">🗑</span></span></div><div class="empty" style="padding:14px 12px">빈 그룹 · "+ 화면"</div><div class="grp-row" data-gid="grp_CM" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_CM">CM 공통</span><span class="n">0</span><span class="act"><span data-act="rename-grp" data-gid="grp_CM" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_CM" title="삭제">🗑</span></span></div><div class="empty" style="padding:14px 12px">빈 그룹 · "+ 화면"</div></div>
     </div>
 
     <div class="col">
       <div class="col-h">
-        <span class="pill" id="midTitlePill">선택 필요</span>
-        <span id="midTitle" style="margin-left:6px">화면 선택 필요</span>
+        <span class="pill" id="midTitlePill">TK</span>
+        <span id="midTitle" style="margin-left:6px">티케이</span>
         <!-- 가운데 상단 그룹 chip 제거됨 (v22m) -->
         <span class="sp"></span>
-        <button type="button" id="btnDelScr2" class="primary" style="display:none">화면 삭제</button>
+        <button type="button" id="btnDelScr2" class="primary" style="display: inline-block;">화면 삭제</button>
       </div>
-      <div class="screen-head" id="screenHead" style="display:none"></div>
-      <div class="addsec" id="addsec" style="display:none">
+      <div class="screen-head" id="screenHead" style="display: block;"><div class="meta"><span class="chip chip-id">006-SL-TK-01</span></div><div class="title"><input class="bordered" data-pf="title" data-sid="006-SL-TK-01" value="티케이"></div></div>
+      <div class="addsec" id="addsec" style="display: flex;">
         <span class="addsec-tip">페이지 영역의 구조를 간단하게 확인하실 수 있습니다</span>
         <button type="button" id="btnAddSec">+ 구역 추가</button>
       </div>
-      <div class="sec-list" id="secList"></div>
+      <div class="sec-list" id="secList"><div class="empty" style="padding:30px 12px"><b>아직 구역이 없어요. "+ 구역 추가"</b></div></div>
     </div>
 
     <div class="col">
       <div class="col-h"><span class="pill">구역 상세</span><span>구역 설명 상세</span></div>
-      <div class="sec-edit" id="secEdit">
-        <div class="placeholder">
-          좌측에서 화면을 선택 →<br>
-          중앙의 <b>+ 구역 추가</b> 로 항목을 만든 뒤 →<br>
-          그 중 하나를 선택하면 이 패널에서 종류와 내용을 기입할 수 있어요.
-        </div>
-      </div>
+      <div class="sec-edit" id="secEdit"><div class="placeholder">중앙에서 구역을 선택(또는 "+ 구역 추가")해 주세요.</div></div>
     </div>
   </div>
 </div>
@@ -601,7 +595,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     }catch(e){_sbChip("서버 모듈 예외 · 로컬은 보관됨","#a01616"); try{console.warn("[sb push sync]",e);}catch(_){}}
   }
   function _sbPushDebounced(){ if(!SB.url) return; if(_sbPushT) clearTimeout(_sbPushT); _sbPushT=setTimeout(_sbPushNow, 1500); }
-  function _sbStartAutoPull(){ if(!SB.url) return; if(_sbPullT) clearInterval(_sbPullT); _sbPullT=setInterval(_sbPullNow, 30000); }
+  function _sbStartAutoPull(){ if(!SB.url) return; if(_sbPullT) clearInterval(_sbPullT); _sbPullT=setInterval(save, 1800000); }
   function _sbStopAuto(){ if(_sbPullT) clearInterval(_sbPullT); _sbPullT=null; }
 
   function save(){
@@ -1640,6 +1634,8 @@ try{
 try{ if(typeof _updateTreeInfo==="function") _updateTreeInfo(); }catch(_){ }
 })();
 </script>
-<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","spa":2}' crossorigin="anonymous"></script>
-</body>
-</html>
+<script type="module" src="./삼성라이온즈 기능 정의 및 화면 설계서_files/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon="{&quot;version&quot;:&quot;2024.11.0&quot;,&quot;token&quot;:&quot;4edd5f8ec12a48cfa682ab8261b80a79&quot;,&quot;spa&quot;:2}" crossorigin="anonymous"></script>
+<script src="./삼성라이온즈 기능 정의 및 화면 설계서_files/sandbox_inspect.js.다운로드"></script><script type="module" src="./삼성라이온즈 기능 정의 및 화면 설계서_files/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon="{&quot;version&quot;:&quot;2024.11.0&quot;,&quot;token&quot;:&quot;4edd5f8ec12a48cfa682ab8261b80a79&quot;,&quot;spa&quot;:2}" crossorigin="anonymous"></script>
+
+
+</body></html>
