@@ -82,7 +82,7 @@ header button.primary{background:var(--clr-accent);color:var(--clr-brand-deep);b
 header button.primary:hover{background:#ffd443}
 header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color:#c97a72}
 
-.main{display:grid;grid-template-columns:280px minmax(360px,1fr) minmax(360px,1fr);gap:var(--sp-4);padding:var(--sp-4);overflow:hidden}
+.main{display:grid;grid-template-columns:280px minmax(360px,30fr) minmax(360px,50fr);gap:var(--sp-4);padding:var(--sp-4);overflow:hidden}
 .col{background:var(--panel);border-radius:10px;display:flex;flex-direction:column;overflow:hidden;border:1px solid rgba(255,255,255,.35);box-shadow:0 6px 18px rgba(0,0,0,.18);min-width:0}
 .col-h{display:flex;align-items:center;gap:var(--sp-3);padding:0 var(--sp-4);height:42px;border-bottom:1px solid var(--line);font-size:var(--fs-h2);font-weight:800;color:var(--ink);background:var(--panel-2);flex:none}
 .col-h .pill{display:inline-flex;align-items:center;height:22px;background:var(--clr-brand);color:#fff;padding:0 10px;border-radius:11px;font-size:var(--fs-mini);font-weight:800;letter-spacing:.3px;flex:none}
@@ -118,9 +118,16 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 ..empty{color:var(--sub-2);text-align:center;padding:48px 16px;font-size:var(--fs-meta);line-height:1.6}
 .empty .em-path{color:var(--clr-brand);font-weight:700}
 
-.screen-head{padding:10px 16px;background:#fff;border-bottom:1px solid var(--line);flex:none}
-.screen-head .title{margin:0;gap:var(--sp-3)}
-.screen-head .meta{font-size:13px;color:var(--sub);margin-bottom:6px;display:flex;gap:8px;align-items:center;font-family:Consolas,monospace;flex-wrap:wrap}
+.screen-head{padding:14px 18px 16px;background:#fff;border-bottom:1px solid var(--line);flex:none;line-height:1.5}
+.screen-head .title{margin:6px 0 0;gap:var(--sp-3);line-height:1.4}
+.screen-head .meta{font-size:14px;color:var(--clr-brand);margin:2px 0 6px;display:flex;gap:10px;align-items:center;font-family:Consolas,monospace;flex-wrap:wrap;line-height:1.5}
+.screen-head .meta .scrId{font-weight:800;letter-spacing:.2px;color:var(--clr-brand);background:#eef3fb;padding:3px 9px;border-radius:5px;font-size:13.5px}
+.chip{display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;font-size:13px;font-weight:700;background:#eef3fb;color:var(--ink);border:1px solid var(--line);white-space:nowrap;letter-spacing:-.1px;flex:none}
+.chip-id{background:#eef3fb;color:var(--clr-brand);font-family:Consolas,monospace;font-weight:800;letter-spacing:.2px;font-size:13.5px}
+.chip-grp{background:#eef3fb;color:#5b6a87;font-weight:600}
+.chip-tp{background:var(--clr-brand);color:#fff;padding:0 10px;height:24px;border-radius:12px;font-size:13px;font-weight:800;letter-spacing:.1px;border:0}
+.chip-sep{display:inline-flex;align-items:center;color:var(--sub);font-weight:700;margin:0 2px;font-size:13px}
+/* .meta-row 제거됨 — 우측 첫줄 ID chip 영역 삭제 */
 .screen-head .meta .gid{color:var(--clr-brand);font-weight:900;font-size:15px;background:transparent;padding:0}
 .screen-head .meta .grpName{color:var(--ink);font-family:"Pretendard","Malgun Gothic",sans-serif;font-weight:700;font-size:13px}
 .screen-head .title{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap}
@@ -149,6 +156,10 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 
 .sec-list{padding:8px 12px;flex:1;overflow:auto}
 .sec{background:var(--panel-2);border:1px solid var(--line);border-radius:7px;padding:10px 12px;margin-bottom:6px;cursor:grab;display:flex;align-items:center;gap:10px;user-select:none}
+/* 가운데 구역 카드 톤 — 진행상황(작성중/검토중/확정)에 맞춰 카드 전체 배경이 조화를 이루도록 함 */
+.sec.s-wd{background:linear-gradient(180deg,#fbfdff 0%,#eef3fb 100%);border-left:4px solid #c8d1e0}
+.sec.s-wr{background:linear-gradient(180deg,#fffaf0 0%,#ffe9c4 100%);border-left:4px solid #b7791f}
+.sec.s-ok{background:linear-gradient(180deg,#f7fbf6 0%,#e2f1e3 100%);border-left:4px solid #2e7d32}
 .sec.selected{background:var(--hl);border-color:var(--clr-brand);outline:1px solid var(--clr-brand)}
 .sec.dragging{opacity:.4}
 .sec.drag-over{border-top:3px solid var(--clr-brand)}
@@ -161,6 +172,10 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .sec .act span:hover{color:var(--danger)}
 
 .sec-edit{padding:16px 18px;flex:1;overflow:auto;background:#fff}
+/* 진행 상태 톤(작성중/검토중/확정) — 구역 영역 배경이 chip 색상과 조화를 이루도록 토닝 */
+.sec-edit.t-wd{background:linear-gradient(180deg,#fbfdff 0%,#eef3fb 100%)}
+.sec-edit.t-wr{background:linear-gradient(180deg,#fffaf0 0%,#ffe9c4 100%)}
+.sec-edit.t-ok{background:linear-gradient(180deg,#f7fbf6 0%,#e2f1e3 100%)}
 .sec-edit h3{font-size:var(--fs-h2);font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .sec-edit .badgebox{display:flex;gap:6px}
 .sec-edit .badgebox .badge{cursor:pointer;border:1px solid var(--line);user-select:none}
@@ -278,16 +293,16 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       </span>
     </span>
     <input type="file" id="imp" accept=".json" style="display:none">
-    <button id="btnSave" class="primary">저장</button>
-    <button id="btnCfgS" style="display:none">Supabase 설정</button>
+    <button type="button" id="btnSave" class="primary">저장</button>
+    <button type="button" id="btnCfgS" style="display:none">Supabase 설정</button>
     <span id="providerTag" style="display:none">로컬 only</span>
 </header>
 
   <div class="main">
     <div class="col">
       <div class="col-h"><span class="info" id="treeInfo">전체 0</span>
-        <button id="btnAddScr" class="primary">+ 화면</button>
-        <button id="btnAddGrp">+ 그룹</button>
+        <button type="button" id="btnAddScr" class="primary">+ 화면</button>
+        <button type="button" id="btnAddGrp">+ 그룹</button>
       </div>
       <div class="col-b" id="tree"></div>
     </div>
@@ -296,19 +311,20 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       <div class="col-h">
         <span class="pill" id="midTitlePill">선택 필요</span>
         <span id="midTitle" style="margin-left:6px">화면 선택 필요</span>
+        <!-- 가운데 상단 그룹 chip 제거됨 (v22m) -->
         <span class="sp"></span>
-        <button id="btnDelScr2" class="primary" style="display:none">화면 삭제</button>
+        <button type="button" id="btnDelScr2" class="primary" style="display:none">화면 삭제</button>
       </div>
       <div class="screen-head" id="screenHead" style="display:none"></div>
       <div class="addsec" id="addsec" style="display:none">
         <span class="addsec-tip">페이지 영역의 구조를 간단하게 확인하실 수 있습니다</span>
-        <button id="btnAddSec">+ 구역 추가</button>
+        <button type="button" id="btnAddSec">+ 구역 추가</button>
       </div>
       <div class="sec-list" id="secList"></div>
     </div>
 
     <div class="col">
-      <div class="col-h"><span class="pill">구역 상세</span><span>구역 종류 선택 · 본문 작성</span></div>
+      <div class="col-h"><span class="pill">구역 상세</span><span>구역 설명 상세</span></div>
       <div class="sec-edit" id="secEdit">
         <div class="placeholder">
           좌측에서 화면을 선택 →<br>
@@ -326,8 +342,8 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     <div class="err" id="modalErr" style="display:none"></div>
     <div class="body" id="modalBody"></div>
     <div class="ft">
-      <button id="btnModalCancel">취소</button>
-      <button id="btnModalOk" class="primary">선택 완료</button>
+      <button type="button" id="btnModalCancel">취소</button>
+      <button type="button" id="btnModalOk" class="primary">선택 완료</button>
     </div>
   </div>
 </div>
@@ -348,8 +364,8 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       <input id="cfgUser" type="text" placeholder="세현" style="width:200px;margin-top:4px;padding:7px 8px;border:1px solid #c8d1e0;border-radius:6px;font-size:13px">
     </label>
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px">
-      <button id="cfgClose" style="padding:7px 14px;border:1px solid #c8d1e0;background:#fff;border-radius:6px;cursor:pointer">닫기</button>
-      <button id="cfgSave" style="padding:7px 14px;background:#2563eb;color:#fff;border:none;border-radius:6px;cursor:pointer">연결</button>
+      <button type="button" id="cfgClose" style="padding:7px 14px;border:1px solid #c8d1e0;background:#fff;border-radius:6px;cursor:pointer">닫기</button>
+      <button type="button" id="cfgSave" style="padding:7px 14px;background:#2563eb;color:#fff;border:none;border-radius:6px;cursor:pointer">연결</button>
     </div>
   </div>
 </div>
@@ -374,23 +390,29 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   var STATUSES   = ["작성중","검토중","확정"];
   var SECTION_TYPES = ["기능","광고","아웃링크","페이지연결"];
   var GROUPS_DEF = [
-    {code:"HM", name:"HM (홈)"},
-    {code:"GM", name:"GM (게임)"},
-    {code:"TK", name:"TK (예매)"},
-    {code:"LG", name:"LG (라운지)"},
-    {code:"MY", name:"MY (마이페이지)"},
-    {code:"AL", name:"AL (전체 메뉴)"},
-    {code:"CM", name:"CM (공통)"}
+    {code:"HM", name:"홈"},
+    {code:"GM", name:"게임"},
+    {code:"TK", name:"예매"},
+    {code:"LG", name:"라운지"},
+    {code:"MY", name:"마이페이지"},
+    {code:"AL", name:"전체 메뉴"},
+    {code:"CM", name:"공통"}
   ];
 
   // ── 상태
   var STORAGE_KEY = "samsung_lions_spec_v4";
+  var DRAFT_KEY = "samsung_lions_spec_v4_draft";
+  var _dirty = 0;
+  var _draftT = null;
   var SCHEMA = 4;
   var STATE = {
     schema:SCHEMA, version:"1.0", updated:todayStr(),
     proj:"삼성라이온즈 앱 신규 개편",
     groups:[], screens:[],
-    selectedScreenId:null, selectedSectionId:null
+    selectedScreenId:null, selectedSectionId:null,
+    // ID 불변 정책: 삭제된 화면 ID 블랙리스트
+    // (한번 삭제된 ID 는 어떤 경로로도 절대 재사용되지 않는다)
+    retiredScreenIds:[]
   };
 
   function _lsGet(){ try{return localStorage.getItem(STORAGE_KEY);}catch(e){return null;} }
@@ -405,7 +427,8 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       STATE = Object.assign(STATE, d, {
         schema:SCHEMA,
         selectedScreenId:d.selectedScreenId||null,
-        selectedSectionId:d.selectedSectionId||null
+        selectedSectionId:d.selectedSectionId||null,
+        retiredScreenIds: Array.isArray(d.retiredScreenIds) ? d.retiredScreenIds : (STATE.retiredScreenIds || [])
       });
       (STATE.screens||[]).forEach(function(s){
         // 옛 5-depth ID 끝의 "-01" 정리
@@ -438,6 +461,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     });
     STATE.screens = [];
     var s = newScreenShell("HM");
+    s.screenId = "001-SL-HM-01";   // ID 불변: 시드 화면은 명시적으로 첫 회차 부여
     s.title = "구매 미리보기";
     s.subtitle = "티켓 구매 흐름의 첫 단계 안내 화면";
     var names = ["헤더 가이드","팀 선택","경기 선택","좌석 선택","결제 수단","예약 확인","완료 안내"];
@@ -462,10 +486,10 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   function newScreenShell(groupCode, ovName){
     var grp = (STATE.groups||[]).find(function(g){return g.code===groupCode;}) || (STATE.groups||[])[0];
     var same = (STATE.screens||[]).filter(function(x){return x.groupId===grp.id;});
-    var seq = String(same.length+1).padStart(2,"0");
-    var total = String((STATE.screens||[]).length+1).padStart(3,"0");
     return {
-      screenId: total+"-SL-"+grp.code+"-"+seq,
+      // ID 불변 정책: newScreenShell 은 자리표시(pending) 만 만든다.
+      // 실제 화면 ID 는 addScr 핸들러가 사용자 입력값으로 확정할 때만 부여된다.
+      screenId: "__pending__",
       title:ovName||"새 화면", subtitle:"", groupId:grp.id,
       status:"작성중", sections:[],
       history:[{v:"0.1", date:todayStr(), by:"세현", note:"신규 생성"}]
@@ -487,14 +511,17 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     };
   }
 
+  // ID 불변 정책:
+  //   screenId 는 [첫 부여 시점(addScr confirm 핸들러)] 또는 [시드] 에서 1회만 세팅된다.
+  //   그룹 이동 / 정렬 / 삭제 후 재정렬 / 저장·재로드 등 어떤 경로에서도 절대 재계산·덮어쓰기 하지 않는다.
+  //   표시 순번(seq)만 그룹 내부에서 재정렬한다.
   function resyncAllScreenIds(){
-    var n = 1;
     (STATE.groups||[]).slice().sort(function(a,b){return (a.order||0)-(b.order||0);}).forEach(function(g){
       (STATE.screens||[]).filter(function(s){return s.groupId===g.id;})
         .sort(function(a,b){return (a.seq||0)-(b.seq||0);})
         .forEach(function(s,i){
           s.seq = i+1;
-          s.screenId = String(n++).padStart(3,"0")+"-SL-"+g.code+"-"+String(i+1).padStart(2,"0");
+          // s.screenId 는 그대로 둔다 (불변)
         });
     });
   }
@@ -526,6 +553,11 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
           var d = (typeof row.payload === "string") ? JSON.parse(row.payload) : row.payload;
           if(d && Array.isArray(d.screens)){
             STATE = Object.assign(STATE, d, { schema: SCHEMA });
+            // 서버에서 받은 데이터를 먼저 localStorage에 반영한 뒤 migrate()를 호출해야 한다.
+            // (순서가 바뀌면 migrate()가 아직 갱신되지 않은 옛 로컬 데이터를 다시 읽어와
+            //  방금 받은 서버 데이터를 덮어써버리는 버그가 발생함 — 다른 브라우저에서
+            //  처음 열었을 때 서버 데이터 대신 로컬 seed 데이터가 보이는 원인이었음)
+            _lsSet(JSON.stringify(STATE));
             safe(function(){ migrate(); }, function(){});
             STATE.selectedScreenId = d.selectedScreenId || null;
             STATE.selectedSectionId = null;
@@ -547,11 +579,24 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     _sbChip("서버 저장 중…","#8b5d00");
     fetch(url, {
       method:"POST",
-      headers: Object.assign({}, _sbH(), { "Prefer":"resolution=merge-duplicates" }),
+      // 주의: Object.assign은 같은 키(Prefer)를 나중 값으로 "덮어쓰기"하지, 합쳐주지 않는다.
+      // 그래서 _sbH()의 "return=representation"과 여기 "resolution=merge-duplicates"를
+      // 하나의 문자열로 콤마 연결해서 같이 보내야 서버가 저장된 행을 응답 본문에 실어서 돌려준다.
+      // (이전 코드는 뒤 값이 앞 값을 지워버려서 Prefer: resolution=merge-duplicates 만 나갔고,
+      //  그 결과 서버가 본문 없이 응답해서 Response 탭이 항상 비어 보였음)
+      headers: Object.assign({}, _sbH(), { "Prefer":"resolution=merge-duplicates,return=representation" }),
       body: JSON.stringify([row])
     })
-      .then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); })
-      .then(function(rows){ if(Array.isArray(rows) && rows[0]) _sbRowId = rows[0].id; _sbChip("서버 저장됨 · "+SB.user+" · "+new Date().toLocaleTimeString(),"#206b35"); })
+      .then(function(r){
+        if(!r.ok) throw new Error("HTTP "+r.status);
+        return r.text();
+      })
+      .then(function(txt){
+        var rows = null;
+        if(txt){ try{ rows = JSON.parse(txt); }catch(e){ rows = null; } }
+        if(Array.isArray(rows) && rows[0]) _sbRowId = rows[0].id;
+        _sbChip("서버 저장됨 · "+SB.user+" · "+new Date().toLocaleTimeString(),"#206b35");
+      })
       .catch(function(e){ _sbChip("서버 저장 실패 · 로컬은 보관됨","#a01616"); try{console.warn("[sb push]",e);}catch(_){} });
     }catch(e){_sbChip("서버 모듈 예외 · 로컬은 보관됨","#a01616"); try{console.warn("[sb push sync]",e);}catch(_){}}
   }
@@ -563,13 +608,40 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     safe(function(){
       STATE.updated = todayStr();
       _lsSet(JSON.stringify(STATE));
+      try{ localStorage.removeItem(DRAFT_KEY); }catch(_){ }
+      _dirty = 0;
       _sbPushDebounced();
     }, function(){ toast("저장 실패", true); });
+  }
+  function _markDirty(){
+    _dirty = 1;
+    try{
+      STATE.updated = todayStr();
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(STATE));
+    }catch(_){ }
   }
   function toast(msg, err){
     var t=document.getElementById("toast"); if(!t) return;
     t.textContent=msg; t.className="toast show"+(err?" err":"");
     clearTimeout(toast._t); toast._t=setTimeout(function(){t.className="toast";},1600);
+  }
+
+  // 그룹 라벨 4개(트리/헤더/select/모달) 단일 표시 소스
+  //   mode: "tree" → "코드 이름", "select" → "코드 이름", "header" → "이름"
+  function _fmtGroup(g, mode){
+    var code = (g && g.code) || "";
+    var raw  = ((g && g.name) || "").trim();
+    var nm0  = raw.replace(/^\((.+)\)$/, "$1").trim();   // "(홈)" → "홈"
+    var nm   = nm0;
+    // code 접두 자동 제거: "HM 홈" / "HM (홈)" / "HM(홈)" / "HM ( 홈 )" 모두 → "홈"
+    if(code){
+      var escC = code.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      var re = new RegExp("^" + escC + "\\s*\\(?(.+?)\\)?\\s*$");
+      var m  = nm0.match(re);
+      if(m && m[1] && m[1] !== code) nm = m[1].trim();
+    }
+    if(mode === "header") return nm || code;             // 가운데 헤더는 이름만
+    return code ? (nm ? (code + " " + nm) : code) : nm;  // 트리·select는 "코드 이름"
   }
 
   function findScreen(sid){ return (STATE.screens||[]).find(function(x){return x.screenId===sid;}); }
@@ -605,7 +677,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     var html = "";
     groups.forEach(function(g){
       var items = (STATE.screens||[]).filter(function(s){return s.groupId===g.id;});
-      var label = g.code + (g.name.match(/\((.+)\)/) ? " (" + (g.name.match(/\((.+)\)/)[1]) + ")" : "");
+      var label = _fmtGroup(g, "tree");
       var arrow = g._open===false ? "▸" : "▾";
       html += '<div class="grp-row" data-gid="'+esc(g.id)+'" data-act="toggle-grp">'
             +   '<span class="arrow">'+arrow+'</span>'
@@ -717,27 +789,31 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       return '<option value="'+v+'"'+(v===s.status?'selected':'')+'>'+v+'</option>';
     }).join("");
     var groupOpts = (STATE.groups||[]).map(function(g){
-      var label = g.code + (g.name.match(/\((.+)\)/) ? " (" + (g.name.match(/\((.+)\)/)[1]) + ")" : "");
+      var label = _fmtGroup(g, "select");
       return '<option value="'+esc(g.id)+'"'+(g.id===s.groupId?'selected':'')+'>'+esc(label)+'</option>';
     }).join("");
 
     head.innerHTML =
-        '<div class="title">'
+        '<div class="meta">'
+      +   '<span class="chip chip-id">'+esc(s.screenId||"")+'</span>'
+      + '</div>'
+      + '<div class="title">'
       +   '<input class="bordered" data-pf="title" data-sid="'+esc(s.screenId)+'" value="'+esc(s.title||"")+'">'
-      +   '<span class="badge '+badgeCls(s.status)+'">'+esc(s.status||"작성중")+'</span>'
       + '</div>';
 
     head.querySelectorAll("[data-pf]").forEach(function(el){
       el.addEventListener("change", function(){
         var k = el.dataset.pf;
-        if(k==="group"){ s.groupId = el.value; resyncAllScreenIds(); save(); renderAll(); }
-        else if(k==="status"){ s.status = el.value; save(); renderMid(); }
-        else { s[k]=el.value; save(); renderTree(); renderMid(); }
+        if(k==="group"){ s.groupId = el.value; resyncAllScreenIds(); save(); _markDirty(); renderAll(); }
+        else if(k==="status"){ s.status = el.value; save(); _markDirty(); renderMid(); }
+        else { s[k]=el.value; save(); _markDirty(); renderTree(); renderMid(); }
       });
       el.addEventListener("input", function(){
         var k=el.dataset.pf;
         if(k!=="group" && k!=="status"){
-          s[k]=el.value; saveDebounced();
+          // 타이핑 중에는 서버로 자동 저장하지 않음 — 메모리 상태만 갱신하고
+          // 새로고침 대비용 로컬 초안(_markDirty)만 남겨둔다. 실제 저장은 "저장" 버튼을 눌렀을 때만.
+          s[k]=el.value; _markDirty();
           if(k==="title"){ document.getElementById("midTitle").textContent = s.title; }
         }
       });
@@ -753,7 +829,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     list.innerHTML = secs.map(function(sec,i){
       var sel = STATE.selectedSectionId===sec.id ? "selected" : "";
       var tBadge = '<span class="badge '+tpCls(sec.type)+'" style="font-size:10.5px">'+(sec.type||"기능")+'</span>';
-      return '<div class="sec '+sel+'" draggable="true" data-sid="'+esc(s.screenId)+'" data-sec-id="'+esc(sec.id)+'">'
+      return '<div class="sec '+sel+' '+secSt(sec.status)+'" draggable="true" data-sid="'+esc(s.screenId)+'" data-sec-id="'+esc(sec.id)+'">'
            +   '<span class="num">'+(i+1)+'</span>'
            +   tBadge
            +   '<span class="ti">'+esc(sec.title||"구역 이름")+'</span>'
@@ -806,6 +882,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     });
   }
   function badgeCls(v){ return v==="확정" ? "b-ok" : v==="검토중" ? "b-wr" : "b-wd"; }
+  function secSt(v){ return v==="확정" ? "s-ok" : v==="검토중" ? "s-wr" : "s-wd"; }
   function tpCls(t){ return t==="광고" ? "b-tp-ad" : t==="아웃링크" ? "b-tp-out" : t==="페이지연결" ? "b-tp-link" : "b-tp-func"; }
 
   // ── RIGHT
@@ -815,6 +892,11 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     if(!s){ box.innerHTML = '<div class="placeholder">좌측에서 화면을 선택해 주세요.</div>'; return; }
     var sec = (s.sections||[]).find(function(x){return x.id===STATE.selectedSectionId;});
     if(!sec){ box.innerHTML = '<div class="placeholder">중앙에서 구역을 선택(또는 "+ 구역 추가")해 주세요.</div>'; return; }
+
+    // 진행 상태에 맞춰 우측 패널 배경 톤 적용 (작성중/검토중/확정 과 조화)
+    box.classList.remove("t-wd","t-wr","t-ok");
+    var _st = sec.status || "작성중";
+    box.classList.add(_st==="확정" ? "t-ok" : _st==="검토중" ? "t-wr" : "t-wd");
 
     var currentType = SECTION_TYPES.indexOf(sec.type)>=0 ? sec.type : "기능";
     var tpKey = currentType==="광고" ? "ad" : currentType==="아웃링크" ? "out" : currentType==="페이지연결" ? "link" : "func";
@@ -890,7 +972,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         +     (sec.related||[]).map(function(r){
               return '<span class="chip">'+esc(r)+'  <span class="x" data-act="chip-x" data-value="'+esc(r)+'">×</span></span>';
             }).join("")
-        +     '<button data-act="chip-add" class="chipadd">+ 연관 화면 추가</button>'
+        +     '<button type="button" data-act="chip-add" class="chipadd">+ 연관 화면 추가</button>'
         +   '</div>'
         +   '<div class="tip">이미 만들어진 화면 리스트에서 여러 개 선택할 수 있어요.</div>'
         + '</div>';
@@ -964,15 +1046,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     }
 
     box.innerHTML =
-        '<h3>'
-      +   '<span style="font-family:Consolas,monospace;color:var(--clr-brand);font-size:15px">'+esc(s.screenId)+'</span>'
-      +   '<span style="color:var(--ink);font-size:16px">· '+esc(sec.title||"")+'</span>'
-      +   '<span class="badge '+tpCls(currentType)+'" style="margin-left:4px">'+esc(currentType)+'</span>'
-      +   '<span style="flex:1"></span>'
-      + '</h3>'
-
-      + progressPicker
-
+        progressPicker
       + typePicker
 
       + '<div class="rower">'
@@ -993,14 +1067,15 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       el.addEventListener("input", function(){
         var p = el.dataset.pf2;
         sec[p] = el.value;
-        saveDebounced();
+        // 타이핑 중에는 서버로 자동 저장하지 않음 — "저장" 버튼을 눌러야 실제 저장/전송됨
+        _markDirty();
         if(p==="title"){
           var card=document.querySelector('.sec.selected .ti');
           if(card) card.textContent=sec.title||"구역 이름";
         }
         // 페이지연결: 드롭다운 바꾸면 미리보기 즉시 갱신
         if(p==="linkedScreenId"){
-          save(); renderDetail();
+          save(); _markDirty(); renderDetail();
         }
       });
       el.addEventListener("change", function(){
@@ -1143,7 +1218,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     groups.forEach(function(g){
       var items = (STATE.screens||[]).filter(function(x){return x.groupId===g.id && x.screenId!==s.screenId;});
       if(!items.length) return;
-      var label = g.code + (g.name.match(/\((.+)\)/) ? " (" + (g.name.match(/\((.+)\)/)[1]) + ")" : "");
+      var label = _fmtGroup(g, "select");
       html += '<div class="grp-h"><span>'+esc(label)+'</span><span class="n">'+items.length+'</span></div>';
       items.slice().sort(function(a,b){return (a.seq||0)-(b.seq||0);}).forEach(function(x){
         var checked = MODAL_STATE.work.indexOf(x.screenId)!==-1;
@@ -1182,11 +1257,39 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 
   // ── CRUD
   function newGrp(){
-    var n = prompt("그룹명", "새 그룹"); if(!n) return;
-    safe(function(){
-      STATE.groups.push({id:uid("grp"), code:"XX", name:n, order:STATE.groups.length, _open:true});
-      save(); renderAll();
-    });
+    if(document.getElementById("addGrpBg")) return;
+    var bg=document.createElement("div"); bg.className="modalbg show"; bg.id="addGrpBg";
+    bg.innerHTML='<div class="modal" style="width:520px">'
+      +'<h3>새 그룹 추가 <span class="sp"></span><span data-act="close" style="cursor:pointer;font-size:18px;color:var(--sub)">✕</span></h3>'
+      +'<div class="body" style="padding:18px">'
+      +'<div class="rower"><div class="lbl">약칭(표기) <span class="req">*</span></div>'
+      +'<input id="addGrpCode" placeholder="예: CM" maxlength="6">'
+      +'<div class="tip">좌측 트리·화면 ID에 사용되는 짧은 코드. 영문/숫자 2~4자 권장.</div></div>'
+      +'<div class="rower hl"><div class="lbl">그룹명 <span class="req">*</span></div>'
+      +'<input id="addGrpName" placeholder="예: 공통">'
+      +'<div class="tip">가운데 헤더 "HM · 구매 미리보기 (그룹명)" 형태로 노출됩니다.</div></div>'
+      +'</div><div class="ft">'
+      +'<button type="button" data-act="close">취소</button>'
+      +'<button type="button" class="primary" data-act="ok">추가</button>'
+      +'</div></div>';
+    document.body.appendChild(bg);
+    setTimeout(function(){ var el=document.getElementById("addGrpCode"); if(el) el.focus(); }, 30);
+    function commit(){
+      var code=((document.getElementById("addGrpCode").value||"").trim()).toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6);
+      var name=(document.getElementById("addGrpName").value||"").trim();
+      if(!code||!name){ if(!code) document.getElementById("addGrpCode").focus(); else document.getElementById("addGrpName").focus(); return; }
+      safe(function(){ STATE.groups.push({id:uid("grp"), code:code, name:name, order:STATE.groups.length, _open:true}); save(); renderAll(); }, function(){ });
+      bg.remove();
+    }
+    bg.onclick=function(e){
+      var n=e.target;
+      while(n && n!==bg && !(n.dataset && (n.dataset.act==="close"||n.dataset.act==="ok"))) n=n.parentNode;
+      if(!n||n===bg) return;
+      if(n.dataset.act==="close"){ bg.remove(); return; }
+      if(n.dataset.act==="ok") commit();
+    };
+    document.getElementById("addGrpCode").addEventListener("keydown",function(e){ if(e.key==="Enter"){ e.preventDefault(); document.getElementById("addGrpName").focus(); } });
+    document.getElementById("addGrpName").addEventListener("keydown",function(e){ if(e.key==="Enter"){ e.preventDefault(); commit(); } });
   }
   function openAddScrModal(){
     if(document.getElementById("addScrBg")) return;
@@ -1210,8 +1313,8 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       +     '</div>'
       +   '</div>'
       +   '<div class="ft">'
-      +     '<button data-act="add-scr-close">취소</button>'
-      +     '<button class="primary" data-act="add-scr-ok">확인</button>'
+      +     '<button type="button" data-act="add-scr-close">취소</button>'
+      +     '<button type="button" class="primary" data-act="add-scr-ok">확인</button>'
       +   '</div>'
       + '</div>';
     document.body.appendChild(bg);
@@ -1232,8 +1335,11 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
             var id = ((idEl && idEl.value) || "").trim() || defId;
             var title = ((tiEl && tiEl.value) || "").trim();
             if(!title){ toast("화면 이름을 입력해 주세요", true); return; }
-            if((STATE.screens||[]).some(function(s){return s.screenId===id;})){
-              toast("이미 존재하는 화면 ID 입니다", true); return;
+            // ID 불변 정책: 활성 screens + retire 리스트 양쪽 모두 검사
+            STATE.retiredScreenIds = STATE.retiredScreenIds || [];
+            if((STATE.screens||[]).some(function(s){return s.screenId===id;})
+               || STATE.retiredScreenIds.indexOf(id) >= 0){
+              toast("이미 사용 중이거나 이전에 삭제된 화면 ID 입니다", true); return;
             }
             close();
             safe(function(){
@@ -1267,6 +1373,12 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     if(!confirm("'"+sid+"' 화면을 삭제할까요?")) return;
     safe(function(){
       STATE.screens = STATE.screens.filter(function(x){return x.screenId!==sid;});
+      // ── ID 불변 정책: 삭제된 ID 를 retire 리스트에 등록 → 다시 추가 시도 시 거부.
+      //    시드 화면은 시스템이 보장하는 화면이므로 retire 처리하지 않는다.
+      STATE.retiredScreenIds = STATE.retiredScreenIds || [];
+      if(sid !== "001-SL-HM-01" && STATE.retiredScreenIds.indexOf(sid) < 0){
+        STATE.retiredScreenIds.push(sid);
+      }
       if(STATE.selectedScreenId===sid){ STATE.selectedScreenId=null; STATE.selectedSectionId=null; }
       resyncAllScreenIds(); save(); renderAll();
     });
@@ -1334,7 +1446,13 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     var btnImp = document.getElementById("btnImp"); if(btnImp) /*v16 imp*/ null;
     var imp = document.getElementById("imp"); if(imp){ imp.onchange = importJson; }
     var btnReset = document.getElementById("btnReset"); if(btnReset) btnReset.onclick = function(){ if(!confirm("전체 데이터 초기화 — 예시 HM 화면 1개로 돌아가요.")) return; };
-    var btnSave = document.getElementById("btnSave"); if(btnSave) btnSave.onclick = function(){ save(); toast("저장됨 · "+new Date().toLocaleTimeString()); };
+    var btnSave = document.getElementById("btnSave"); if(btnSave) btnSave.onclick = function(){
+      save();
+      // "저장" 버튼은 디바운스를 기다리지 않고 즉시 서버로 전송한다.
+      if(_sbPushT){ clearTimeout(_sbPushT); _sbPushT=null; }
+      _sbPushNow();
+      toast("저장됨 · "+new Date().toLocaleTimeString());
+    };
 
     document.body.onclick = function(e){
       var t = e.target;
@@ -1453,6 +1571,21 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     var btnCfg = document.getElementById("btnCfgS"); if(btnCfg) btnCfg.onclick = openCfg;
 
     safe(function(){ migrate(); }, function(){ seed(); save(); });
+    // ── 작성 중이던 초안 자동 복원 (저장본보다 더 최근이면 복원)
+    try{
+      var dRaw = localStorage.getItem(DRAFT_KEY);
+      if(dRaw){
+        var dObj = null; try{ dObj = JSON.parse(dRaw); }catch(_){}
+        if(dObj && dObj.updated && (!STATE.updated || dObj.updated > STATE.updated)){
+          if(Array.isArray(dObj.screens) || Array.isArray(dObj.groups)){
+            STATE = Object.assign(STATE, dObj);
+            save();
+            try{ localStorage.removeItem(DRAFT_KEY); }catch(_){}
+            console.log("[draft restored]", STATE.updated);
+          }
+        }
+      }
+    }catch(_){ }
     try{ attachHeader(); }catch(e){ try{console.warn("[boot attach]",e);}catch(_){ } }
     try{ renderAll(); }catch(e){ try{console.warn("[boot render]",e);}catch(_){ } }
 
@@ -1483,6 +1616,26 @@ try{
 try{
   window.addEventListener("error",function(ev){try{console.warn("[win]",ev.message);}catch(_){}});
   window.addEventListener("unhandledrejection",function(ev){try{console.warn("[rej]",ev.reason);}catch(_){}});
+}catch(_){}
+try{
+  window.addEventListener("beforeunload",function(e){
+    try{
+      if(_dirty){
+        try{ STATE.updated = todayStr(); localStorage.setItem(DRAFT_KEY, JSON.stringify(STATE)); }catch(_){}
+        try{ save(); }catch(_){}
+        e.preventDefault(); e.returnValue = "";
+        return "";
+      }
+    }catch(_){}
+  });
+  document.addEventListener("visibilitychange",function(){
+    try{
+      if(document.visibilityState==="hidden" && _dirty){
+        try{ STATE.updated = todayStr(); localStorage.setItem(DRAFT_KEY, JSON.stringify(STATE)); }catch(_){}
+        try{ save(); }catch(_){}
+      }
+    }catch(_){}
+  });
 }catch(_){}
 try{ if(typeof _updateTreeInfo==="function") _updateTreeInfo(); }catch(_){ }
 })();
