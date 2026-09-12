@@ -72,6 +72,8 @@ header h1{
   display:flex;align-items:center;gap:var(--sp-3);margin:0;
 }
 header h1 .sub{font-size:11.5px;font-weight:600;color:#a8c1ee;margin-left:6px;letter-spacing:0}
+header .credit{display:inline-flex;align-items:center;justify-content:center;align-self:center;margin-left:auto;margin-right:var(--sp-3);font-size:13px;font-weight:700;color:rgba(234,240,255,.78);letter-spacing:.4px}
+header h1{align-self:center}
 header .pill{display:inline-flex;align-items:center;height:var(--pill-h);background:rgba(255,255,255,.12);padding:0 10px;border-radius:14px;color:#eaf0ff;font-size:var(--fs-mini);font-weight:600;letter-spacing:.1px}
 header .sp{flex:1;min-width:var(--sp-3)}
 header button{display:inline-flex;align-items:center;justify-content:center;height:var(--pill-h);background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:5px;padding:0 14px;font-size:var(--fs-base);cursor:pointer;font-weight:600;letter-spacing:-.1px}
@@ -260,6 +262,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 <div class="app">
   <header>
     <h1>삼성라이온즈 기능 정의 및 화면 설계서</h1>
+    <span class="credit">BY PTKOREA</span>
     <span class="sp"></span>
     <span class="syncBlock" role="group" aria-label="서버 상태">
       <span class="syncDot" id="syncDot"></span>
@@ -275,7 +278,6 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       </span>
     </span>
     <input type="file" id="imp" accept=".json" style="display:none">
-    <button id="btnReset">초기화</button>
     <button id="btnSave" class="primary">저장</button>
     <button id="btnCfgS" style="display:none">Supabase 설정</button>
     <span id="providerTag" style="display:none">로컬 only</span>
@@ -283,7 +285,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 
   <div class="main">
     <div class="col">
-      <div class="col-h"><span class="info" id="treeInfo">전체 0 페이지 · BY PTKOREA</span>
+      <div class="col-h"><span class="info" id="treeInfo">전체 0</span>
         <button id="btnAddScr" class="primary">+ 화면</button>
         <button id="btnAddGrp">+ 그룹</button>
       </div>
@@ -585,8 +587,8 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     var el = document.getElementById("treeInfo"); if(!el) return;
     try{
       var n = (STATE && Array.isArray(STATE.screens)) ? STATE.screens.length : 0;
-      el.textContent = "전체 " + n + " 페이지 · BY PTKOREA";
-    }catch(e){ try{ el.textContent = "전체 — 페이지 · BY PTKOREA"; }catch(_){ } }
+      el.textContent = "전체 " + n;
+    }catch(e){ try{ el.textContent = "전체 —"; }catch(_){ } }
   }
 
   function renderMeta(){
@@ -1331,7 +1333,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     var btnExpCsv = document.getElementById("btnExpCsv"); if(btnExpCsv) /*v16*/ null && exportCsv;
     var btnImp = document.getElementById("btnImp"); if(btnImp) /*v16 imp*/ null;
     var imp = document.getElementById("imp"); if(imp){ imp.onchange = importJson; }
-    var btnReset = document.getElementById("btnReset"); if(btnReset) btnReset.onclick = resetAll;
+    var btnReset = document.getElementById("btnReset"); if(btnReset) btnReset.onclick = function(){ if(!confirm("전체 데이터 초기화 — 예시 HM 화면 1개로 돌아가요.")) return; };
     var btnSave = document.getElementById("btnSave"); if(btnSave) btnSave.onclick = function(){ save(); toast("저장됨 · "+new Date().toLocaleTimeString()); };
 
     document.body.onclick = function(e){
