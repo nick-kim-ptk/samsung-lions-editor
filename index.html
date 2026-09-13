@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0288)https://www.genspark.ai/api/code_sandbox_light_git/preview/6e8f498b-8874-4b9b-aa09-4bf4bacda4d1/%EC%82%BC%EC%84%B1%EB%9D%BC%EC%9D%B4%EC%98%A8%EC%A6%88_%EA%B8%B0%EB%8A%A5%EC%A0%95%EC%9D%98%EC%84%9C_%EC%88%98%EC%A0%95%EB%B3%B8.html?canvas_history_id=3c5d606cac378fce9fb262ba316823027d628baa -->
+<!-- saved from url=(0288)https://www.genspark.ai/api/code_sandbox_light_git/preview/6e8f498b-8874-4b9b-aa09-4bf4bacda4d1/%EC%82%BC%EC%84%B1%EB%9D%BC%EC%9D%B4%EC%98%A8%EC%A6%88_%EA%B8%B0%EB%8A%A5%EC%A0%95%EC%9D%98%EC%84%9C_%EC%88%98%EC%A0%95%EB%B3%B8.html?canvas_history_id=c411dfcb5a34d84342f39989b6a634c8ab977d39 -->
 <html lang="ko"><object id="jnobgabnnbdhjompaagbfbjiimplamll" width="0" height="0" style="display: none;"></object><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -154,16 +154,43 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .addsec button{display:inline-flex;align-items:center;height:26px;font-size:12.5px;background:var(--clr-brand);color:#fff;border:0;border-radius:5px;padding:0 14px;cursor:pointer;font-weight:800;letter-spacing:-.1px;flex:none}
 .addsec button:hover{background:var(--clr-brand-deep)}
 
-.sec-list{padding:8px 12px;flex:1;overflow:auto}
-.sec{background:var(--panel-2);border:1px solid var(--line);border-radius:7px;padding:10px 12px;margin-bottom:6px;cursor:grab;display:flex;align-items:center;gap:10px;user-select:none}
+/* ── 가운데 컬럼 전체를 폰 목업으로 (1,3번 컬럼과 동일한 사이즈로 꽉 채움) ── */
+.col.phone-col{background:#12172a;padding:0;align-items:stretch;justify-content:flex-start;border-radius:10px}
+.phone-mock{position:relative;width:100%;height:100%;margin:0;background:#12172a;border-radius:10px;padding:12px 10px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.06);display:flex;flex-direction:column;flex:1;min-height:0}
+.phone-mock .notch{width:84px;height:9px;background:#fff;border-radius:5px;margin:0 auto 10px;position:relative;flex:none;box-shadow:0 0 4px rgba(255,255,255,.35)}
+.phone-mock .signal{position:absolute;top:14px;left:18px;display:flex;align-items:flex-end;gap:2px;z-index:2}
+.phone-mock .signal i{display:block;width:3px;background:#fff;border-radius:1px;opacity:.55}
+.phone-mock .signal i:nth-child(1){height:4px}
+.phone-mock .signal i:nth-child(2){height:6px;opacity:.75}
+.phone-mock .signal i:nth-child(3){height:8px;opacity:.9}
+.phone-mock .signal i:nth-child(4){height:10px;opacity:1}
+.phone-mock .screen{background:#f7f9fd;border-radius:22px;overflow:hidden;flex:1;display:flex;flex-direction:column;min-height:0}
+
+/* 폰 화면 안 상단 앱바(원래 col-h) */
+.phone-mock .screen .col-h{background:linear-gradient(90deg,var(--clr-brand-deep),var(--clr-brand));color:#fff;border-bottom:0;border-radius:0;height:46px;padding:0 16px}
+.phone-mock .screen .col-h .pill{background:rgba(255,255,255,.22)}
+.phone-mock .screen .col-h span:not(.pill):not(.sp){color:#fff;font-weight:700}
+.phone-mock .screen .col-h button.primary{background:var(--clr-accent);color:var(--clr-brand-deep)}
+.phone-mock .screen .col-h #btnDelScr2{background:#fff;color:var(--danger);border:1px solid #fff}
+.phone-mock .screen .col-h #btnDelScr2:hover{background:#f2f2f2}
+
+/* 폰 화면 안 화면 정보(원래 screen-head) — 앱 안내/타이틀 영역처럼 */
+.phone-mock .screen .screen-head{background:#fff;padding:12px 16px 14px;border-bottom:1px solid var(--line)}
+.phone-mock .screen .screen-head input.bordered{font-size:18px;width:100%}
+
+/* 폰 화면 안 구역 추가 툴바 */
+.phone-mock .screen .addsec{background:#eef2fb}
+
+.sec-list{padding:14px 12px 22px;flex:1;overflow:auto}
+.sec{position:relative;background:var(--panel-2);border:1.5px dashed var(--line-2);border-radius:14px;padding:16px 14px 14px;margin-bottom:14px;cursor:grab;display:flex;align-items:center;gap:10px;user-select:none;min-height:52px;box-shadow:0 2px 6px rgba(20,30,60,.06)}
 /* 가운데 구역 카드 톤 — 진행상황(작성중/검토중/확정)에 맞춰 카드 전체 배경이 조화를 이루도록 함 */
-.sec.s-wd{background:linear-gradient(180deg,#fbfdff 0%,#eef3fb 100%);border-left:4px solid #c8d1e0}
-.sec.s-wr{background:linear-gradient(180deg,#fffaf0 0%,#ffe9c4 100%);border-left:4px solid #b7791f}
-.sec.s-ok{background:linear-gradient(180deg,#f7fbf6 0%,#e2f1e3 100%);border-left:4px solid #2e7d32}
-.sec.selected{background:var(--hl);border-color:var(--clr-brand);outline:1px solid var(--clr-brand)}
+.sec.s-wd{background:linear-gradient(180deg,#fbfdff 0%,#eef3fb 100%);border-color:#c8d1e0}
+.sec.s-wr{background:linear-gradient(180deg,#fffaf0 0%,#ffe9c4 100%);border-color:#d9ab5c}
+.sec.s-ok{background:linear-gradient(180deg,#f7fbf6 0%,#e2f1e3 100%);border-color:#8fbf95}
+.sec.selected{background:var(--hl);border-color:var(--clr-brand);border-style:solid;outline:1px solid var(--clr-brand)}
 .sec.dragging{opacity:.4}
 .sec.drag-over{border-top:3px solid var(--clr-brand)}
-.sec .num{font-size:var(--fs-base);color:#fff;font-weight:900;width:26px;height:26px;background:var(--clr-brand);border-radius:5px;display:flex;align-items:center;justify-content:center;flex:none}
+.sec .num{position:static;font-size:12.5px;color:#fff;font-weight:900;width:26px;height:26px;background:var(--clr-brand);border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 3px 8px rgba(10,61,145,.4);border:2px solid #fff;align-self:center}
 .sec .ti{font-size:var(--fs-base);font-weight:800;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink)}
 .sec .bdgbox{display:flex;gap:4px;flex:none}
 .sec .act{opacity:0;display:flex;gap:5px;color:var(--sub);font-size:var(--fs-mini);font-weight:700}
@@ -281,7 +308,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     <span class="sp"></span>
     <span class="syncBlock" role="group" aria-label="서버 상태">
       <span class="syncDot" id="syncDot"></span>
-      <span id="syncChip" style="color: rgb(32, 107, 53);">서버 불러옴 · 세현 · 오후 8:25:41</span>
+      <span id="syncChip" style="color: rgb(32, 107, 53);">서버 불러옴 · 세현 · 오후 8:31:28</span>
       <span class="sep"></span>
       <span class="data-menu"><span class="lbl">데이터</span>
         <select id="dataMenu" aria-label="데이터 관리 메뉴">
@@ -300,27 +327,33 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 
   <div class="main">
     <div class="col">
-      <div class="col-h"><span class="info" id="treeInfo">전체 5</span>
+      <div class="col-h"><span class="info" id="treeInfo">전체 2</span>
         <button type="button" id="btnAddScr" class="primary">+ 화면</button>
         <button type="button" id="btnAddGrp">+ 그룹</button>
       </div>
-      <div class="col-b" id="tree"><div class="grp-row" data-gid="grp_HM" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_HM">HM 홈</span><span class="n">4</span><span class="act"><span data-act="rename-grp" data-gid="grp_HM" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_HM" title="삭제">🗑</span></span></div><div class="scr-row " draggable="true" data-sid="001-SL-HM-01" data-act="sel-scr"><span class="sid">001-SL-HM-01</span><span class="nm">구매 미리보기</span><span class="act"><span data-act="del-scr" data-sid="001-SL-HM-01" title="삭제">🗑</span></span></div><div class="scr-row " draggable="true" data-sid="003-SL-HM-03" data-act="sel-scr"><span class="sid">003-SL-HM-03</span><span class="nm">용돈내놔</span><span class="act"><span data-act="del-scr" data-sid="003-SL-HM-03" title="삭제">🗑</span></span></div><div class="scr-row " draggable="true" data-sid="004-SL-HM-04" data-act="sel-scr"><span class="sid">004-SL-HM-04</span><span class="nm">새창</span><span class="act"><span data-act="del-scr" data-sid="004-SL-HM-04" title="삭제">🗑</span></span></div><div class="scr-row " draggable="true" data-sid="002-SL-HM-02" data-act="sel-scr"><span class="sid">002-SL-HM-02</span><span class="nm">테스트웅</span><span class="act"><span data-act="del-scr" data-sid="002-SL-HM-02" title="삭제">🗑</span></span></div><div class="grp-row" data-gid="grp_GM" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_GM">GM 게임</span><span class="n">0</span><span class="act"><span data-act="rename-grp" data-gid="grp_GM" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_GM" title="삭제">🗑</span></span></div><div class="empty" style="padding:14px 12px">빈 그룹 · "+ 화면"</div><div class="grp-row" data-gid="grp_TK" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_TK">TK 예매</span><span class="n">1</span><span class="act"><span data-act="rename-grp" data-gid="grp_TK" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_TK" title="삭제">🗑</span></span></div><div class="scr-row active" draggable="true" data-sid="006-SL-TK-01" data-act="sel-scr"><span class="sid">006-SL-TK-01</span><span class="nm">티케이</span><span class="act"><span data-act="del-scr" data-sid="006-SL-TK-01" title="삭제">🗑</span></span></div><div class="grp-row" data-gid="grp_LG" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_LG">LG 라운지</span><span class="n">0</span><span class="act"><span data-act="rename-grp" data-gid="grp_LG" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_LG" title="삭제">🗑</span></span></div><div class="empty" style="padding:14px 12px">빈 그룹 · "+ 화면"</div><div class="grp-row" data-gid="grp_MY" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_MY">MY 마이페이지</span><span class="n">0</span><span class="act"><span data-act="rename-grp" data-gid="grp_MY" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_MY" title="삭제">🗑</span></span></div><div class="empty" style="padding:14px 12px">빈 그룹 · "+ 화면"</div><div class="grp-row" data-gid="grp_AL" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_AL">AL 전체 메뉴</span><span class="n">0</span><span class="act"><span data-act="rename-grp" data-gid="grp_AL" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_AL" title="삭제">🗑</span></span></div><div class="empty" style="padding:14px 12px">빈 그룹 · "+ 화면"</div><div class="grp-row" data-gid="grp_CM" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_CM">CM 공통</span><span class="n">0</span><span class="act"><span data-act="rename-grp" data-gid="grp_CM" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_CM" title="삭제">🗑</span></span></div><div class="empty" style="padding:14px 12px">빈 그룹 · "+ 화면"</div></div>
+      <div class="col-b" id="tree"><div class="grp-row" data-gid="grp_HM" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_HM">HM 홈</span><span class="n">0</span><span class="act"><span data-act="rename-grp" data-gid="grp_HM" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_HM" title="삭제">🗑</span></span></div><div class="empty" style="padding:14px 12px">빈 그룹 · "+ 화면"</div><div class="grp-row" data-gid="grp_GM" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_GM">GM 게임</span><span class="n">0</span><span class="act"><span data-act="rename-grp" data-gid="grp_GM" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_GM" title="삭제">🗑</span></span></div><div class="empty" style="padding:14px 12px">빈 그룹 · "+ 화면"</div><div class="grp-row" data-gid="grp_TK" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_TK">TK 예매</span><span class="n">0</span><span class="act"><span data-act="rename-grp" data-gid="grp_TK" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_TK" title="삭제">🗑</span></span></div><div class="empty" style="padding:14px 12px">빈 그룹 · "+ 화면"</div><div class="grp-row" data-gid="grp_LG" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_LG">LG 라운지</span><span class="n">0</span><span class="act"><span data-act="rename-grp" data-gid="grp_LG" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_LG" title="삭제">🗑</span></span></div><div class="empty" style="padding:14px 12px">빈 그룹 · "+ 화면"</div><div class="grp-row" data-gid="grp_MY" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_MY">MY 마이페이지</span><span class="n">0</span><span class="act"><span data-act="rename-grp" data-gid="grp_MY" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_MY" title="삭제">🗑</span></span></div><div class="empty" style="padding:14px 12px">빈 그룹 · "+ 화면"</div><div class="grp-row" data-gid="grp_AL" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_AL">AL 전체 메뉴</span><span class="n">0</span><span class="act"><span data-act="rename-grp" data-gid="grp_AL" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_AL" title="삭제">🗑</span></span></div><div class="empty" style="padding:14px 12px">빈 그룹 · "+ 화면"</div><div class="grp-row" data-gid="grp_CM" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_CM">CM 공통</span><span class="n">2</span><span class="act"><span data-act="rename-grp" data-gid="grp_CM" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_CM" title="삭제">🗑</span></span></div><div class="scr-row " draggable="true" data-sid="001-SL-HM-01" data-act="sel-scr"><span class="sid">001-SL-HM-01</span><span class="nm">구매 미리보기</span><span class="act"><span data-act="del-scr" data-sid="001-SL-HM-01" title="삭제">🗑</span></span></div><div class="scr-row active" draggable="true" data-sid="001-SL-CM-01" data-act="sel-scr"><span class="sid">001-SL-CM-01</span><span class="nm">스플래시 스크린</span><span class="act"><span data-act="del-scr" data-sid="001-SL-CM-01" title="삭제">🗑</span></span></div></div>
     </div>
 
-    <div class="col">
-      <div class="col-h">
-        <span class="pill" id="midTitlePill">TK</span>
-        <span id="midTitle" style="margin-left:6px">티케이</span>
-        <!-- 가운데 상단 그룹 chip 제거됨 (v22m) -->
-        <span class="sp"></span>
-        <button type="button" id="btnDelScr2" class="primary" style="display: inline-block;">화면 삭제</button>
+    <div class="col phone-col">
+      <div class="phone-mock">
+        <div class="signal"><i></i><i></i><i></i><i></i></div>
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="col-h">
+            <span class="pill" id="midTitlePill">CM</span>
+            <span id="midTitle" style="margin-left:6px">스플래시 스크린</span>
+            <!-- 가운데 상단 그룹 chip 제거됨 (v22m) -->
+            <span class="sp"></span>
+            <button type="button" id="btnDelScr2" class="primary" style="display: inline-block;">화면 삭제</button>
+          </div>
+          <div class="screen-head" id="screenHead" style="display: block;"><div class="meta"><span class="chip chip-id">001-SL-CM-01</span></div><div class="title"><input class="bordered" data-pf="title" data-sid="001-SL-CM-01" value="스플래시 스크린"></div></div>
+          <div class="addsec" id="addsec" style="display: flex;">
+            <span class="addsec-tip">페이지 영역의 구조를 간단하게 확인하실 수 있습니다</span>
+            <button type="button" id="btnAddSec">+ 구역 추가</button>
+          </div>
+          <div class="sec-list" id="secList"><div class="sec  s-wd" draggable="true" data-sid="001-SL-CM-01" data-sec-id="sec_sbhucb_9vr"><span class="num">1</span><span class="badge b-tp-func" style="font-size:10.5px">기능</span><span class="ti">배경화면</span><span class="bdgbox"><span class="badge b-wd"><b>작성중</b></span></span><span class="act"><span data-act="edit-sec" data-sid="001-SL-CM-01" data-sec-id="sec_sbhucb_9vr" title="이 구역 편집">✎</span><span data-act="del-sec" data-sid="001-SL-CM-01" data-sec-id="sec_sbhucb_9vr" title="삭제">🗑</span></span></div><div class="sec  s-wd" draggable="true" data-sid="001-SL-CM-01" data-sec-id="sec_e8vfze_eqs"><span class="num">2</span><span class="badge b-tp-func" style="font-size:10.5px">기능</span><span class="ti">로딩 메시지</span><span class="bdgbox"><span class="badge b-wd"><b>작성중</b></span></span><span class="act"><span data-act="edit-sec" data-sid="001-SL-CM-01" data-sec-id="sec_e8vfze_eqs" title="이 구역 편집">✎</span><span data-act="del-sec" data-sid="001-SL-CM-01" data-sec-id="sec_e8vfze_eqs" title="삭제">🗑</span></span></div></div>
+        </div>
       </div>
-      <div class="screen-head" id="screenHead" style="display: block;"><div class="meta"><span class="chip chip-id">006-SL-TK-01</span></div><div class="title"><input class="bordered" data-pf="title" data-sid="006-SL-TK-01" value="티케이"></div></div>
-      <div class="addsec" id="addsec" style="display: flex;">
-        <span class="addsec-tip">페이지 영역의 구조를 간단하게 확인하실 수 있습니다</span>
-        <button type="button" id="btnAddSec">+ 구역 추가</button>
-      </div>
-      <div class="sec-list" id="secList"><div class="empty" style="padding:30px 12px"><b>아직 구역이 없어요. "+ 구역 추가"</b></div></div>
     </div>
 
     <div class="col">
