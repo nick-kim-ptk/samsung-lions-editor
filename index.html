@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0288)https://www.genspark.ai/api/code_sandbox_light_git/preview/6e8f498b-8874-4b9b-aa09-4bf4bacda4d1/%EC%82%BC%EC%84%B1%EB%9D%BC%EC%9D%B4%EC%98%A8%EC%A6%88_%EA%B8%B0%EB%8A%A5%EC%A0%95%EC%9D%98%EC%84%9C_%EC%88%98%EC%A0%95%EB%B3%B8.html?canvas_history_id=e6253ca6b73f2bb20e0c396a820f48edc7635c4d -->
+<!-- saved from url=(0288)https://www.genspark.ai/api/code_sandbox_light_git/preview/6e8f498b-8874-4b9b-aa09-4bf4bacda4d1/%EC%82%BC%EC%84%B1%EB%9D%BC%EC%9D%B4%EC%98%A8%EC%A6%88_%EA%B8%B0%EB%8A%A5%EC%A0%95%EC%9D%98%EC%84%9C_%EC%88%98%EC%A0%95%EB%B3%B8.html?canvas_history_id=36439630d711081f4e81bd97a8a35b4259e1979a -->
 <html lang="ko"><object id="jnobgabnnbdhjompaagbfbjiimplamll" width="0" height="0" style="display: none;"></object><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -236,6 +236,30 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .typechip.on.review{background:#b7791f;color:#fff;border-color:#b7791f}
 .typechip.on.ok{background:#2e7d32;color:#fff;border-color:#2e7d32}
 
+/* ── 진행 상황 / 구역 종류 나란히 배치 ── */
+.rower-row{display:flex;gap:16px;margin-bottom:14px;flex-wrap:wrap}
+.rower-row .rower{flex:1;margin-bottom:0;min-width:180px}
+
+/* ── 구역 상세 아코디언: 작성된 항목만 기본 펼침, 미작성은 제목만 ── */
+.acc-item{border:1px solid var(--line);border-radius:8px;margin-bottom:10px;overflow:hidden;background:#fff}
+.acc-item .acc-head{display:flex;align-items:center;gap:8px;padding:10px 12px;cursor:pointer;font-weight:800;font-size:var(--fs-meta);color:var(--ink);background:var(--panel-2);user-select:none}
+.acc-item .acc-head:hover{background:var(--acc-soft)}
+.acc-item .acc-arrow{font-size:11px;color:var(--clr-brand);width:12px;flex:none;transition:transform .15s}
+.acc-item.is-open .acc-arrow{transform:rotate(90deg)}
+.acc-item .acc-title{flex:1}
+.acc-item .acc-dot{width:7px;height:7px;border-radius:50%;background:var(--line-2);flex:none}
+.acc-item .acc-dot.filled{background:var(--ok)}
+.acc-item .acc-panel{padding:12px 12px 14px;border-top:1px solid var(--line);display:none}
+.acc-item.is-open .acc-panel{display:flex;flex-direction:column}
+.acc-panel .rower{margin-bottom:0;flex:1;display:flex;flex-direction:column}
+.acc-panel .rower textarea{flex:1;min-height:160px}
+.acc-panel .rower input{min-height:44px}
+/* 아코디언 패널 안에 rower로 감싸지 않고 직접 들어간 입력창들도 동일한 스타일이 적용되도록 보강 */
+.acc-panel>textarea,.acc-panel>input,.acc-panel>select{width:100%;border:1px solid var(--line);border-radius:5px;padding:8px 10px;font-size:var(--fs-base);font-family:inherit;background:#fff;color:var(--ink)}
+.acc-panel>textarea:focus,.acc-panel>input:focus,.acc-panel>select:focus{outline:none;border-color:var(--clr-brand);box-shadow:0 0 0 2px rgba(10,61,145,.16)}
+.acc-panel>textarea{flex:1;min-height:160px;resize:vertical}
+.acc-panel>input{min-height:44px}
+
 .adbox{background:var(--danger-soft);border:1px solid var(--danger);border-radius:6px;padding:10px 12px;color:var(--danger);font-size:13px;font-weight:700;margin-bottom:10px}
 
 .linkpreview{background:var(--acc-soft);border:1px solid var(--clr-brand);border-radius:6px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;cursor:pointer}
@@ -298,7 +322,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 
 
 </style>
-<script src="./삼성라이온즈 기능 정의 및 화면 설계서33_files/diffDOM.js.다운로드"></script></head>
+<script src="./삼성라이온즈 기능 정의 및 화면 설계서44_files/diffDOM.js.다운로드"></script></head>
 <body>
 
 <div class="app">
@@ -308,7 +332,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     <span class="sp"></span>
     <span class="syncBlock" role="group" aria-label="서버 상태">
       <span class="syncDot" id="syncDot"></span>
-      <span id="syncChip" style="color: rgb(32, 107, 53);">서버 불러옴 · 세현 · 오후 9:21:09</span>
+      <span id="syncChip" style="color: rgb(32, 107, 53);">서버 불러옴 · 세현 · 오후 10:34:26</span>
       <span class="sep"></span>
       <span class="data-menu"><span class="lbl">데이터</span>
         <select id="dataMenu" aria-label="데이터 관리 메뉴">
@@ -331,7 +355,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         <button type="button" id="btnAddScr" class="primary">+ 화면</button>
         <button type="button" id="btnAddGrp">+ 그룹</button>
       </div>
-      <div class="col-b" id="tree"><div class="grp-row" data-gid="grp_HM" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_HM">HM 홈</span><span class="n">2</span><span class="act"><span data-act="rename-grp" data-gid="grp_HM" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_HM" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="004-SL-HM-01" data-act="sel-scr"><span class="sid">004-SL-HM-01</span><span class="nm">홈</span><span class="act"><span data-act="del-scr" data-sid="004-SL-HM-01" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="005-SL-HM-02" data-act="sel-scr"><span class="sid">005-SL-HM-02</span><span class="nm">알림</span><span class="act"><span data-act="del-scr" data-sid="005-SL-HM-02" title="삭제">🗑</span></span></div><div class="grp-row" data-gid="grp_GM" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_GM">GM 게임</span><span class="n">11</span><span class="act"><span data-act="rename-grp" data-gid="grp_GM" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_GM" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="006-SL-GM-01" data-act="sel-scr"><span class="sid">006-SL-GM-01</span><span class="nm">게임(GAME)</span><span class="act"><span data-act="del-scr" data-sid="006-SL-GM-01" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="007-SL-GM-02" data-act="sel-scr"><span class="sid">007-SL-GM-02</span><span class="nm">오늘의 라인업</span><span class="act"><span data-act="del-scr" data-sid="007-SL-GM-02" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="008-SL-GM-03" data-act="sel-scr"><span class="sid">008-SL-GM-03</span><span class="nm">오늘의 치어리더</span><span class="act"><span data-act="del-scr" data-sid="008-SL-GM-03" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="009-SL-GM-04" data-act="sel-scr"><span class="sid">009-SL-GM-04</span><span class="nm">라이온즈 뉴스</span><span class="act"><span data-act="del-scr" data-sid="009-SL-GM-04" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="010-SL-GM-05" data-act="sel-scr"><span class="sid">010-SL-GM-05</span><span class="nm">경기 일정</span><span class="act"><span data-act="del-scr" data-sid="010-SL-GM-05" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="011-SL-GM-06" data-act="sel-scr"><span class="sid">011-SL-GM-06</span><span class="nm">투수/타자 기록</span><span class="act"><span data-act="del-scr" data-sid="011-SL-GM-06" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="012-SL-GM-07" data-act="sel-scr"><span class="sid">012-SL-GM-07</span><span class="nm">유튜브 콘텐츠</span><span class="act"><span data-act="del-scr" data-sid="012-SL-GM-07" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="013-SL-GM-08" data-act="sel-scr"><span class="sid">013-SL-GM-08</span><span class="nm">라팍 정보</span><span class="act"><span data-act="del-scr" data-sid="013-SL-GM-08" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="014-SL-GM-09" data-act="sel-scr"><span class="sid">014-SL-GM-09</span><span class="nm">라이온즈 매거진</span><span class="act"><span data-act="del-scr" data-sid="014-SL-GM-09" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="015-SL-GM-10" data-act="sel-scr"><span class="sid">015-SL-GM-10</span><span class="nm">라이온즈 원정대</span><span class="act"><span data-act="del-scr" data-sid="015-SL-GM-10" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="016-SL-GM-11" data-act="sel-scr"><span class="sid">016-SL-GM-11</span><span class="nm">라이온즈 VR</span><span class="act"><span data-act="del-scr" data-sid="016-SL-GM-11" title="삭제">🗑</span></span></div><div class="grp-row" data-gid="grp_TK" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_TK">TK 예매</span><span class="n">1</span><span class="act"><span data-act="rename-grp" data-gid="grp_TK" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_TK" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="017-SL-TK-01" data-act="sel-scr"><span class="sid">017-SL-TK-01</span><span class="nm">티켓+(Ticket+)</span><span class="act"><span data-act="del-scr" data-sid="017-SL-TK-01" title="삭제">🗑</span></span></div><div class="grp-row" data-gid="grp_LG" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_LG">LG 라운지</span><span class="n">11</span><span class="act"><span data-act="rename-grp" data-gid="grp_LG" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_LG" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="020-SL-LG-01" data-act="sel-scr"><span class="sid">020-SL-LG-01</span><span class="nm">라운지</span><span class="act"><span data-act="del-scr" data-sid="020-SL-LG-01" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="021-SL-LG-02" data-act="sel-scr"><span class="sid">021-SL-LG-02</span><span class="nm">독점 콘텐츠</span><span class="act"><span data-act="del-scr" data-sid="021-SL-LG-02" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="022-SL-LG-03" data-act="sel-scr"><span class="sid">022-SL-LG-03</span><span class="nm">엘도라도 ZONE</span><span class="act"><span data-act="del-scr" data-sid="022-SL-LG-03" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="023-SL-LG-04" data-act="sel-scr"><span class="sid">023-SL-LG-04</span><span class="nm">144경기의 기록</span><span class="act"><span data-act="del-scr" data-sid="023-SL-LG-04" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="024-SL-LG-05" data-act="sel-scr"><span class="sid">024-SL-LG-05</span><span class="nm">라이온즈 응원보드</span><span class="act"><span data-act="del-scr" data-sid="024-SL-LG-05" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="025-SL-LG-06" data-act="sel-scr"><span class="sid">025-SL-LG-06</span><span class="nm">나의 승리 운세</span><span class="act"><span data-act="del-scr" data-sid="025-SL-LG-06" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="026-SL-LG-07" data-act="sel-scr"><span class="sid">026-SL-LG-07</span><span class="nm">디지털 굿즈</span><span class="act"><span data-act="del-scr" data-sid="026-SL-LG-07" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="027-SL-LG-08" data-act="sel-scr"><span class="sid">027-SL-LG-08</span><span class="nm">사용 방법</span><span class="act"><span data-act="del-scr" data-sid="027-SL-LG-08" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="028-SL-LG-09" data-act="sel-scr"><span class="sid">028-SL-LG-09</span><span class="nm">오늘의 미션</span><span class="act"><span data-act="del-scr" data-sid="028-SL-LG-09" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="029-SL-LG-10" data-act="sel-scr"><span class="sid">029-SL-LG-10</span><span class="nm">블루 시그널</span><span class="act"><span data-act="del-scr" data-sid="029-SL-LG-10" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="029-SL-LG-11" data-act="sel-scr"><span class="sid">029-SL-LG-11</span><span class="nm">삼팬 SNS</span><span class="act"><span data-act="del-scr" data-sid="029-SL-LG-11" title="삭제">🗑</span></span></div><div class="grp-row" data-gid="grp_MY" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_MY">MY 마이페이지</span><span class="n">26</span><span class="act"><span data-act="rename-grp" data-gid="grp_MY" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_MY" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="030-SL-MY-01" data-act="sel-scr"><span class="sid">030-SL-MY-01</span><span class="nm">My (마이페이지)</span><span class="act"><span data-act="del-scr" data-sid="030-SL-MY-01" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="031-SL-MY-02" data-act="sel-scr"><span class="sid">031-SL-MY-02</span><span class="nm">설정</span><span class="act"><span data-act="del-scr" data-sid="031-SL-MY-02" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="032-SL-MY-03" data-act="sel-scr"><span class="sid">032-SL-MY-03</span><span class="nm">개인정보 처리방침</span><span class="act"><span data-act="del-scr" data-sid="032-SL-MY-03" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="033-SL-MY-04" data-act="sel-scr"><span class="sid">033-SL-MY-04</span><span class="nm">영상정보처리기기 운영관리방침</span><span class="act"><span data-act="del-scr" data-sid="033-SL-MY-04" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="034-SL-MY-05" data-act="sel-scr"><span class="sid">034-SL-MY-05</span><span class="nm">이메일 무단수집거부</span><span class="act"><span data-act="del-scr" data-sid="034-SL-MY-05" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="035-SL-MY-06" data-act="sel-scr"><span class="sid">035-SL-MY-06</span><span class="nm">내 정보 수정</span><span class="act"><span data-act="del-scr" data-sid="035-SL-MY-06" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="036-SL-MY-07" data-act="sel-scr"><span class="sid">036-SL-MY-07</span><span class="nm">비밀번호 변경</span><span class="act"><span data-act="del-scr" data-sid="036-SL-MY-07" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="037 -SL-MY-08" data-act="sel-scr"><span class="sid">037 -SL-MY-08</span><span class="nm">회원 탈퇴</span><span class="act"><span data-act="del-scr" data-sid="037 -SL-MY-08" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="039-SL-MY-10" data-act="sel-scr"><span class="sid">039-SL-MY-10</span><span class="nm">모바일티켓 (QR)</span><span class="act"><span data-act="del-scr" data-sid="039-SL-MY-10" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="040-SL-MY-11" data-act="sel-scr"><span class="sid">040-SL-MY-11</span><span class="nm">내 앰블럼</span><span class="act"><span data-act="del-scr" data-sid="040-SL-MY-11" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="041-SL-MY-12" data-act="sel-scr"><span class="sid">041-SL-MY-12</span><span class="nm">앰블럼 정보</span><span class="act"><span data-act="del-scr" data-sid="041-SL-MY-12" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="042-SL-MY-13" data-act="sel-scr"><span class="sid">042-SL-MY-13</span><span class="nm">테마 변경</span><span class="act"><span data-act="del-scr" data-sid="042-SL-MY-13" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="043-SL-MY-14" data-act="sel-scr"><span class="sid">043-SL-MY-14</span><span class="nm">예매 내역</span><span class="act"><span data-act="del-scr" data-sid="043-SL-MY-14" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="044-SL-MY-15" data-act="sel-scr"><span class="sid">044-SL-MY-15</span><span class="nm">예매 상세</span><span class="act"><span data-act="del-scr" data-sid="044-SL-MY-15" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="045-SL-MY-16" data-act="sel-scr"><span class="sid">045-SL-MY-16</span><span class="nm">예매 취소</span><span class="act"><span data-act="del-scr" data-sid="045-SL-MY-16" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="046-SL-MY-17" data-act="sel-scr"><span class="sid">046-SL-MY-17</span><span class="nm">예매 안내</span><span class="act"><span data-act="del-scr" data-sid="046-SL-MY-17" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="047-SL-MY-18" data-act="sel-scr"><span class="sid">047-SL-MY-18</span><span class="nm">티켓 선물</span><span class="act"><span data-act="del-scr" data-sid="047-SL-MY-18" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="048-SL-MY-19" data-act="sel-scr"><span class="sid">048-SL-MY-19</span><span class="nm">쿠폰함</span><span class="act"><span data-act="del-scr" data-sid="048-SL-MY-19" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="049-SL-MY-20" data-act="sel-scr"><span class="sid">049-SL-MY-20</span><span class="nm">사용 완료 처리</span><span class="act"><span data-act="del-scr" data-sid="049-SL-MY-20" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="050-SL-MY-21" data-act="sel-scr"><span class="sid">050-SL-MY-21</span><span class="nm">나의 멤버십</span><span class="act"><span data-act="del-scr" data-sid="050-SL-MY-21" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="051-SL-MY-22" data-act="sel-scr"><span class="sid">051-SL-MY-22</span><span class="nm">멤버십/시즌권 안내</span><span class="act"><span data-act="del-scr" data-sid="051-SL-MY-22" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="052-SL-MY-23" data-act="sel-scr"><span class="sid">052-SL-MY-23</span><span class="nm">멤버십 내역</span><span class="act"><span data-act="del-scr" data-sid="052-SL-MY-23" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="053-SL-MY-24" data-act="sel-scr"><span class="sid">053-SL-MY-24</span><span class="nm">어린이회원 등록</span><span class="act"><span data-act="del-scr" data-sid="053-SL-MY-24" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="054-SL-MY-25" data-act="sel-scr"><span class="sid">054-SL-MY-25</span><span class="nm">1:1 문의 목록</span><span class="act"><span data-act="del-scr" data-sid="054-SL-MY-25" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="055-SL-MY-26" data-act="sel-scr"><span class="sid">055-SL-MY-26</span><span class="nm">문의 상세</span><span class="act"><span data-act="del-scr" data-sid="055-SL-MY-26" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="056-SL-MY-27" data-act="sel-scr"><span class="sid">056-SL-MY-27</span><span class="nm">신규 문의</span><span class="act"><span data-act="del-scr" data-sid="056-SL-MY-27" title="삭제">🗑</span></span></div><div class="grp-row" data-gid="grp_AL" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_AL">AL 전체 메뉴</span><span class="n">32</span><span class="act"><span data-act="rename-grp" data-gid="grp_AL" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_AL" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="057-SL-AL-01" data-act="sel-scr"><span class="sid">057-SL-AL-01</span><span class="nm">전체 메뉴</span><span class="act"><span data-act="del-scr" data-sid="057-SL-AL-01" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="058-SL-AL-02" data-act="sel-scr"><span class="sid">058-SL-AL-02</span><span class="nm">구단 소개</span><span class="act"><span data-act="del-scr" data-sid="058-SL-AL-02" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="059-SL-AL-03" data-act="sel-scr"><span class="sid">059-SL-AL-03</span><span class="nm">구단 앰블럼</span><span class="act"><span data-act="del-scr" data-sid="059-SL-AL-03" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="060-SL-AL-04" data-act="sel-scr"><span class="sid">060-SL-AL-04</span><span class="nm">구단 로고</span><span class="act"><span data-act="del-scr" data-sid="060-SL-AL-04" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="061-SL-AL-05" data-act="sel-scr"><span class="sid">061-SL-AL-05</span><span class="nm">구단 마스코트</span><span class="act"><span data-act="del-scr" data-sid="061-SL-AL-05" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="062-SL-AL-06" data-act="sel-scr"><span class="sid">062-SL-AL-06</span><span class="nm">캐치프레이즈</span><span class="act"><span data-act="del-scr" data-sid="062-SL-AL-06" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="063-SL-AL-07" data-act="sel-scr"><span class="sid">063-SL-AL-07</span><span class="nm">대구삼성라이온즈파크</span><span class="act"><span data-act="del-scr" data-sid="063-SL-AL-07" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="064-SL-AL-08" data-act="sel-scr"><span class="sid">064-SL-AL-08</span><span class="nm">경산볼파크</span><span class="act"><span data-act="del-scr" data-sid="064-SL-AL-08" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="065-SL-AL-09" data-act="sel-scr"><span class="sid">065-SL-AL-09</span><span class="nm">선수단 소개</span><span class="act"><span data-act="del-scr" data-sid="065-SL-AL-09" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="066-SL-AL-10" data-act="sel-scr"><span class="sid">066-SL-AL-10</span><span class="nm">선수별 개인 페이지</span><span class="act"><span data-act="del-scr" data-sid="066-SL-AL-10" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="067-SL-AL-11" data-act="sel-scr"><span class="sid">067-SL-AL-11</span><span class="nm">응원단 소개</span><span class="act"><span data-act="del-scr" data-sid="067-SL-AL-11" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="068-SL-AL-12" data-act="sel-scr"><span class="sid">068-SL-AL-12</span><span class="nm">구단 연혁</span><span class="act"><span data-act="del-scr" data-sid="068-SL-AL-12" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="069-SL-AL-13" data-act="sel-scr"><span class="sid">069-SL-AL-13</span><span class="nm">역대 감독</span><span class="act"><span data-act="del-scr" data-sid="069-SL-AL-13" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="070-SL-AL-14" data-act="sel-scr"><span class="sid">070-SL-AL-14</span><span class="nm">라이온즈 21</span><span class="act"><span data-act="del-scr" data-sid="070-SL-AL-14" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="071-SL-AL-15" data-act="sel-scr"><span class="sid">071-SL-AL-15</span><span class="nm">히스토리</span><span class="act"><span data-act="del-scr" data-sid="071-SL-AL-15" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="072-SL-AL-16" data-act="sel-scr"><span class="sid">072-SL-AL-16</span><span class="nm">구단 소식</span><span class="act"><span data-act="del-scr" data-sid="072-SL-AL-16" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="073-SL-AL-17" data-act="sel-scr"><span class="sid">073-SL-AL-17</span><span class="nm">외부감사 보고서</span><span class="act"><span data-act="del-scr" data-sid="073-SL-AL-17" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="074-SL-AL-18" data-act="sel-scr"><span class="sid">074-SL-AL-18</span><span class="nm">라이온즈 파트너</span><span class="act"><span data-act="del-scr" data-sid="074-SL-AL-18" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="075-SL-AL-19" data-act="sel-scr"><span class="sid">075-SL-AL-19</span><span class="nm">뉴스 목록</span><span class="act"><span data-act="del-scr" data-sid="075-SL-AL-19" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="076-SL-AL-20" data-act="sel-scr"><span class="sid">076-SL-AL-20</span><span class="nm">뉴스 상세보기</span><span class="act"><span data-act="del-scr" data-sid="076-SL-AL-20" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="077-SL-AL-21" data-act="sel-scr"><span class="sid">077-SL-AL-21</span><span class="nm">공지 목록</span><span class="act"><span data-act="del-scr" data-sid="077-SL-AL-21" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="078-SL-AL-22" data-act="sel-scr"><span class="sid">078-SL-AL-22</span><span class="nm">공지 상세보기</span><span class="act"><span data-act="del-scr" data-sid="078-SL-AL-22" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="079-SL-AL-23" data-act="sel-scr"><span class="sid">079-SL-AL-23</span><span class="nm">이벤트 목록</span><span class="act"><span data-act="del-scr" data-sid="079-SL-AL-23" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="080-SL-AL-24" data-act="sel-scr"><span class="sid">080-SL-AL-24</span><span class="nm">이벤트 상세보기</span><span class="act"><span data-act="del-scr" data-sid="080-SL-AL-24" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="081-SL-AL-25" data-act="sel-scr"><span class="sid">081-SL-AL-25</span><span class="nm">이벤트 참여하기</span><span class="act"><span data-act="del-scr" data-sid="081-SL-AL-25" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="082-SL-AL-26" data-act="sel-scr"><span class="sid">082-SL-AL-26</span><span class="nm">이벤트 참여 내역</span><span class="act"><span data-act="del-scr" data-sid="082-SL-AL-26" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="083-SL-AL-27" data-act="sel-scr"><span class="sid">083-SL-AL-27</span><span class="nm">프리뷰 목록</span><span class="act"><span data-act="del-scr" data-sid="083-SL-AL-27" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="084-SL-AL-28" data-act="sel-scr"><span class="sid">084-SL-AL-28</span><span class="nm">프리뷰 상세</span><span class="act"><span data-act="del-scr" data-sid="084-SL-AL-28" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="085-SL-AL-29" data-act="sel-scr"><span class="sid">085-SL-AL-29</span><span class="nm">어센틱 샵</span><span class="act"><span data-act="del-scr" data-sid="085-SL-AL-29" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="086-SL-AL-30" data-act="sel-scr"><span class="sid">086-SL-AL-30</span><span class="nm">베리즈 샵</span><span class="act"><span data-act="del-scr" data-sid="086-SL-AL-30" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="087-SL-AL-31" data-act="sel-scr"><span class="sid">087-SL-AL-31</span><span class="nm">FAQ 페이지</span><span class="act"><span data-act="del-scr" data-sid="087-SL-AL-31" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="088-SL-AL-32" data-act="sel-scr"><span class="sid">088-SL-AL-32</span><span class="nm">온라인 광고 문의</span><span class="act"><span data-act="del-scr" data-sid="088-SL-AL-32" title="삭제">🗑</span></span></div><div class="grp-row" data-gid="grp_CM" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_CM">CM 공통</span><span class="n">10</span><span class="act"><span data-act="rename-grp" data-gid="grp_CM" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_CM" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="001-SL-CM-01" data-act="sel-scr"><span class="sid">001-SL-CM-01</span><span class="nm">스플래시 스크린</span><span class="act"><span data-act="del-scr" data-sid="001-SL-CM-01" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="002-SL-CM-02" data-act="sel-scr"><span class="sid">002-SL-CM-02</span><span class="nm">권한 요청</span><span class="act"><span data-act="del-scr" data-sid="002-SL-CM-02" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="003-SL-CM-03" data-act="sel-scr"><span class="sid">003-SL-CM-03</span><span class="nm">팝업(공지)</span><span class="act"><span data-act="del-scr" data-sid="003-SL-CM-03" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="089-SL-CM-04" data-act="sel-scr"><span class="sid">089-SL-CM-04</span><span class="nm">로그인</span><span class="act"><span data-act="del-scr" data-sid="089-SL-CM-04" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="090-SL-CM-05" data-act="sel-scr"><span class="sid">090-SL-CM-05</span><span class="nm">회원가입</span><span class="act"><span data-act="del-scr" data-sid="090-SL-CM-05" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="091-SL-CM-06" data-act="sel-scr"><span class="sid">091-SL-CM-06</span><span class="nm">회원 약관</span><span class="act"><span data-act="del-scr" data-sid="091-SL-CM-06" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="092-SL-CM-07" data-act="sel-scr"><span class="sid">092-SL-CM-07</span><span class="nm">개인정보수집이용 동의서</span><span class="act"><span data-act="del-scr" data-sid="092-SL-CM-07" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="093-SL-CM-08" data-act="sel-scr"><span class="sid">093-SL-CM-08</span><span class="nm">가입환영 페이지</span><span class="act"><span data-act="del-scr" data-sid="093-SL-CM-08" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="094-SL-CM-09" data-act="sel-scr"><span class="sid">094-SL-CM-09</span><span class="nm">아이디/비밀번호 찾기</span><span class="act"><span data-act="del-scr" data-sid="094-SL-CM-09" title="삭제">🗑</span></span></div><div class="scr-row active" data-sid="095-SL-CM-10" data-act="sel-scr"><span class="sid">095-SL-CM-10</span><span class="nm">계정 활성화</span><span class="act"><span data-act="del-scr" data-sid="095-SL-CM-10" title="삭제">🗑</span></span></div></div>
+      <div class="col-b" id="tree"><div class="grp-row" data-gid="grp_HM" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_HM">HM 홈</span><span class="n">2</span><span class="act"><span data-act="rename-grp" data-gid="grp_HM" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_HM" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="004-SL-HM-01" data-act="sel-scr"><span class="sid">004-SL-HM-01</span><span class="nm">홈</span><span class="act"><span data-act="del-scr" data-sid="004-SL-HM-01" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="005-SL-HM-02" data-act="sel-scr"><span class="sid">005-SL-HM-02</span><span class="nm">알림</span><span class="act"><span data-act="del-scr" data-sid="005-SL-HM-02" title="삭제">🗑</span></span></div><div class="grp-row" data-gid="grp_GM" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_GM">GM 게임</span><span class="n">11</span><span class="act"><span data-act="rename-grp" data-gid="grp_GM" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_GM" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="006-SL-GM-01" data-act="sel-scr"><span class="sid">006-SL-GM-01</span><span class="nm">게임(GAME)</span><span class="act"><span data-act="del-scr" data-sid="006-SL-GM-01" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="007-SL-GM-02" data-act="sel-scr"><span class="sid">007-SL-GM-02</span><span class="nm">오늘의 라인업</span><span class="act"><span data-act="del-scr" data-sid="007-SL-GM-02" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="008-SL-GM-03" data-act="sel-scr"><span class="sid">008-SL-GM-03</span><span class="nm">오늘의 치어리더</span><span class="act"><span data-act="del-scr" data-sid="008-SL-GM-03" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="009-SL-GM-04" data-act="sel-scr"><span class="sid">009-SL-GM-04</span><span class="nm">라이온즈 뉴스</span><span class="act"><span data-act="del-scr" data-sid="009-SL-GM-04" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="010-SL-GM-05" data-act="sel-scr"><span class="sid">010-SL-GM-05</span><span class="nm">경기 일정</span><span class="act"><span data-act="del-scr" data-sid="010-SL-GM-05" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="011-SL-GM-06" data-act="sel-scr"><span class="sid">011-SL-GM-06</span><span class="nm">투수/타자 기록</span><span class="act"><span data-act="del-scr" data-sid="011-SL-GM-06" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="012-SL-GM-07" data-act="sel-scr"><span class="sid">012-SL-GM-07</span><span class="nm">유튜브 콘텐츠</span><span class="act"><span data-act="del-scr" data-sid="012-SL-GM-07" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="013-SL-GM-08" data-act="sel-scr"><span class="sid">013-SL-GM-08</span><span class="nm">라팍 정보</span><span class="act"><span data-act="del-scr" data-sid="013-SL-GM-08" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="014-SL-GM-09" data-act="sel-scr"><span class="sid">014-SL-GM-09</span><span class="nm">라이온즈 매거진</span><span class="act"><span data-act="del-scr" data-sid="014-SL-GM-09" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="015-SL-GM-10" data-act="sel-scr"><span class="sid">015-SL-GM-10</span><span class="nm">라이온즈 원정대</span><span class="act"><span data-act="del-scr" data-sid="015-SL-GM-10" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="016-SL-GM-11" data-act="sel-scr"><span class="sid">016-SL-GM-11</span><span class="nm">라이온즈 VR</span><span class="act"><span data-act="del-scr" data-sid="016-SL-GM-11" title="삭제">🗑</span></span></div><div class="grp-row" data-gid="grp_TK" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_TK">TK 예매</span><span class="n">1</span><span class="act"><span data-act="rename-grp" data-gid="grp_TK" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_TK" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="017-SL-TK-01" data-act="sel-scr"><span class="sid">017-SL-TK-01</span><span class="nm">티켓+(Ticket+)</span><span class="act"><span data-act="del-scr" data-sid="017-SL-TK-01" title="삭제">🗑</span></span></div><div class="grp-row" data-gid="grp_LG" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_LG">LG 라운지</span><span class="n">11</span><span class="act"><span data-act="rename-grp" data-gid="grp_LG" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_LG" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="020-SL-LG-01" data-act="sel-scr"><span class="sid">020-SL-LG-01</span><span class="nm">라운지</span><span class="act"><span data-act="del-scr" data-sid="020-SL-LG-01" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="021-SL-LG-02" data-act="sel-scr"><span class="sid">021-SL-LG-02</span><span class="nm">독점 콘텐츠</span><span class="act"><span data-act="del-scr" data-sid="021-SL-LG-02" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="022-SL-LG-03" data-act="sel-scr"><span class="sid">022-SL-LG-03</span><span class="nm">엘도라도 ZONE</span><span class="act"><span data-act="del-scr" data-sid="022-SL-LG-03" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="023-SL-LG-04" data-act="sel-scr"><span class="sid">023-SL-LG-04</span><span class="nm">144경기의 기록</span><span class="act"><span data-act="del-scr" data-sid="023-SL-LG-04" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="024-SL-LG-05" data-act="sel-scr"><span class="sid">024-SL-LG-05</span><span class="nm">라이온즈 응원보드</span><span class="act"><span data-act="del-scr" data-sid="024-SL-LG-05" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="025-SL-LG-06" data-act="sel-scr"><span class="sid">025-SL-LG-06</span><span class="nm">나의 승리 운세</span><span class="act"><span data-act="del-scr" data-sid="025-SL-LG-06" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="026-SL-LG-07" data-act="sel-scr"><span class="sid">026-SL-LG-07</span><span class="nm">디지털 굿즈</span><span class="act"><span data-act="del-scr" data-sid="026-SL-LG-07" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="027-SL-LG-08" data-act="sel-scr"><span class="sid">027-SL-LG-08</span><span class="nm">사용 방법</span><span class="act"><span data-act="del-scr" data-sid="027-SL-LG-08" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="028-SL-LG-09" data-act="sel-scr"><span class="sid">028-SL-LG-09</span><span class="nm">오늘의 미션</span><span class="act"><span data-act="del-scr" data-sid="028-SL-LG-09" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="029-SL-LG-10" data-act="sel-scr"><span class="sid">029-SL-LG-10</span><span class="nm">블루 시그널</span><span class="act"><span data-act="del-scr" data-sid="029-SL-LG-10" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="029-SL-LG-11" data-act="sel-scr"><span class="sid">029-SL-LG-11</span><span class="nm">삼팬 SNS</span><span class="act"><span data-act="del-scr" data-sid="029-SL-LG-11" title="삭제">🗑</span></span></div><div class="grp-row" data-gid="grp_MY" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_MY">MY 마이페이지</span><span class="n">26</span><span class="act"><span data-act="rename-grp" data-gid="grp_MY" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_MY" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="030-SL-MY-01" data-act="sel-scr"><span class="sid">030-SL-MY-01</span><span class="nm">My (마이페이지)</span><span class="act"><span data-act="del-scr" data-sid="030-SL-MY-01" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="031-SL-MY-02" data-act="sel-scr"><span class="sid">031-SL-MY-02</span><span class="nm">설정</span><span class="act"><span data-act="del-scr" data-sid="031-SL-MY-02" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="032-SL-MY-03" data-act="sel-scr"><span class="sid">032-SL-MY-03</span><span class="nm">개인정보 처리방침</span><span class="act"><span data-act="del-scr" data-sid="032-SL-MY-03" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="033-SL-MY-04" data-act="sel-scr"><span class="sid">033-SL-MY-04</span><span class="nm">영상정보처리기기 운영관리방침</span><span class="act"><span data-act="del-scr" data-sid="033-SL-MY-04" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="034-SL-MY-05" data-act="sel-scr"><span class="sid">034-SL-MY-05</span><span class="nm">이메일 무단수집거부</span><span class="act"><span data-act="del-scr" data-sid="034-SL-MY-05" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="035-SL-MY-06" data-act="sel-scr"><span class="sid">035-SL-MY-06</span><span class="nm">내 정보 수정</span><span class="act"><span data-act="del-scr" data-sid="035-SL-MY-06" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="036-SL-MY-07" data-act="sel-scr"><span class="sid">036-SL-MY-07</span><span class="nm">비밀번호 변경</span><span class="act"><span data-act="del-scr" data-sid="036-SL-MY-07" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="037 -SL-MY-08" data-act="sel-scr"><span class="sid">037 -SL-MY-08</span><span class="nm">회원 탈퇴</span><span class="act"><span data-act="del-scr" data-sid="037 -SL-MY-08" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="039-SL-MY-10" data-act="sel-scr"><span class="sid">039-SL-MY-10</span><span class="nm">모바일티켓 (QR)</span><span class="act"><span data-act="del-scr" data-sid="039-SL-MY-10" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="040-SL-MY-11" data-act="sel-scr"><span class="sid">040-SL-MY-11</span><span class="nm">내 앰블럼</span><span class="act"><span data-act="del-scr" data-sid="040-SL-MY-11" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="041-SL-MY-12" data-act="sel-scr"><span class="sid">041-SL-MY-12</span><span class="nm">앰블럼 정보</span><span class="act"><span data-act="del-scr" data-sid="041-SL-MY-12" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="042-SL-MY-13" data-act="sel-scr"><span class="sid">042-SL-MY-13</span><span class="nm">테마 변경</span><span class="act"><span data-act="del-scr" data-sid="042-SL-MY-13" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="043-SL-MY-14" data-act="sel-scr"><span class="sid">043-SL-MY-14</span><span class="nm">예매 내역</span><span class="act"><span data-act="del-scr" data-sid="043-SL-MY-14" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="044-SL-MY-15" data-act="sel-scr"><span class="sid">044-SL-MY-15</span><span class="nm">예매 상세</span><span class="act"><span data-act="del-scr" data-sid="044-SL-MY-15" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="045-SL-MY-16" data-act="sel-scr"><span class="sid">045-SL-MY-16</span><span class="nm">예매 취소</span><span class="act"><span data-act="del-scr" data-sid="045-SL-MY-16" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="046-SL-MY-17" data-act="sel-scr"><span class="sid">046-SL-MY-17</span><span class="nm">예매 안내</span><span class="act"><span data-act="del-scr" data-sid="046-SL-MY-17" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="047-SL-MY-18" data-act="sel-scr"><span class="sid">047-SL-MY-18</span><span class="nm">티켓 선물</span><span class="act"><span data-act="del-scr" data-sid="047-SL-MY-18" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="048-SL-MY-19" data-act="sel-scr"><span class="sid">048-SL-MY-19</span><span class="nm">쿠폰함</span><span class="act"><span data-act="del-scr" data-sid="048-SL-MY-19" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="049-SL-MY-20" data-act="sel-scr"><span class="sid">049-SL-MY-20</span><span class="nm">사용 완료 처리</span><span class="act"><span data-act="del-scr" data-sid="049-SL-MY-20" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="050-SL-MY-21" data-act="sel-scr"><span class="sid">050-SL-MY-21</span><span class="nm">나의 멤버십</span><span class="act"><span data-act="del-scr" data-sid="050-SL-MY-21" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="051-SL-MY-22" data-act="sel-scr"><span class="sid">051-SL-MY-22</span><span class="nm">멤버십/시즌권 안내</span><span class="act"><span data-act="del-scr" data-sid="051-SL-MY-22" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="052-SL-MY-23" data-act="sel-scr"><span class="sid">052-SL-MY-23</span><span class="nm">멤버십 내역</span><span class="act"><span data-act="del-scr" data-sid="052-SL-MY-23" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="053-SL-MY-24" data-act="sel-scr"><span class="sid">053-SL-MY-24</span><span class="nm">어린이회원 등록</span><span class="act"><span data-act="del-scr" data-sid="053-SL-MY-24" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="054-SL-MY-25" data-act="sel-scr"><span class="sid">054-SL-MY-25</span><span class="nm">1:1 문의 목록</span><span class="act"><span data-act="del-scr" data-sid="054-SL-MY-25" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="055-SL-MY-26" data-act="sel-scr"><span class="sid">055-SL-MY-26</span><span class="nm">문의 상세</span><span class="act"><span data-act="del-scr" data-sid="055-SL-MY-26" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="056-SL-MY-27" data-act="sel-scr"><span class="sid">056-SL-MY-27</span><span class="nm">신규 문의</span><span class="act"><span data-act="del-scr" data-sid="056-SL-MY-27" title="삭제">🗑</span></span></div><div class="grp-row" data-gid="grp_AL" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_AL">AL 전체 메뉴</span><span class="n">32</span><span class="act"><span data-act="rename-grp" data-gid="grp_AL" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_AL" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="057-SL-AL-01" data-act="sel-scr"><span class="sid">057-SL-AL-01</span><span class="nm">전체 메뉴</span><span class="act"><span data-act="del-scr" data-sid="057-SL-AL-01" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="058-SL-AL-02" data-act="sel-scr"><span class="sid">058-SL-AL-02</span><span class="nm">구단 소개</span><span class="act"><span data-act="del-scr" data-sid="058-SL-AL-02" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="059-SL-AL-03" data-act="sel-scr"><span class="sid">059-SL-AL-03</span><span class="nm">구단 앰블럼</span><span class="act"><span data-act="del-scr" data-sid="059-SL-AL-03" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="060-SL-AL-04" data-act="sel-scr"><span class="sid">060-SL-AL-04</span><span class="nm">구단 로고</span><span class="act"><span data-act="del-scr" data-sid="060-SL-AL-04" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="061-SL-AL-05" data-act="sel-scr"><span class="sid">061-SL-AL-05</span><span class="nm">구단 마스코트</span><span class="act"><span data-act="del-scr" data-sid="061-SL-AL-05" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="062-SL-AL-06" data-act="sel-scr"><span class="sid">062-SL-AL-06</span><span class="nm">캐치프레이즈</span><span class="act"><span data-act="del-scr" data-sid="062-SL-AL-06" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="063-SL-AL-07" data-act="sel-scr"><span class="sid">063-SL-AL-07</span><span class="nm">대구삼성라이온즈파크</span><span class="act"><span data-act="del-scr" data-sid="063-SL-AL-07" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="064-SL-AL-08" data-act="sel-scr"><span class="sid">064-SL-AL-08</span><span class="nm">경산볼파크</span><span class="act"><span data-act="del-scr" data-sid="064-SL-AL-08" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="065-SL-AL-09" data-act="sel-scr"><span class="sid">065-SL-AL-09</span><span class="nm">선수단 소개</span><span class="act"><span data-act="del-scr" data-sid="065-SL-AL-09" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="066-SL-AL-10" data-act="sel-scr"><span class="sid">066-SL-AL-10</span><span class="nm">선수별 개인 페이지</span><span class="act"><span data-act="del-scr" data-sid="066-SL-AL-10" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="067-SL-AL-11" data-act="sel-scr"><span class="sid">067-SL-AL-11</span><span class="nm">응원단 소개</span><span class="act"><span data-act="del-scr" data-sid="067-SL-AL-11" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="068-SL-AL-12" data-act="sel-scr"><span class="sid">068-SL-AL-12</span><span class="nm">구단 연혁</span><span class="act"><span data-act="del-scr" data-sid="068-SL-AL-12" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="069-SL-AL-13" data-act="sel-scr"><span class="sid">069-SL-AL-13</span><span class="nm">역대 감독</span><span class="act"><span data-act="del-scr" data-sid="069-SL-AL-13" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="070-SL-AL-14" data-act="sel-scr"><span class="sid">070-SL-AL-14</span><span class="nm">라이온즈 21</span><span class="act"><span data-act="del-scr" data-sid="070-SL-AL-14" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="071-SL-AL-15" data-act="sel-scr"><span class="sid">071-SL-AL-15</span><span class="nm">히스토리</span><span class="act"><span data-act="del-scr" data-sid="071-SL-AL-15" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="072-SL-AL-16" data-act="sel-scr"><span class="sid">072-SL-AL-16</span><span class="nm">구단 소식</span><span class="act"><span data-act="del-scr" data-sid="072-SL-AL-16" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="073-SL-AL-17" data-act="sel-scr"><span class="sid">073-SL-AL-17</span><span class="nm">외부감사 보고서</span><span class="act"><span data-act="del-scr" data-sid="073-SL-AL-17" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="074-SL-AL-18" data-act="sel-scr"><span class="sid">074-SL-AL-18</span><span class="nm">라이온즈 파트너</span><span class="act"><span data-act="del-scr" data-sid="074-SL-AL-18" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="075-SL-AL-19" data-act="sel-scr"><span class="sid">075-SL-AL-19</span><span class="nm">뉴스 목록</span><span class="act"><span data-act="del-scr" data-sid="075-SL-AL-19" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="076-SL-AL-20" data-act="sel-scr"><span class="sid">076-SL-AL-20</span><span class="nm">뉴스 상세보기</span><span class="act"><span data-act="del-scr" data-sid="076-SL-AL-20" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="077-SL-AL-21" data-act="sel-scr"><span class="sid">077-SL-AL-21</span><span class="nm">공지 목록</span><span class="act"><span data-act="del-scr" data-sid="077-SL-AL-21" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="078-SL-AL-22" data-act="sel-scr"><span class="sid">078-SL-AL-22</span><span class="nm">공지 상세보기</span><span class="act"><span data-act="del-scr" data-sid="078-SL-AL-22" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="079-SL-AL-23" data-act="sel-scr"><span class="sid">079-SL-AL-23</span><span class="nm">이벤트 목록</span><span class="act"><span data-act="del-scr" data-sid="079-SL-AL-23" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="080-SL-AL-24" data-act="sel-scr"><span class="sid">080-SL-AL-24</span><span class="nm">이벤트 상세보기</span><span class="act"><span data-act="del-scr" data-sid="080-SL-AL-24" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="081-SL-AL-25" data-act="sel-scr"><span class="sid">081-SL-AL-25</span><span class="nm">이벤트 참여하기</span><span class="act"><span data-act="del-scr" data-sid="081-SL-AL-25" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="082-SL-AL-26" data-act="sel-scr"><span class="sid">082-SL-AL-26</span><span class="nm">이벤트 참여 내역</span><span class="act"><span data-act="del-scr" data-sid="082-SL-AL-26" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="083-SL-AL-27" data-act="sel-scr"><span class="sid">083-SL-AL-27</span><span class="nm">프리뷰 목록</span><span class="act"><span data-act="del-scr" data-sid="083-SL-AL-27" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="084-SL-AL-28" data-act="sel-scr"><span class="sid">084-SL-AL-28</span><span class="nm">프리뷰 상세</span><span class="act"><span data-act="del-scr" data-sid="084-SL-AL-28" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="085-SL-AL-29" data-act="sel-scr"><span class="sid">085-SL-AL-29</span><span class="nm">어센틱 샵</span><span class="act"><span data-act="del-scr" data-sid="085-SL-AL-29" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="086-SL-AL-30" data-act="sel-scr"><span class="sid">086-SL-AL-30</span><span class="nm">베리즈 샵</span><span class="act"><span data-act="del-scr" data-sid="086-SL-AL-30" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="087-SL-AL-31" data-act="sel-scr"><span class="sid">087-SL-AL-31</span><span class="nm">FAQ 페이지</span><span class="act"><span data-act="del-scr" data-sid="087-SL-AL-31" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="088-SL-AL-32" data-act="sel-scr"><span class="sid">088-SL-AL-32</span><span class="nm">온라인 광고 문의</span><span class="act"><span data-act="del-scr" data-sid="088-SL-AL-32" title="삭제">🗑</span></span></div><div class="grp-row" data-gid="grp_CM" data-act="toggle-grp"><span class="arrow">▾</span><span data-act="toggle-grp" data-gid="grp_CM">CM 공통</span><span class="n">10</span><span class="act"><span data-act="rename-grp" data-gid="grp_CM" title="이름 변경">✎</span><span data-act="del-grp" data-gid="grp_CM" title="삭제">🗑</span></span></div><div class="scr-row active" data-sid="001-SL-CM-01" data-act="sel-scr"><span class="sid">001-SL-CM-01</span><span class="nm">스플래시 스크린</span><span class="act"><span data-act="del-scr" data-sid="001-SL-CM-01" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="002-SL-CM-02" data-act="sel-scr"><span class="sid">002-SL-CM-02</span><span class="nm">권한 요청</span><span class="act"><span data-act="del-scr" data-sid="002-SL-CM-02" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="003-SL-CM-03" data-act="sel-scr"><span class="sid">003-SL-CM-03</span><span class="nm">팝업(공지)</span><span class="act"><span data-act="del-scr" data-sid="003-SL-CM-03" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="089-SL-CM-04" data-act="sel-scr"><span class="sid">089-SL-CM-04</span><span class="nm">로그인</span><span class="act"><span data-act="del-scr" data-sid="089-SL-CM-04" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="090-SL-CM-05" data-act="sel-scr"><span class="sid">090-SL-CM-05</span><span class="nm">회원가입</span><span class="act"><span data-act="del-scr" data-sid="090-SL-CM-05" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="091-SL-CM-06" data-act="sel-scr"><span class="sid">091-SL-CM-06</span><span class="nm">회원 약관</span><span class="act"><span data-act="del-scr" data-sid="091-SL-CM-06" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="092-SL-CM-07" data-act="sel-scr"><span class="sid">092-SL-CM-07</span><span class="nm">개인정보수집이용 동의서</span><span class="act"><span data-act="del-scr" data-sid="092-SL-CM-07" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="093-SL-CM-08" data-act="sel-scr"><span class="sid">093-SL-CM-08</span><span class="nm">가입환영 페이지</span><span class="act"><span data-act="del-scr" data-sid="093-SL-CM-08" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="094-SL-CM-09" data-act="sel-scr"><span class="sid">094-SL-CM-09</span><span class="nm">아이디/비밀번호 찾기</span><span class="act"><span data-act="del-scr" data-sid="094-SL-CM-09" title="삭제">🗑</span></span></div><div class="scr-row " data-sid="095-SL-CM-10" data-act="sel-scr"><span class="sid">095-SL-CM-10</span><span class="nm">계정 활성화</span><span class="act"><span data-act="del-scr" data-sid="095-SL-CM-10" title="삭제">🗑</span></span></div></div>
     </div>
 
     <div class="col phone-col">
@@ -341,24 +365,25 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         <div class="screen">
           <div class="col-h">
             <span class="pill" id="midTitlePill">CM</span>
-            <span id="midTitle" style="margin-left:6px">계정 활성화</span>
+            <span id="midTitle" style="margin-left:6px">스플래시 스크린</span>
             <!-- 가운데 상단 그룹 chip 제거됨 (v22m) -->
             <span class="sp"></span>
             <button type="button" id="btnDelScr2" class="primary" style="display: inline-block;">화면 삭제</button>
           </div>
-          <div class="screen-head" id="screenHead" style="display: block;"><div class="meta"><span class="chip chip-id">095-SL-CM-10</span></div><div class="title"><input class="bordered" data-pf="title" data-sid="095-SL-CM-10" value="계정 활성화"></div><div class="rower" style="margin-top:10px"><div class="lbl">목적/개요</div><textarea data-pf="subtitle" data-sid="095-SL-CM-10" placeholder="이 화면의 목적/개요를 입력해 주세요" style="min-height:56px"></textarea></div></div>
+          <div class="screen-head" id="screenHead" style="display: block;"><div class="meta"><span class="chip chip-id">001-SL-CM-01</span></div><div class="title"><input class="bordered" data-pf="title" data-sid="001-SL-CM-01" value="스플래시 스크린"></div><div class="rower" style="margin-top:10px"><div class="lbl">목적/개요</div><textarea data-pf="subtitle" data-sid="001-SL-CM-01" style="min-height:56px">앱이 실행되는 동안 브랜드를 인지시키고, 초기 데이터 로딩 시간을 자연스럽게 대기하도록 유도</textarea></div></div>
           <div class="addsec" id="addsec" style="display: flex;">
             <span class="addsec-tip">페이지 영역 내 구역 정보를 확인합니다.</span>
             <button type="button" id="btnAddSec">+ 구역 추가</button>
           </div>
-          <div class="sec-list" id="secList"><div class="empty" style="padding:30px 12px"><b>아직 구역이 없어요. "+ 구역 추가"</b></div></div>
+          <div class="sec-list" id="secList"><div class="sec selected s-wd" draggable="true" data-sid="001-SL-CM-01" data-sec-id="sec_sbhucb_9vr"><span class="num">1</span><span class="badge b-tp-func" style="font-size:10.5px">기능</span><span class="ti">배경 스크린</span><span class="bdgbox"><span class="badge b-wd"><b>작성중</b></span></span><span class="act"><span data-act="edit-sec" data-sid="001-SL-CM-01" data-sec-id="sec_sbhucb_9vr" title="이 구역 편집">✎</span><span data-act="del-sec" data-sid="001-SL-CM-01" data-sec-id="sec_sbhucb_9vr" title="삭제">🗑</span></span></div><div class="sec  s-wd" draggable="true" data-sid="001-SL-CM-01" data-sec-id="sec_e8vfze_eqs"><span class="num">2</span><span class="badge b-tp-func" style="font-size:10.5px">기능</span><span class="ti">로딩 메시지</span><span class="bdgbox"><span class="badge b-wd"><b>작성중</b></span></span><span class="act"><span data-act="edit-sec" data-sid="001-SL-CM-01" data-sec-id="sec_e8vfze_eqs" title="이 구역 편집">✎</span><span data-act="del-sec" data-sid="001-SL-CM-01" data-sec-id="sec_e8vfze_eqs" title="삭제">🗑</span></span></div></div>
         </div>
       </div>
     </div>
 
     <div class="col">
       <div class="col-h"><span class="pill">구역 상세</span><span>구역 설명 상세</span></div>
-      <div class="sec-edit" id="secEdit"><div class="placeholder">중앙에서 구역을 선택(또는 "+ 구역 추가")해 주세요.</div></div>
+      <div class="sec-edit t-wd" id="secEdit"><div class="rower"><div class="lbl">작성자</div><input data-sec="sec_sbhucb_9vr" data-pf2="author" value=""></div><div class="rower-row"><div class="rower"><div class="lbl">진행 상황</div><div class="typebar"><button type="button" class="typechip on prog" data-act="set-status" data-v="작성중">작성중</button><button type="button" class="typechip  review" data-act="set-status" data-v="검토중">검토중</button><button type="button" class="typechip  ok" data-act="set-status" data-v="확정">확정</button></div></div><div class="rower"><div class="lbl">구역 종류 <span class="req">*</span></div><div class="typebar"><button type="button" class="typechip on func" data-act="set-type" data-v="기능">기능</button><button type="button" class="typechip  ad" data-act="set-type" data-v="광고">광고</button><button type="button" class="typechip  out" data-act="set-type" data-v="아웃링크">아웃링크</button><button type="button" class="typechip  link" data-act="set-type" data-v="페이지연결">페이지연결</button></div></div></div><div class="rower"><div class="lbl">구역 이름 <span class="req">*</span></div><input data-sec="sec_sbhucb_9vr" data-pf2="title" value="배경 스크린"></div><div class="acc-item is-open" data-acc="desc"><div class="acc-head" data-act="acc-toggle" data-acc="desc"><span class="acc-arrow">▶</span><span class="acc-title">기능 설명 <span class="req">*</span></span><span class="acc-dot filled"></span></div><div class="acc-panel"><textarea data-sec="sec_sbhucb_9vr" data-pf2="desc">풀브리드 이미지를 사용하여 스플래시 스크린 이미지를 제공한다.
+초기 값은 기본 이미지로 일괄 제공하며, 추후 마이페이지 내의 기능을 통해서 사용자가 원하는 이미지로 교체 가능하다.</textarea></div></div><div class="acc-item " data-acc="target"><div class="acc-head" data-act="acc-toggle" data-acc="target"><span class="acc-arrow">▶</span><span class="acc-title">관련 자료</span><span class="acc-dot "></span></div><div class="acc-panel"><textarea data-sec="sec_sbhucb_9vr" data-pf2="target"></textarea><div class="imgbox"><label class="imgadd">+ 이미지 첨부<input type="file" accept="image/*" multiple="" data-act="img-file" style="display:none"></label></div><div class="tip">개당 2MB 이하 파일 업로드 권장</div></div></div><div class="acc-item is-open" data-acc="requirement"><div class="acc-head" data-act="acc-toggle" data-acc="requirement"><span class="acc-arrow">▶</span><span class="acc-title">고려 요소</span><span class="acc-dot filled"></span></div><div class="acc-panel"><textarea data-sec="sec_sbhucb_9vr" data-pf2="requirement">마이페이지 기능을 통해 스플래시 스크린을 사용자 선택에 따라 이미지를 변경할 수 있다.</textarea></div></div><div class="acc-item " data-acc="exception"><div class="acc-head" data-act="acc-toggle" data-acc="exception"><span class="acc-arrow">▶</span><span class="acc-title">예외</span><span class="acc-dot "></span></div><div class="acc-panel"><textarea data-sec="sec_sbhucb_9vr" data-pf2="exception"></textarea></div></div><div class="acc-item " data-acc="feedback"><div class="acc-head" data-act="acc-toggle" data-acc="feedback"><span class="acc-arrow">▶</span><span class="acc-title">광고주 요청 / 피드백</span><span class="acc-dot "></span></div><div class="acc-panel"><textarea data-sec="sec_sbhucb_9vr" data-pf2="feedback"></textarea></div></div><div class="acc-item " data-acc="related"><div class="acc-head" data-act="acc-toggle" data-acc="related"><span class="acc-arrow">▶</span><span class="acc-title">연관 화면 ID</span><span class="acc-dot "></span></div><div class="acc-panel"><div class="chipbox"></div><label class="imgadd" data-act="chip-add" style="display:inline-block;margin-top:8px;cursor:pointer">+ 연관 화면 추가</label></div></div><div class="acc-item " data-acc="note"><div class="acc-head" data-act="acc-toggle" data-acc="note"><span class="acc-arrow">▶</span><span class="acc-title">메모</span><span class="acc-dot "></span></div><div class="acc-panel"><textarea data-sec="sec_sbhucb_9vr" data-pf2="note"></textarea></div></div></div>
     </div>
   </div>
 </div>
@@ -782,7 +807,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       + '</div>'
       + '<div class="rower" style="margin-top:10px">'
       +   '<div class="lbl">목적/개요</div>'
-      +   '<textarea data-pf="subtitle" data-sid="'+esc(s.screenId)+'" placeholder="이 화면의 목적/개요를 입력해 주세요" style="min-height:56px">'+esc(s.subtitle||"")+'</textarea>'
+      +   '<textarea data-pf="subtitle" data-sid="'+esc(s.screenId)+'" style="min-height:56px">'+esc(s.subtitle||"")+'</textarea>'
       + '</div>';
 
     head.querySelectorAll("[data-pf]").forEach(function(el){
@@ -870,6 +895,17 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   function tpCls(t){ return t==="광고" ? "b-tp-ad" : t==="아웃링크" ? "b-tp-out" : t==="페이지연결" ? "b-tp-link" : "b-tp-func"; }
 
   // ── RIGHT
+  // 아코디언 항목 1개 생성. filled=참이면(=작성됨) 기본 펼침, 아니면 제목만 보이게 닫힘.
+  function accItem(key, label, filled, innerHtml){
+    return '<div class="acc-item '+(filled?"is-open":"")+'" data-acc="'+esc(key)+'">'
+         +   '<div class="acc-head" data-act="acc-toggle" data-acc="'+esc(key)+'">'
+         +     '<span class="acc-arrow">▶</span>'
+         +     '<span class="acc-title">'+label+'</span>'
+         +     '<span class="acc-dot '+(filled?"filled":"")+'"></span>'
+         +   '</div>'
+         +   '<div class="acc-panel">'+innerHtml+'</div>'
+         + '</div>';
+  }
   function renderDetail(){
     var box = document.getElementById("secEdit");
     var s = findScreen(STATE.selectedScreenId);
@@ -885,117 +921,102 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     var currentType = SECTION_TYPES.indexOf(sec.type)>=0 ? sec.type : "기능";
     var tpKey = currentType==="광고" ? "ad" : currentType==="아웃링크" ? "out" : currentType==="페이지연결" ? "link" : "func";
 
-    // ── 진행 상황 선택 (구역 종류보다 위)
+    // ── 진행 상황 + 구역 종류: 한 줄에 나란히 배치
     var progressPicker =
-        '<div class="rower">'
-      +   '<div class="lbl">진행 상황</div>'
-      +   '<div class="typebar">'
-      +     STATUSES.map(function(v){
-              var sel = ((sec.status||"작성중")===v) ? "on" : "";
-              var k = v==="확정"?"ok":v==="검토중"?"review":"prog";
-              return '<button type="button" class="typechip '+sel+' '+k+'" data-act="set-status" data-v="'+v+'">'+v+'</button>';
-            }).join("")
-      +   '</div>'
+        '<div class="lbl">진행 상황</div>'
+      + '<div class="typebar">'
+      +   STATUSES.map(function(v){
+            var sel = ((sec.status||"작성중")===v) ? "on" : "";
+            var k = v==="확정"?"ok":v==="검토중"?"review":"prog";
+            return '<button type="button" class="typechip '+sel+' '+k+'" data-act="set-status" data-v="'+v+'">'+v+'</button>';
+          }).join("")
       + '</div>';
 
-    // ── 4가지 모드 셀렉터 (구역 이름 위에 위치)
     var typePicker =
-        '<div class="rower">'
-      +   '<div class="lbl">구역 종류 <span class="req">*</span></div>'
-      +   '<div class="typebar">'
-      +     SECTION_TYPES.map(function(t){
-              var k = t==="광고"?"ad":t==="아웃링크"?"out":t==="페이지연결"?"link":"func";
-              var sel = (t===currentType) ? "on" : "";
-              return '<button type="button" class="typechip '+sel+' '+k+'" data-act="set-type" data-v="'+t+'">'+t+'</button>';
-            }).join("")
-      +   '</div>'
-      +   '<div class="tip">종류를 바꾸면 다른 영역 입력칸은 화면에서 숨겨지고 데이터는 그대로 보관돼요. 다시 돌아오면 내용 자동 복원.</div>'
+        '<div class="lbl">구역 종류 <span class="req">*</span></div>'
+      + '<div class="typebar">'
+      +   SECTION_TYPES.map(function(t){
+            var k = t==="광고"?"ad":t==="아웃링크"?"out":t==="페이지연결"?"link":"func";
+            var sel = (t===currentType) ? "on" : "";
+            return '<button type="button" class="typechip '+sel+' '+k+'" data-act="set-type" data-v="'+t+'">'+t+'</button>';
+          }).join("")
       + '</div>';
 
-    // ── 모드별 본문
-    var bodyHtml = "";
-    var tailHtml = "";
+    var statusTypeRow =
+        '<div class="rower-row">'
+      +   '<div class="rower">'+progressPicker+'</div>'
+      +   '<div class="rower">'+typePicker+'</div>'
+      + '</div>';
+
+    // ── 작성자(최상단 고정) / 구역 이름
+    var authorRow =
+        '<div class="rower">'
+      +   '<div class="lbl">작성자</div>'
+      +   '<input data-sec="'+esc(sec.id)+'" data-pf2="author" value="'+esc(sec.author||"")+'">'
+      + '</div>';
+
+    var titleRow =
+        '<div class="rower">'
+      +   '<div class="lbl">구역 이름 <span class="req">*</span></div>'
+      +   '<input data-sec="'+esc(sec.id)+'" data-pf2="title" value="'+esc(sec.title||"")+'">'
+      + '</div>';
+
+    // ── 모드별 본문: 작성 여부에 따라 열림/닫힘이 결정되는 아코디언 항목들
+    var accHtml = "";
 
     if(currentType==="기능"){
-      bodyHtml =
-          '<div class="rower hl">'
-        +   '<div class="lbl">기능 설명 <span class="req">*</span></div>'
-        +   '<textarea data-sec="'+esc(sec.id)+'" data-pf2="desc" placeholder="이 페이지는 어떤 기능을 한다. 어떤 내용이 들어있었다.">'+esc(sec.desc||"")+'</textarea>'
-        + '</div>'
+      accHtml =
+          accItem("desc", "기능 설명 <span class='req'>*</span>", !!(sec.desc && sec.desc.trim()),
+            '<textarea data-sec="'+esc(sec.id)+'" data-pf2="desc">'+esc(sec.desc||"")+'</textarea>')
 
-        + '<div class="rower">'
-        +   '<div class="lbl">관련 자료</div>'
-        +   '<textarea data-sec="'+esc(sec.id)+'" data-pf2="target" placeholder="관련 문서 · 링크 · 참고 문장">'+esc(sec.target||"")+'</textarea>'
-        +   '<div class="imgbox">'
-        +     (sec.images||[]).map(function(im){
-              return '<span class="thumb" data-act="img-view" data-img="'+esc(im.id)+'" title="클릭하면 크게 보기"><img src="'+esc(im.dataUrl)+'" alt="'+esc(im.name||"")+'"><span class="tx" data-act="img-del" data-img="'+esc(im.id)+'" title="삭제">×</span></span>';
-            }).join("")
-        +     '<label class="imgadd">+ 이미지 첨부<input type="file" accept="image/*" multiple data-act="img-file" style="display:none"></label>'
-        +   '</div>'
-        +   '<div class="tip">이미지는 이 브라우저 저장소에 함께 보관되고 JSON보내기에도 포함돼요. (개당 2MB 이하 권장)</div>'
-        + '</div>'
+        + accItem("target", "관련 자료", !!((sec.target && sec.target.trim()) || (sec.images && sec.images.length)),
+            '<textarea data-sec="'+esc(sec.id)+'" data-pf2="target">'+esc(sec.target||"")+'</textarea>'
+          + '<div class="imgbox">'
+          +   (sec.images||[]).map(function(im){
+                return '<span class="thumb" data-act="img-view" data-img="'+esc(im.id)+'" title="클릭하면 크게 보기"><img src="'+esc(im.dataUrl)+'" alt="'+esc(im.name||"")+'"><span class="tx" data-act="img-del" data-img="'+esc(im.id)+'" title="삭제">×</span></span>';
+              }).join("")
+          +   '<label class="imgadd">+ 이미지 첨부<input type="file" accept="image/*" multiple data-act="img-file" style="display:none"></label>'
+          + '</div>'
+          + '<div class="tip">개당 2MB 이하 파일 업로드 권장</div>')
 
-        + '<div class="rower">'
-        +   '<div class="lbl">고려 요소</div>'
-        +   '<textarea data-sec="'+esc(sec.id)+'" data-pf2="requirement" placeholder="구현 시 반영해야 하는 항목">'+esc(sec.requirement||"")+'</textarea>'
-        + '</div>'
+        + accItem("requirement", "고려 요소", !!(sec.requirement && sec.requirement.trim()),
+            '<textarea data-sec="'+esc(sec.id)+'" data-pf2="requirement">'+esc(sec.requirement||"")+'</textarea>')
 
-        + '<div class="rower err">'
-        +   '<div class="lbl">예외</div>'
-        +   '<textarea data-sec="'+esc(sec.id)+'" data-pf2="exception" placeholder="발생 시 어떤 모양으로 메시지를 노출한다.">'+esc(sec.exception||"")+'</textarea>'
-        + '</div>'
+        + accItem("exception", "예외", !!(sec.exception && sec.exception.trim()),
+            '<textarea data-sec="'+esc(sec.id)+'" data-pf2="exception">'+esc(sec.exception||"")+'</textarea>')
 
-        + '<div class="rower">'
-        +   '<div class="lbl">광고주 요청 / 피드백</div>'
-        +   '<textarea data-sec="'+esc(sec.id)+'" data-pf2="feedback" placeholder="광고주 측 요청사항 또는 회신 예정 피드백">'+esc(sec.feedback||"")+'</textarea>'
-        + '</div>'
+        + accItem("feedback", "광고주 요청 / 피드백", !!(sec.feedback && sec.feedback.trim()),
+            '<textarea data-sec="'+esc(sec.id)+'" data-pf2="feedback">'+esc(sec.feedback||"")+'</textarea>')
 
-        + '<div class="rower">'
-        +   '<div class="lbl">연관 화면 ID</div>'
-        +   '<div class="chipbox">'
-        +     (sec.related||[]).map(function(r){
-              return '<span class="chip">'+esc(r)+'  <span class="x" data-act="chip-x" data-value="'+esc(r)+'">×</span></span>';
-            }).join("")
-        +     '<button type="button" data-act="chip-add" class="chipadd">+ 연관 화면 추가</button>'
-        +   '</div>'
-        +   '<div class="tip">이미 만들어진 화면 리스트에서 여러 개 선택할 수 있어요.</div>'
-        + '</div>';
-      tailHtml =
-          '<div class="rower">'
-        +   '<div class="lbl">작성자</div>'
-        +   '<input data-sec="'+esc(sec.id)+'" data-pf2="author" value="'+esc(sec.author||"")+'" placeholder="예: 세현 / 기획파트">'
-        + '</div>'
-        + '<div class="rower">'
-        +   '<div class="lbl">메모</div>'
-        +   '<textarea data-sec="'+esc(sec.id)+'" data-pf2="note" placeholder="핸드오프 백로그 / 추가 메모">'+esc(sec.note||"")+'</textarea>'
-        + '</div>';
+        + accItem("related", "연관 화면 ID", !!(sec.related && sec.related.length),
+            '<div class="chipbox">'
+          +   (sec.related||[]).map(function(r){
+                return '<span class="chip">'+esc(r)+'  <span class="x" data-act="chip-x" data-value="'+esc(r)+'">×</span></span>';
+              }).join("")
+          + '</div>'
+          + '<label class="imgadd" data-act="chip-add" style="display:inline-block;margin-top:8px;cursor:pointer">+ 연관 화면 추가</label>')
+
+        + accItem("note", "메모", !!(sec.note && sec.note.trim()),
+            '<textarea data-sec="'+esc(sec.id)+'" data-pf2="note">'+esc(sec.note||"")+'</textarea>');
     }
     else if(currentType==="광고"){
       // 사용자 요청: "하단 작성영역은 모두 날라가고 메모 정도만 쓸수 있게"
-      bodyHtml =
+      accHtml =
           '<div class="adbox">⚠ 광고 슬롯 모드입니다. 노출 위치·사이즈·소재 규격만 메모해 두세요.</div>'
-        + '<div class="rower hl">'
-        +   '<div class="lbl">광고 메모 <span class="req">*</span></div>'
-        +   '<textarea data-sec="'+esc(sec.id)+'" data-pf2="note" rows="10" placeholder="광고 슬롯 · 노출 위치·사이즈·소재 규격·갱신 주기 메모 자유 입력">'+esc(sec.note||"")+'</textarea>'
-        + '</div>';
-      tailHtml = ""; // 메모는 본문에서 노출되므로 footer 숨김
+        + accItem("note", "광고 메모 <span class='req'>*</span>", !!(sec.note && sec.note.trim()),
+            '<textarea data-sec="'+esc(sec.id)+'" data-pf2="note" rows="10">'+esc(sec.note||"")+'</textarea>');
     }
     else if(currentType==="아웃링크"){
       // 사용자 요청: "아웃링크도 하단 내용 다 날라가고 어느 페이지로 넘어가는 지 작성할 수 있게"
-      bodyHtml =
-          '<div class="rower">'
-        +   '<div class="lbl">이동 URL <span class="req">*</span></div>'
-        +   '<input data-sec="'+esc(sec.id)+'" data-pf2="outUrl" value="'+esc(sec.outUrl||"")+'" placeholder="https://..." style="font-family:Consolas,monospace">'
-        + '</div>'
-        + '<div class="rower">'
-        +   '<div class="lbl">표시 라벨 (화면에 보이는 글자)</div>'
-        +   '<input data-sec="'+esc(sec.id)+'" data-pf2="outLabel" value="'+esc(sec.outLabel||"")+'" placeholder="예: 공식 홈페이지 바로가기">'
-        + '</div>';
-      tailHtml =
-          '<div class="rower">'
-        +   '<div class="lbl">설명 메모</div>'
-        +   '<textarea data-sec="'+esc(sec.id)+'" data-pf2="note" placeholder="이 아웃링크의 목적 / 트리거 메모">'+esc(sec.note||"")+'</textarea>'
-        + '</div>';
+      accHtml =
+          accItem("outUrl", "이동 URL <span class='req'>*</span>", !!(sec.outUrl && sec.outUrl.trim()),
+            '<input data-sec="'+esc(sec.id)+'" data-pf2="outUrl" value="'+esc(sec.outUrl||"")+'" style="font-family:Consolas,monospace">')
+
+        + accItem("outLabel", "표시 라벨 (화면에 보이는 글자)", !!(sec.outLabel && sec.outLabel.trim()),
+            '<input data-sec="'+esc(sec.id)+'" data-pf2="outLabel" value="'+esc(sec.outLabel||"")+'">')
+
+        + accItem("note", "설명 메모", !!(sec.note && sec.note.trim()),
+            '<textarea data-sec="'+esc(sec.id)+'" data-pf2="note">'+esc(sec.note||"")+'</textarea>');
     }
     else { // 페이지연결
       var linkOpts =
@@ -1008,44 +1029,39 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
                    + esc(x.screenId)+' · '+esc(x.title||"(제목 없음)")+'</option>';
             }).join("");
       var linked = sec.linkedScreenId ? findScreen(sec.linkedScreenId) : null;
-      bodyHtml =
-          '<div class="rower">'
-        +   '<div class="lbl">연결할 화면 <span class="req">*</span></div>'
-        +   '<select data-sec="'+esc(sec.id)+'" data-pf2="linkedScreenId">'+linkOpts+'</select>'
-        + '</div>'
-        + '<div class="rower">'
-        +   '<div class="lbl">연결된 화면 미리보기</div>'
-        +   (linked
-            ? '<div class="linkpreview" data-act="goto-screen" data-sid="'+esc(linked.screenId)+'">'
-              +   '<span class="lkbtn">'+esc(linked.title||"(제목 없음)")+'</span>'
-              +   '<span class="lkid">'+esc(linked.screenId)+' · 클릭하면 그 화면으로 자동 이동 · 첫 구역 펼침</span>'
-              + '</div>'
-            : '<div class="linkpreview empty">연결된 화면이 없어요. 위 드롭다운에서 화면을 골라 주세요.</div>')
-        + '</div>';
-      tailHtml =
-          '<div class="rower">'
-        +   '<div class="lbl">설명 메모</div>'
-        +   '<textarea data-sec="'+esc(sec.id)+'" data-pf2="note" placeholder="이 페이지 연결의 트리거 / 조건 메모">'+esc(sec.note||"")+'</textarea>'
-        + '</div>';
+      accHtml =
+          accItem("linkedScreenId", "연결할 화면 <span class='req'>*</span>", !!sec.linkedScreenId,
+            '<select data-sec="'+esc(sec.id)+'" data-pf2="linkedScreenId">'+linkOpts+'</select>'
+          + '<div class="lbl" style="margin-top:12px">연결된 화면 미리보기</div>'
+          + (linked
+              ? '<div class="linkpreview" data-act="goto-screen" data-sid="'+esc(linked.screenId)+'">'
+                +   '<span class="lkbtn">'+esc(linked.title||"(제목 없음)")+'</span>'
+                +   '<span class="lkid">'+esc(linked.screenId)+' · 클릭하면 그 화면으로 자동 이동 · 첫 구역 펼침</span>'
+                + '</div>'
+              : '<div class="linkpreview empty">연결된 화면이 없어요. 위 드롭다운에서 화면을 골라 주세요.</div>'))
+
+        + accItem("note", "설명 메모", !!(sec.note && sec.note.trim()),
+            '<textarea data-sec="'+esc(sec.id)+'" data-pf2="note">'+esc(sec.note||"")+'</textarea>');
     }
 
     box.innerHTML =
-        progressPicker
-      + typePicker
-
-      + '<div class="rower">'
-      +   '<div class="lbl">구역 이름 <span class="req">*</span></div>'
-      +   '<input data-sec="'+esc(sec.id)+'" data-pf2="title" value="'+esc(sec.title||"")+'" placeholder="예: 헤더 가이드">'
-      + '</div>'
-
-      + bodyHtml
-
-      + tailHtml;
+        authorRow
+      + statusTypeRow
+      + titleRow
+      + accHtml;
 
     bindDetailHandlers(box, sec);
   }
 
   function bindDetailHandlers(box, sec){
+    // 아코디언 펼침/닫힘 토글 (수동으로 열고 닫을 수 있음. 작성 여부는 최초 렌더링 시 기본 상태만 결정)
+    box.querySelectorAll("[data-act='acc-toggle']").forEach(function(el){
+      el.addEventListener("click", function(){
+        var item = el.closest ? el.closest(".acc-item") : el.parentNode;
+        if(item) item.classList.toggle("is-open");
+      });
+    });
+
     // 단일 입력 핸들러
     box.querySelectorAll("[data-pf2]").forEach(function(el){
       el.addEventListener("input", function(){
@@ -1642,8 +1658,8 @@ try{
 try{ if(typeof _updateTreeInfo==="function") _updateTreeInfo(); }catch(_){ }
 })();
 </script>
-<script type="module" src="./삼성라이온즈 기능 정의 및 화면 설계서33_files/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon="{&quot;version&quot;:&quot;2024.11.0&quot;,&quot;token&quot;:&quot;4edd5f8ec12a48cfa682ab8261b80a79&quot;,&quot;spa&quot;:2}" crossorigin="anonymous"></script>
-<script src="./삼성라이온즈 기능 정의 및 화면 설계서33_files/sandbox_inspect.js.다운로드"></script><script type="module" src="./삼성라이온즈 기능 정의 및 화면 설계서33_files/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon="{&quot;version&quot;:&quot;2024.11.0&quot;,&quot;token&quot;:&quot;4edd5f8ec12a48cfa682ab8261b80a79&quot;,&quot;spa&quot;:2}" crossorigin="anonymous"></script>
+<script type="module" src="./삼성라이온즈 기능 정의 및 화면 설계서44_files/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon="{&quot;version&quot;:&quot;2024.11.0&quot;,&quot;token&quot;:&quot;4edd5f8ec12a48cfa682ab8261b80a79&quot;,&quot;spa&quot;:2}" crossorigin="anonymous"></script>
+<script src="./삼성라이온즈 기능 정의 및 화면 설계서44_files/sandbox_inspect.js.다운로드"></script><script type="module" src="./삼성라이온즈 기능 정의 및 화면 설계서44_files/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon="{&quot;version&quot;:&quot;2024.11.0&quot;,&quot;token&quot;:&quot;4edd5f8ec12a48cfa682ab8261b80a79&quot;,&quot;spa&quot;:2}" crossorigin="anonymous"></script>
 
 
 </body></html>
