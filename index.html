@@ -82,7 +82,7 @@ header button.primary{background:var(--clr-accent);color:var(--clr-brand-deep);b
 header button.primary:hover{background:#ffd443}
 header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color:#c97a72}
 
-.main{display:grid;grid-template-columns:280px minmax(360px,30fr) minmax(360px,50fr);gap:var(--sp-4);padding:var(--sp-4);overflow:hidden}
+.main{display:grid;grid-template-columns:minmax(220px,2fr) minmax(360px,4fr) minmax(360px,4fr);gap:var(--sp-4);padding:var(--sp-4);overflow:hidden}
 .col{background:var(--panel);border-radius:10px;display:flex;flex-direction:column;overflow:hidden;border:1px solid rgba(255,255,255,.35);box-shadow:0 6px 18px rgba(0,0,0,.18);min-width:0}
 .col-h{display:flex;align-items:center;gap:var(--sp-3);padding:0 var(--sp-4);height:42px;border-bottom:1px solid var(--line);font-size:var(--fs-h2);font-weight:800;color:var(--ink);background:var(--panel-2);flex:none}
 .col-h .pill{display:inline-flex;align-items:center;height:22px;background:var(--clr-brand);color:#fff;padding:0 10px;border-radius:11px;font-size:var(--fs-mini);font-weight:800;letter-spacing:.3px;flex:none}
@@ -181,7 +181,8 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 /* 폰 화면 안 구역 추가 툴바 */
 .phone-mock .screen .addsec{background:#eef2fb}
 
-.sec-list{padding:14px 12px 22px;flex:1;overflow:auto}
+.sec-list{padding:14px 12px 22px;flex:1;overflow:auto;min-width:0;min-height:0}
+.midsplit{display:flex;align-items:stretch;gap:12px;padding:0 14px 14px;flex:1;min-height:0;overflow:hidden}
 .sec{position:relative;background:var(--panel-2);border:1.5px dashed var(--line-2);border-radius:14px;padding:16px 14px 14px;margin-bottom:14px;cursor:grab;display:flex;align-items:center;gap:10px;user-select:none;min-height:52px;box-shadow:0 2px 6px rgba(20,30,60,.06)}
 /* 가운데 구역 카드 톤 — 진행상황(작성중/검토중/확정)에 맞춰 카드 전체 배경이 조화를 이루도록 함 */
 .sec.s-wd{background:linear-gradient(180deg,#fbfdff 0%,#eef3fb 100%);border-color:#c8d1e0}
@@ -276,6 +277,16 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .imgadd{background:var(--acc-soft);color:var(--clr-brand);border:1px dashed var(--clr-brand);border-radius:6px;padding:10px 14px;font-size:13px;font-weight:700;cursor:pointer}
 .imgadd:hover{background:var(--clr-brand);color:#fff}
 
+.scrshot{margin:0;flex:0 0 40%;min-width:130px;min-height:0;display:flex;flex-direction:column}
+.scrshot .add{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:160px;border:2px dashed var(--line-2);border-radius:10px;background:var(--panel-2);color:var(--sub-2);cursor:pointer;font-size:13px;font-weight:700;text-align:center}
+.scrshot .add:hover{background:var(--acc-soft);border-color:var(--clr-brand);color:var(--clr-brand)}
+.scrshot .add .plus{font-size:26px;font-weight:400;line-height:1}
+.scrshot .preview{flex:1;min-height:0;position:relative;display:flex;justify-content:center;align-items:flex-start;padding:10px;background:var(--panel-2);border-radius:10px;overflow:auto}
+.scrshot .preview img{width:412px;max-width:100%;display:block;border:1px solid var(--line);border-radius:4px;background:#fff;cursor:zoom-in}
+.scrshot .preview .rm{position:absolute;top:16px;right:16px;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,.62);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;line-height:1;flex:none}
+.scrshot .preview .rm:hover{background:var(--danger)}
+#secList.sec-list{flex:1}
+
 .imglb{position:fixed;inset:0;background:rgba(5,15,40,.86);display:none;align-items:center;justify-content:center;z-index:400;cursor:zoom-out;flex-direction:column}
 .imglb.show{display:flex}
 .imglb img{max-width:88vw;max-height:82vh;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.5);background:#fff}
@@ -332,7 +343,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     <span class="sp"></span>
     <span class="syncBlock" role="group" aria-label="서버 상태">
       <span class="syncDot" id="syncDot"></span>
-      <span id="syncChip" style="color: rgb(32, 107, 53);">서버 불러옴 · 세현 · 오후 10:34:26</span>
+      <span id="syncChip" style="color: rgb(143, 227, 171);">서버 불러옴 · 세현 · 오후 10:34:26</span>
       <span class="sep"></span>
       <span class="data-menu"><span class="lbl">데이터</span>
         <select id="dataMenu" aria-label="데이터 관리 메뉴">
@@ -352,6 +363,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   <div class="main">
     <div class="col">
       <div class="col-h"><span class="info" id="treeInfo">전체 93</span>
+        <span class="sp"></span>
         <button type="button" id="btnAddScr" class="primary">+ 화면</button>
         <button type="button" id="btnAddGrp">+ 그룹</button>
       </div>
@@ -580,6 +592,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 
   /* ==== Supabase (옵션 토글, 외부 리소스 0개 정책 유지) ==== */
   var SB = { url:"https://gyfldkokgivdqtlytbze.supabase.co", key:"sb_publishable_IjEHGpxgWk3bALJs9lBKug_hqn4GrGH", user:"세현" };
+  var SB_BUCKET = "samsunglion";
   var _sbRowId = null;
   var _sbPushT = null;
   var _sbPullT = null;
@@ -593,13 +606,13 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   function _sbPullNow(){
     try{
     if(!SB.url) return;
-    _sbChip("가져오는 중…","#8b5d00");
+    _sbChip("가져오는 중…","#ffd166");
     var url = SB.url + "/rest/v1/spec?id=eq.1&select=*";
     fetch(url, { method:"GET", headers: _sbH() })
       .then(function(r){ return r.json(); })
       .then(function(rows){
         if(!Array.isArray(rows)) throw new Error("bad response");
-        if(rows.length === 0){ _sbRowId = null; _sbChip("서버 비어 있음 · 편집하면 자동 업로드","#206b35"); return; }
+        if(rows.length === 0){ _sbRowId = null; _sbChip("서버 비어 있음 · 편집하면 자동 업로드","#8fe3ab"); return; }
         var row = rows[0]; _sbRowId = row.id;
         try{
           var d = (typeof row.payload === "string") ? JSON.parse(row.payload) : row.payload;
@@ -617,10 +630,10 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
             renderAll();
           }
         }catch(e){ console.warn("[sb parse]", e); }
-        _sbChip("서버 불러옴 · "+(row.updated_by||"")+" · "+new Date().toLocaleTimeString(),"#206b35");
+        _sbChip("서버 불러옴 · "+(row.updated_by||"")+" · "+new Date().toLocaleTimeString(),"#8fe3ab");
       })
-      .catch(function(e){ _sbChip("서버 연결 실패 · 로컬로 작업","#a01616"); try{console.warn("[sb pull]",e);}catch(_){} });
-    }catch(e){_sbChip("서버 모듈 예외 · 로컬로 작업","#a01616"); try{console.warn("[sb pull sync]",e);}catch(_){}}
+      .catch(function(e){ _sbChip("서버 연결 실패 · 로컬로 작업","#ff9c96"); try{console.warn("[sb pull]",e);}catch(_){} });
+    }catch(e){_sbChip("서버 모듈 예외 · 로컬로 작업","#ff9c96"); try{console.warn("[sb pull sync]",e);}catch(_){}}
   }
 
   function _sbPushNow(){
@@ -628,7 +641,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     if(!SB.url) return;
     var row = { id: _sbRowId || 1, payload: STATE, updated_at: new Date().toISOString(), updated_by: SB.user };
     var url = SB.url + "/rest/v1/spec";
-    _sbChip("서버 저장 중…","#8b5d00");
+    _sbChip("서버 저장 중…","#ffd166");
     fetch(url, {
       method:"POST",
       // 주의: Object.assign은 같은 키(Prefer)를 나중 값으로 "덮어쓰기"하지, 합쳐주지 않는다.
@@ -647,10 +660,10 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         var rows = null;
         if(txt){ try{ rows = JSON.parse(txt); }catch(e){ rows = null; } }
         if(Array.isArray(rows) && rows[0]) _sbRowId = rows[0].id;
-        _sbChip("서버 저장됨 · "+SB.user+" · "+new Date().toLocaleTimeString(),"#206b35");
+        _sbChip("서버 저장됨 · "+SB.user+" · "+new Date().toLocaleTimeString(),"#8fe3ab");
       })
-      .catch(function(e){ _sbChip("서버 저장 실패 · 로컬은 보관됨","#a01616"); try{console.warn("[sb push]",e);}catch(_){} });
-    }catch(e){_sbChip("서버 모듈 예외 · 로컬은 보관됨","#a01616"); try{console.warn("[sb push sync]",e);}catch(_){}}
+      .catch(function(e){ _sbChip("서버 저장 실패 · 로컬은 보관됨","#ff9c96"); try{console.warn("[sb push]",e);}catch(_){} });
+    }catch(e){_sbChip("서버 모듈 예외 · 로컬은 보관됨","#ff9c96"); try{console.warn("[sb push sync]",e);}catch(_){}}
   }
   function _sbPushDebounced(){ if(!SB.url) return; if(_sbPushT) clearTimeout(_sbPushT); _sbPushT=setTimeout(_sbPushNow, 1500); }
   function _sbStartAutoPull(){ if(!SB.url) return; if(_sbPullT) clearInterval(_sbPullT); _sbPullT=setInterval(save, 1800000); }
@@ -778,10 +791,24 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     var addsec=document.getElementById("addsec");
     var list=document.getElementById("secList");
     var delBtn=document.getElementById("btnDelScr2");
+    var shot=document.getElementById("scrShot");
+    if(!shot){
+      shot=document.createElement("div");
+      shot.className="scrshot"; shot.id="scrShot";
+    }
+    var split=document.getElementById("midSplit");
+    if(!split && addsec && addsec.parentNode){
+      split=document.createElement("div");
+      split.className="midsplit"; split.id="midSplit";
+      addsec.parentNode.insertBefore(split, addsec.nextSibling);
+      split.appendChild(shot);
+      if(list) split.appendChild(list);
+    }
     var s = findScreen(STATE.selectedScreenId);
     if(!s){
       pill.textContent="선택 필요"; mid.textContent="화면 선택 필요";
       head.style.display="none"; addsec.style.display="none"; list.innerHTML=""; delBtn.style.display="none";
+      if(shot) shot.innerHTML="";
       return;
     }
     var grp = (STATE.groups||[]).find(function(g){return g.id===s.groupId;}) || {};
@@ -827,6 +854,8 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         }
       });
     });
+
+    if(shot){ renderScrShot(shot, s); }
 
     addsec.style.display = "flex";
 
@@ -888,6 +917,101 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         ordered.forEach(function(x,i){ x.order = i; });
         save(); renderMid(); renderDetail();
       });
+    });
+  }
+  function renderScrShot(shot, s){
+    if(s.mockImage && s.mockImage.url){
+      shot.innerHTML =
+          '<div class="preview">'
+        +   '<img src="'+esc(s.mockImage.url)+'" alt="'+esc(s.mockImage.name||"")+'">'
+        +   '<span class="rm" data-act="scrshot-del" title="삭제">×</span>'
+        + '</div>';
+    } else {
+      shot.innerHTML =
+          '<label class="add">'
+        +   '<span class="plus">+</span>'
+        +   '<span>화면을 등록하세요</span>'
+        +   '<input type="file" accept="image/*" data-act="scrshot-file" style="display:none">'
+        + '</label>';
+    }
+    var fileInp = shot.querySelector("[data-act='scrshot-file']");
+    if(fileInp){
+      fileInp.onchange = function(e){
+        var f = e.target.files && e.target.files[0];
+        e.target.value = "";
+        if(f) handleScrShotFile(f, s);
+      };
+    }
+    var rm = shot.querySelector("[data-act='scrshot-del']");
+    if(rm){
+      rm.onclick = function(e){
+        e.stopPropagation();
+        var old = s.mockImage;
+        s.mockImage = null;
+        save(); renderMid();
+        toast("화면 이미지 삭제됨");
+        if(old && old.path && SB.url){
+          fetch(SB.url + "/storage/v1/object/" + SB_BUCKET + "/" + old.path, {
+            method:"DELETE",
+            headers:{ "apikey":SB.key, "Authorization":"Bearer "+SB.key }
+          }).catch(function(){ /* 서버 파일 삭제 실패는 무시 */ });
+        }
+      };
+    }
+    var previewImg = shot.querySelector(".preview img");
+    if(previewImg){
+      previewImg.onclick = function(e){
+        e.stopPropagation();
+        openShotLightbox(s.mockImage);
+      };
+    }
+  }
+  function openShotLightbox(im){
+    if(!im || !im.url) return;
+    document.getElementById("imglbImg").src = im.url;
+    document.getElementById("imglbCap").textContent = (im.name||"화면 이미지")+" · 클릭하면 닫힘";
+    document.getElementById("imglb").classList.add("show");
+  }
+
+  function handleScrShotFile(f, s){
+    if(!SB.url){ toast("서버 연결이 없어 이미지 업로드가 안 돼요", true); return; }
+    if(f.size > 5*1024*1024){ toast("5MB 초과라 제외: "+f.name, true); return; }
+    // 파일명은 화면 ID로 고정 (ex: 016-SL-GM-11.png)
+    var extMatch = /\.([a-zA-Z0-9]+)$/.exec(f.name || "");
+    var ext = extMatch ? extMatch[1].toLowerCase() : "png";
+    var path = "screens/" + s.screenId + "." + ext;
+    var old = s.mockImage;
+
+    // 기존에 등록된 파일이 있으면(특히 확장자가 달라 경로가 바뀌는 경우) 먼저 서버에서 지운 뒤 새로 저장
+    var delPromise = (old && old.path && old.path !== path)
+      ? fetch(SB.url + "/storage/v1/object/" + SB_BUCKET + "/" + old.path, {
+          method: "DELETE",
+          headers: { "apikey": SB.key, "Authorization": "Bearer " + SB.key }
+        }).catch(function(){ /* 기존 파일 삭제 실패해도 새 파일 저장은 계속 진행 */ })
+      : Promise.resolve();
+
+    delPromise.then(function(){
+      return fetch(SB.url + "/storage/v1/object/" + SB_BUCKET + "/" + path, {
+        method: "POST",
+        headers: {
+          "apikey": SB.key,
+          "Authorization": "Bearer " + SB.key,
+          "Content-Type": f.type || "application/octet-stream",
+          "x-upsert": "true"
+        },
+        body: f
+      });
+    }).then(function(res){
+      if(!res.ok){
+        return res.text().then(function(t){ throw new Error(t || ("HTTP "+res.status)); });
+      }
+      // 같은 경로로 덮어써도 브라우저/CDN 캐시로 예전 이미지가 보이지 않도록 버전 쿼리 부여
+      var publicUrl = SB.url + "/storage/v1/object/public/" + SB_BUCKET + "/" + path + "?v=" + Date.now();
+      s.mockImage = { id:uid("shot"), name:f.name, path:path, url:publicUrl };
+      save(); renderMid();
+      toast("화면 이미지 등록됨");
+    }).catch(function(err){
+      toast("업로드 실패: "+f.name, true);
     });
   }
   function badgeCls(v){ return v==="확정" ? "b-ok" : v==="검토중" ? "b-wr" : "b-wd"; }
@@ -977,7 +1101,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
               }).join("")
           +   '<label class="imgadd">+ 이미지 첨부<input type="file" accept="image/*" multiple data-act="img-file" style="display:none"></label>'
           + '</div>'
-          + '<div class="tip">개당 2MB 이하 파일 업로드 권장</div>')
+          + '<div class="tip">개당 5MB 이하 · Supabase Storage(samsunglion 버킷)에 업로드되며 업로드 중 약간의 지연이 있을 수 있어요</div>')
 
         + accItem("requirement", "고려 요소", !!(sec.requirement && sec.requirement.trim()),
             '<textarea data-sec="'+esc(sec.id)+'" data-pf2="requirement">'+esc(sec.requirement||"")+'</textarea>')
@@ -1128,8 +1252,15 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         if(a==="img-view"){ openLightbox(sec, t.dataset.img); return; }
         if(a==="img-del"){
           e.stopPropagation();
+          var delImg = (sec.images||[]).find(function(x){return x.id===t.dataset.img;});
           sec.images = (sec.images||[]).filter(function(x){return x.id!==t.dataset.img;});
           save(); renderDetail(); toast("이미지 삭제됨");
+          if(delImg && delImg.path && SB.url){
+            fetch(SB.url + "/storage/v1/object/" + SB_BUCKET + "/" + delImg.path, {
+              method: "DELETE",
+              headers: { "apikey": SB.key, "Authorization": "Bearer " + SB.key }
+            }).catch(function(){ /* 서버 파일 삭제 실패는 무시 — 목록에서는 이미 제거됨 */ });
+          }
           return;
         }
         if(a==="goto-screen"){
@@ -1157,25 +1288,43 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 
   function handleImgFiles(files, sec){
     if(!files || !files.length) return;
+    if(!SB.url){
+      toast("서버 연결이 없어 이미지 업로드가 안 돼요", true);
+      return;
+    }
     sec.images = sec.images || [];
     var list = Array.prototype.slice.call(files);
     var pending = list.length;
     list.forEach(function(f){
-      if(f.size > 2*1024*1024){
-        toast("2MB 초과라 제외: "+f.name, true);
+      if(f.size > 5*1024*1024){
+        toast("5MB 초과라 제외: "+f.name, true);
         if(--pending===0){ save(); renderDetail(); }
         return;
       }
-      var r = new FileReader();
-      r.onload = function(){
-        sec.images.push({id:uid("img"), name:f.name, dataUrl:r.result});
+      var path = sec.id + "/" + uid("img") + "_" + encodeURIComponent(f.name);
+      fetch(SB.url + "/storage/v1/object/" + SB_BUCKET + "/" + path, {
+        method: "POST",
+        headers: {
+          "apikey": SB.key,
+          "Authorization": "Bearer " + SB.key,
+          "Content-Type": f.type || "application/octet-stream",
+          "x-upsert": "true"
+        },
+        body: f
+      }).then(function(res){
+        if(!res.ok){
+          return res.text().then(function(t){ throw new Error(t || ("HTTP "+res.status)); });
+        }
+        var publicUrl = SB.url + "/storage/v1/object/public/" + SB_BUCKET + "/" + path;
+        sec.images.push({id:uid("img"), name:f.name, dataUrl:publicUrl, path:path});
+      }).catch(function(err){
+        toast("업로드 실패: "+f.name, true);
+      }).then(function(){
         if(--pending===0){
           save(); renderDetail();
-          toast("이미지 저장됨 · 총 "+sec.images.length+"개");
+          toast("이미지 처리 완료 · 총 "+sec.images.length+"개");
         }
-      };
-      r.onerror = function(){ if(--pending===0){ save(); renderDetail(); } };
-      r.readAsDataURL(f);
+      });
     });
   }
   function openLightbox(sec, imgId){
@@ -1620,12 +1769,12 @@ try{
       if(SB.url){
         _sbPullNow();
         _sbStartAutoPull();
-        _sbChip("서버 연결됨 · 불러오는 중…","#8b5d00");
+        _sbChip("서버 연결됨 · 불러오는 중…","#ffd166");
       } else {
-        _sbChip("로컬 only","#666");
+        _sbChip("로컬 only","#c7d2e8");
       }
     }catch(e){
-      _sbChip("오프라인 · 로컬로 작업","#a01616");
+      _sbChip("오프라인 · 로컬로 작업","#ff9c96");
       try{console.warn("[boot sync]",e);}catch(_){}
     }
   }
