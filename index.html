@@ -83,6 +83,29 @@ header button.primary:hover{background:#ffd443}
 header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color:#c97a72}
 
 .main{display:grid;grid-template-columns:minmax(220px,2fr) minmax(360px,4fr) minmax(360px,4fr);gap:var(--sp-4);padding:var(--sp-4);overflow:hidden}
+.history-screen{display:none;padding:var(--sp-4);overflow:hidden;min-height:0}
+.history-screen.show{display:flex}
+.hist-compose{flex:none}
+.hist-compose-label{font-size:12.5px;font-weight:800;color:var(--ink);margin-bottom:6px}
+.hist-compose-row{display:flex;gap:10px;align-items:stretch}
+.hist-compose-row textarea{flex:1;min-height:64px;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:13.5px;font-family:inherit;resize:vertical;box-sizing:border-box}
+.hist-compose-row textarea:focus{outline:none;border-color:var(--clr-brand);box-shadow:0 0 0 2px rgba(10,61,145,.16)}
+.hist-compose-row button{flex:none;padding:0 26px;background:var(--clr-brand);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:800;font-size:14px}
+.hist-compose-row button:hover{background:var(--clr-brand-deep)}
+.hist-compose-tip{font-size:11.5px;color:var(--sub);margin-top:6px}
+.hist-table{width:100%;border-collapse:collapse;font-size:13px}
+.hist-table thead th{position:sticky;top:0;background:var(--panel-2);text-align:left;padding:9px 12px;font-size:12px;color:var(--sub);font-weight:800;border-bottom:1px solid var(--line);z-index:1}
+.hist-table tbody td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.hist-table tbody tr:last-child td{border-bottom:none}
+.hist-table tbody tr:hover td{background:var(--acc-soft)}
+.hist-ver{font-family:Consolas,monospace;font-weight:800;color:var(--clr-brand);white-space:nowrap}
+.hist-chip{display:inline-block;border:1px solid var(--clr-brand);color:var(--clr-brand);border-radius:4px;padding:1px 6px;font-family:Consolas,monospace;font-size:12px;font-weight:800;cursor:pointer;margin-right:4px;white-space:nowrap}
+.hist-chip:hover{background:var(--clr-brand);color:#fff}
+.hist-date{white-space:nowrap;color:var(--sub);font-size:12.5px}
+.hist-del{cursor:pointer;color:var(--sub-2)}
+.hist-del:hover{color:var(--danger)}
+.hist-author{color:var(--sub);font-weight:700;font-size:11.5px;margin-right:6px}
+.hist-empty{text-align:center;color:var(--sub-2);font-size:13px;padding:40px 10px}
 .col{background:var(--panel);border-radius:10px;display:flex;flex-direction:column;overflow:hidden;border:1px solid rgba(255,255,255,.35);box-shadow:0 6px 18px rgba(0,0,0,.18);min-width:0}
 .col-h{display:flex;align-items:center;gap:var(--sp-3);padding:0 var(--sp-4);height:42px;border-bottom:1px solid var(--line);font-size:var(--fs-h2);font-weight:800;color:var(--ink);background:var(--panel-2);flex:none}
 .col-h .pill{display:inline-flex;align-items:center;height:22px;background:var(--clr-brand);color:#fff;padding:0 10px;border-radius:11px;font-size:var(--fs-mini);font-weight:800;letter-spacing:.3px;flex:none}
@@ -191,7 +214,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .sec.selected{background:var(--hl);border-color:var(--clr-brand);border-style:solid;outline:1px solid var(--clr-brand)}
 .sec.dragging{opacity:.4}
 .sec.drag-over{border-top:3px solid var(--clr-brand)}
-.sec .num{position:static;font-size:12.5px;color:#fff;font-weight:900;width:26px;height:26px;background:#d90000;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 3px 8px rgba(10,61,145,.4);border:2px solid #fff;align-self:center}
+.sec .num{position:static;font-size:12.5px;color:#fff;font-weight:900;width:26px;height:26px;background:var(--clr-brand);border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 3px 8px rgba(10,61,145,.4);border:2px solid #fff;align-self:center}
 .sec .ti{font-size:var(--fs-base);font-weight:800;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink)}
 .sec .bdgbox{display:flex;gap:4px;flex:none}
 .sec .act{opacity:0;display:flex;gap:5px;color:var(--sub);font-size:var(--fs-mini);font-weight:700}
@@ -360,10 +383,11 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     <span id="providerTag" style="display:none">Supabase 연결됨</span>
 </header>
 
-  <div class="main">
+  <div class="main" id="mainView">
     <div class="col">
       <div class="col-h"><span class="info" id="treeInfo">전체 93</span>
         <span class="sp"></span>
+        <button type="button" id="btnHistory">이력</button>
         <button type="button" id="btnAddScr" class="primary">+ 화면</button>
         <button type="button" id="btnAddGrp">+ 그룹</button>
       </div>
@@ -396,6 +420,34 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       <div class="col-h"><span class="pill">구역 상세</span><span>구역 설명 상세</span></div>
       <div class="sec-edit t-wd" id="secEdit"><div class="rower"><div class="lbl">작성자</div><input data-sec="sec_sbhucb_9vr" data-pf2="author" value=""></div><div class="rower-row"><div class="rower"><div class="lbl">진행 상황</div><div class="typebar"><button type="button" class="typechip on prog" data-act="set-status" data-v="작성중">작성중</button><button type="button" class="typechip  review" data-act="set-status" data-v="검토중">검토중</button><button type="button" class="typechip  ok" data-act="set-status" data-v="확정">확정</button></div></div><div class="rower"><div class="lbl">구역 종류 <span class="req">*</span></div><div class="typebar"><button type="button" class="typechip on func" data-act="set-type" data-v="기능">기능</button><button type="button" class="typechip  ad" data-act="set-type" data-v="광고">광고</button><button type="button" class="typechip  out" data-act="set-type" data-v="아웃링크">아웃링크</button><button type="button" class="typechip  link" data-act="set-type" data-v="페이지연결">페이지연결</button></div></div></div><div class="rower"><div class="lbl">구역 이름 <span class="req">*</span></div><input data-sec="sec_sbhucb_9vr" data-pf2="title" value="배경 스크린"></div><div class="acc-item is-open" data-acc="desc"><div class="acc-head" data-act="acc-toggle" data-acc="desc"><span class="acc-arrow">▶</span><span class="acc-title">기능 설명 <span class="req">*</span></span><span class="acc-dot filled"></span></div><div class="acc-panel"><textarea data-sec="sec_sbhucb_9vr" data-pf2="desc">풀브리드 이미지를 사용하여 스플래시 스크린 이미지를 제공한다.
 초기 값은 기본 이미지로 일괄 제공하며, 추후 마이페이지 내의 기능을 통해서 사용자가 원하는 이미지로 교체 가능하다.</textarea></div></div><div class="acc-item " data-acc="target"><div class="acc-head" data-act="acc-toggle" data-acc="target"><span class="acc-arrow">▶</span><span class="acc-title">관련 자료</span><span class="acc-dot "></span></div><div class="acc-panel"><textarea data-sec="sec_sbhucb_9vr" data-pf2="target"></textarea><div class="imgbox"><label class="imgadd">+ 이미지 첨부<input type="file" accept="image/*" multiple="" data-act="img-file" style="display:none"></label></div><div class="tip">개당 2MB 이하 파일 업로드 권장</div></div></div><div class="acc-item is-open" data-acc="requirement"><div class="acc-head" data-act="acc-toggle" data-acc="requirement"><span class="acc-arrow">▶</span><span class="acc-title">고려 요소</span><span class="acc-dot filled"></span></div><div class="acc-panel"><textarea data-sec="sec_sbhucb_9vr" data-pf2="requirement">마이페이지 기능을 통해 스플래시 스크린을 사용자 선택에 따라 이미지를 변경할 수 있다.</textarea></div></div><div class="acc-item " data-acc="exception"><div class="acc-head" data-act="acc-toggle" data-acc="exception"><span class="acc-arrow">▶</span><span class="acc-title">예외</span><span class="acc-dot "></span></div><div class="acc-panel"><textarea data-sec="sec_sbhucb_9vr" data-pf2="exception"></textarea></div></div><div class="acc-item " data-acc="feedback"><div class="acc-head" data-act="acc-toggle" data-acc="feedback"><span class="acc-arrow">▶</span><span class="acc-title">광고주 요청 / 피드백</span><span class="acc-dot "></span></div><div class="acc-panel"><textarea data-sec="sec_sbhucb_9vr" data-pf2="feedback"></textarea></div></div><div class="acc-item " data-acc="related"><div class="acc-head" data-act="acc-toggle" data-acc="related"><span class="acc-arrow">▶</span><span class="acc-title">연관 화면 ID</span><span class="acc-dot "></span></div><div class="acc-panel"><div class="chipbox"></div><label class="imgadd" data-act="chip-add" style="display:inline-block;margin-top:8px;cursor:pointer">+ 연관 화면 추가</label></div></div><div class="acc-item " data-acc="note"><div class="acc-head" data-act="acc-toggle" data-acc="note"><span class="acc-arrow">▶</span><span class="acc-title">메모</span><span class="acc-dot "></span></div><div class="acc-panel"><textarea data-sec="sec_sbhucb_9vr" data-pf2="note"></textarea></div></div></div>
+    </div>
+  </div>
+
+  <div class="history-screen" id="historyScreen">
+    <div class="col" style="flex:1">
+      <div class="col-h">
+        <span class="pill">이력 관리</span>
+        <span class="pill" id="historyCountPill" style="background:#eef3fb;color:var(--sub)">0건</span>
+        <span class="sp"></span>
+        <input id="historySearch" type="text" placeholder="내용 · 화면ID · 작성자 검색" style="height:26px;padding:0 10px;border:1px solid var(--line);border-radius:13px;font-size:12.5px;font-family:inherit;width:220px">
+        <button type="button" id="btnHistoryBack">← 편집 화면으로</button>
+      </div>
+      <div class="col-b" style="display:flex;flex-direction:column;gap:14px;overflow:hidden">
+        <div class="hist-compose">
+          <div class="hist-compose-label">수정내역</div>
+          <div class="hist-compose-row">
+            <textarea id="historyInput" placeholder="예) #001-SL-CM-01 수정, #002-SL-CM-02 수정"></textarea>
+            <button type="button" id="btnHistoryAdd">등록</button>
+          </div>
+          <div class="hist-compose-tip">#화면ID 를 적으면 표에서 클릭 가능한 태그가 되어 해당 화면으로 바로 이동합니다.</div>
+        </div>
+        <div id="historyTableWrap" style="flex:1;overflow:auto;min-height:0;border:1px solid var(--line);border-radius:8px">
+          <table class="hist-table">
+            <thead><tr><th style="width:70px">버전</th><th>이력내용</th><th style="width:150px">등록날짜</th><th style="width:36px"></th></tr></thead>
+            <tbody id="historyList"></tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -476,7 +528,9 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     selectedScreenId:null, selectedSectionId:null,
     // ID 불변 정책: 삭제된 화면 ID 블랙리스트
     // (한번 삭제된 ID 는 어떤 경로로도 절대 재사용되지 않는다)
-    retiredScreenIds:[]
+    retiredScreenIds:[],
+    // 변경 이력(공지사항 형태로 사용자가 직접 작성해서 남기는 로그)
+    changelog:[]
   };
 
   function _lsGet(){ try{return localStorage.getItem(STORAGE_KEY);}catch(e){return null;} }
@@ -492,7 +546,8 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         schema:SCHEMA,
         selectedScreenId:d.selectedScreenId||null,
         selectedSectionId:d.selectedSectionId||null,
-        retiredScreenIds: Array.isArray(d.retiredScreenIds) ? d.retiredScreenIds : (STATE.retiredScreenIds || [])
+        retiredScreenIds: Array.isArray(d.retiredScreenIds) ? d.retiredScreenIds : (STATE.retiredScreenIds || []),
+        changelog: Array.isArray(d.changelog) ? d.changelog : (STATE.changelog || [])
       });
       (STATE.screens||[]).forEach(function(s){
         // 옛 5-depth ID 끝의 "-01" 정리
@@ -594,6 +649,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   var SB = { url:"https://gyfldkokgivdqtlytbze.supabase.co", key:"sb_publishable_IjEHGpxgWk3bALJs9lBKug_hqn4GrGH", user:"세현" };
   var SB_BUCKET = "samsunglion";
   var _sbRowId = null;
+  var _sbRowVersion = null; // 마지막으로 서버에서 조회/저장 성공한 시점의 version (낙관적 락 체크용)
   var _sbPushT = null;
   var _sbPullT = null;
 
@@ -612,8 +668,9 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       .then(function(r){ return r.json(); })
       .then(function(rows){
         if(!Array.isArray(rows)) throw new Error("bad response");
-        if(rows.length === 0){ _sbRowId = null; _sbChip("서버 비어 있음 · 편집하면 자동 업로드","#8fe3ab"); return; }
+        if(rows.length === 0){ _sbRowId = null; _sbRowVersion = null; _sbChip("서버 비어 있음 · 편집하면 자동 업로드","#8fe3ab"); return; }
         var row = rows[0]; _sbRowId = row.id;
+        _sbRowVersion = (typeof row.version !== "undefined" && row.version !== null) ? row.version : _sbRowVersion;
         try{
           var d = (typeof row.payload === "string") ? JSON.parse(row.payload) : row.payload;
           if(d && Array.isArray(d.screens)){
@@ -639,6 +696,42 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   function _sbPushNow(){
     try{
     if(!SB.url) return;
+
+    // 서버에 이미 행이 있고(=_sbRowId) 그 행의 version을 알고 있으면(=_sbRowVersion),
+    // 낙관적 락: 조회해온 version과 지금 서버 version이 같을 때만 실제로 UPDATE 되도록
+    // PATCH + version 조건을 건다. (version이 다르면 PostgREST가 매칭되는 행 0개로 응답 →
+    // 그 사이 다른 사용자가 먼저 저장했다는 뜻이므로 이번 저장은 반영하지 않고 알려준다.)
+    if(_sbRowId != null && _sbRowVersion != null){
+      var patchBody = { payload: STATE, updated_at: new Date().toISOString(), updated_by: SB.user };
+      var patchUrl = SB.url + "/rest/v1/spec?id=eq."+encodeURIComponent(_sbRowId)+"&version=eq."+encodeURIComponent(_sbRowVersion);
+      _sbChip("서버 저장 중…","#ffd166");
+      fetch(patchUrl, {
+        method:"PATCH",
+        headers: Object.assign({}, _sbH(), { "Prefer":"return=representation" }),
+        body: JSON.stringify(patchBody)
+      })
+        .then(function(r){
+          if(!r.ok) throw new Error("HTTP "+r.status);
+          return r.text();
+        })
+        .then(function(txt){
+          var rows = null;
+          if(txt){ try{ rows = JSON.parse(txt); }catch(e){ rows = null; } }
+          if(!Array.isArray(rows) || rows.length === 0){
+            // version 불일치 → 이번 저장은 서버에 반영되지 않았음
+            _sbChip("저장 충돌 · 최신 데이터 필요","#ff9c96");
+            alert("다른 사용자가 이미 데이터를 수정했습니다. 최신 데이터를 불러온 뒤 다시 시도해 주세요.");
+            return;
+          }
+          _sbRowId = rows[0].id;
+          _sbRowVersion = (typeof rows[0].version !== "undefined" && rows[0].version !== null) ? rows[0].version : _sbRowVersion;
+          _sbChip("서버 저장됨 · "+SB.user+" · "+new Date().toLocaleTimeString(),"#8fe3ab");
+        })
+        .catch(function(e){ _sbChip("서버 저장 실패 · 로컬은 보관됨","#ff9c96"); try{console.warn("[sb push]",e);}catch(_){} });
+      return;
+    }
+
+    // 서버에 아직 행이 없거나(최초 저장) version을 모르는 경우: 기존처럼 upsert로 생성/저장
     var row = { id: _sbRowId || 1, payload: STATE, updated_at: new Date().toISOString(), updated_by: SB.user };
     var url = SB.url + "/rest/v1/spec";
     _sbChip("서버 저장 중…","#ffd166");
@@ -659,7 +752,10 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       .then(function(txt){
         var rows = null;
         if(txt){ try{ rows = JSON.parse(txt); }catch(e){ rows = null; } }
-        if(Array.isArray(rows) && rows[0]) _sbRowId = rows[0].id;
+        if(Array.isArray(rows) && rows[0]){
+          _sbRowId = rows[0].id;
+          _sbRowVersion = (typeof rows[0].version !== "undefined" && rows[0].version !== null) ? rows[0].version : _sbRowVersion;
+        }
         _sbChip("서버 저장됨 · "+SB.user+" · "+new Date().toLocaleTimeString(),"#8fe3ab");
       })
       .catch(function(e){ _sbChip("서버 저장 실패 · 로컬은 보관됨","#ff9c96"); try{console.warn("[sb push]",e);}catch(_){} });
@@ -689,6 +785,114 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     var t=document.getElementById("toast"); if(!t) return;
     t.textContent=msg; t.className="toast show"+(err?" err":"");
     clearTimeout(toast._t); toast._t=setTimeout(function(){t.className="toast";},1600);
+  }
+
+  // ── 저장 시 비밀번호 확인 ──
+  function _checkSavePassword(){
+    var pw = prompt("저장하려면 비밀번호를 입력하세요.");
+    if(pw===null) return false; // 취소
+    if(pw!=="2026"){ toast("비밀번호가 올바르지 않습니다", true); return false; }
+    return true;
+  }
+
+  // ── 변경 이력(전용 화면) ──
+  function _histTimeStr(){
+    var d = new Date();
+    return todayStr()+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
+  }
+  function showHistoryScreen(){
+    var main = document.getElementById("mainView"); if(main) main.style.display = "none";
+    var hs = document.getElementById("historyScreen"); if(hs) hs.classList.add("show");
+    var search = document.getElementById("historySearch"); if(search) search.value = "";
+    renderHistoryList();
+    var ta = document.getElementById("historyInput"); if(ta){ ta.value=""; ta.focus(); }
+  }
+  function hideHistoryScreen(){
+    var hs = document.getElementById("historyScreen"); if(hs) hs.classList.remove("show");
+    var main = document.getElementById("mainView"); if(main) main.style.display = "";
+  }
+  function toggleHistoryScreen(){
+    var hs = document.getElementById("historyScreen");
+    if(hs && hs.classList.contains("show")) hideHistoryScreen(); else showHistoryScreen();
+  }
+  function gotoHistoryScreen(sid){
+    hideHistoryScreen();
+    selScr(sid);
+  }
+  // 텍스트 안의 "#화면ID" 를 실제 존재하는 화면일 때만 클릭 가능한 태그(칩)로 바꿔준다
+  function _linkifyHistoryText(text){
+    var escaped = esc(text);
+    return escaped.replace(/#([A-Za-z0-9\-]+)/g, function(m, sid){
+      var exists = (STATE.screens||[]).some(function(s){ return s.screenId===sid; });
+      if(!exists) return m;
+      return '<span class="hist-chip" data-act="goto-history-screen" data-sid="'+esc(sid)+'" title="'+esc(sid)+' 화면으로 이동">'+esc(sid)+'</span>';
+    });
+  }
+  function addHistoryEntry(){
+    var ta = document.getElementById("historyInput"); if(!ta) return;
+    var txt = (ta.value||"").trim();
+    if(!txt){ toast("내용을 입력해 주세요", true); return; }
+    if(!_checkSavePassword()) return;
+    STATE.changelog = STATE.changelog || [];
+    STATE.changelog.push({
+      id: uid("hist"),
+      text: txt,
+      author: (SB && SB.user) || "익명",
+      ts: Date.now(),
+      dateStr: _histTimeStr()
+    });
+    ta.value = "";
+    save();
+    // "저장" 버튼과 동일하게 디바운스를 기다리지 않고 즉시 서버로 전송한다.
+    if(_sbPushT){ clearTimeout(_sbPushT); _sbPushT=null; }
+    _sbPushNow();
+    var search = document.getElementById("historySearch"); if(search) search.value = "";
+    renderHistoryList();
+    toast("이력 등록됨");
+  }
+  function delHistoryEntry(hid){
+    if(!confirm("이 이력을 삭제할까요?")) return;
+    STATE.changelog = (STATE.changelog||[]).filter(function(h){ return h.id!==hid; });
+    save();
+    if(_sbPushT){ clearTimeout(_sbPushT); _sbPushT=null; }
+    _sbPushNow();
+    renderHistoryList();
+  }
+  function renderHistoryList(){
+    var tbody = document.getElementById("historyList"); if(!tbody) return;
+    var all = STATE.changelog || [];
+    var pill = document.getElementById("historyCountPill"); if(pill) pill.textContent = all.length+"건";
+
+    var q = "";
+    var searchEl = document.getElementById("historySearch");
+    if(searchEl) q = (searchEl.value||"").trim().toLowerCase();
+
+    // 오래된 것이 위, 최신 것이 아래로 오도록 정렬 — 새로 등록하면 표 맨 아래에 쌓인다.
+    // 버전(v001, v002...)은 등록 순서를 기준으로 매 렌더링마다 다시 매긴다.
+    var sorted = all.slice().sort(function(a,b){ return (a.ts||0)-(b.ts||0); });
+    sorted.forEach(function(h,i){ h._seq = i+1; });
+
+    var list = sorted;
+    if(q){
+      list = list.filter(function(h){
+        return (h.text||"").toLowerCase().indexOf(q)>=0 || (h.author||"").toLowerCase().indexOf(q)>=0;
+      });
+    }
+    if(list.length===0){
+      tbody.innerHTML = '<tr><td colspan="4" class="hist-empty">'+(q ? "검색 결과가 없습니다." : "등록된 이력이 없습니다.")+'</td></tr>';
+      return;
+    }
+    tbody.innerHTML = list.map(function(h){
+      return '<tr>'
+        + '<td class="hist-ver">v'+String(h._seq).padStart(3,"0")+'</td>'
+        + '<td>'+_linkifyHistoryText(h.text||"")+'</td>'
+        + '<td class="hist-date">'+esc(h.dateStr||"")+'</td>'
+        + '<td><span class="hist-del" data-act="del-history" data-hid="'+esc(h.id)+'" title="삭제">🗑</span></td>'
+        + '</tr>';
+    }).join("");
+    // 최신 항목(맨 아래)이 바로 보이도록 스크롤을 하단으로 내려준다 (검색 중이 아닐 때만)
+    var wrap = document.getElementById("historyTableWrap");
+    if(wrap && !q) wrap.scrollTop = wrap.scrollHeight;
   }
 
   // 그룹 라벨 4개(트리/헤더/select/모달) 단일 표시 소스
@@ -1614,12 +1818,18 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     var imp = document.getElementById("imp"); if(imp){ imp.onchange = importJson; }
     var btnReset = document.getElementById("btnReset"); if(btnReset) btnReset.onclick = function(){ if(!confirm("전체 데이터 초기화 — 예시 HM 화면 1개로 돌아가요.")) return; };
     var btnSave = document.getElementById("btnSave"); if(btnSave) btnSave.onclick = function(){
+      if(!_checkSavePassword()) return;
       save();
       // "저장" 버튼은 디바운스를 기다리지 않고 즉시 서버로 전송한다.
       if(_sbPushT){ clearTimeout(_sbPushT); _sbPushT=null; }
       _sbPushNow();
       toast("저장됨 · "+new Date().toLocaleTimeString());
     };
+
+    var btnHist = document.getElementById("btnHistory"); if(btnHist) btnHist.onclick = toggleHistoryScreen;
+    var histBack = document.getElementById("btnHistoryBack"); if(histBack) histBack.onclick = hideHistoryScreen;
+    var histAdd = document.getElementById("btnHistoryAdd"); if(histAdd) histAdd.onclick = addHistoryEntry;
+    var histSearch = document.getElementById("historySearch"); if(histSearch) histSearch.oninput = renderHistoryList;
 
     document.body.onclick = function(e){
       var t = e.target;
@@ -1635,6 +1845,8 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
             case "del-scr":    e.stopPropagation(); delScr(t.dataset.sid); return;
             case "sel-scr":    selScr(t.dataset.sid); return;
             case "del-sec":    e.stopPropagation(); delSection(t.dataset.sid, t.dataset.secId); return;
+            case "del-history": e.stopPropagation(); delHistoryEntry(t.dataset.hid); return;
+            case "goto-history-screen": e.stopPropagation(); gotoHistoryScreen(t.dataset.sid); return;
           }
         }
         t = t.parentNode;
