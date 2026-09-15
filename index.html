@@ -96,6 +96,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .hist-table{width:100%;border-collapse:collapse;font-size:13px}
 .hist-table thead th{position:sticky;top:0;background:var(--panel-2);text-align:left;padding:9px 12px;font-size:12px;color:var(--sub);font-weight:800;border-bottom:1px solid var(--line);z-index:1}
 .hist-table tbody td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.hist-content{white-space:pre-wrap;word-break:break-word;line-height:1.6}
 .hist-table tbody tr:last-child td{border-bottom:none}
 .hist-table tbody tr:hover td{background:var(--acc-soft)}
 .hist-ver{font-family:Consolas,monospace;font-weight:800;color:var(--clr-brand);white-space:nowrap}
@@ -214,7 +215,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .sec.selected{background:var(--hl);border-color:var(--clr-brand);border-style:solid;outline:1px solid var(--clr-brand)}
 .sec.dragging{opacity:.4}
 .sec.drag-over{border-top:3px solid var(--clr-brand)}
-.sec .num{position:static;font-size:12.5px;color:#fff;font-weight:900;width:26px;height:26px;background:var(--clr-brand);border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 3px 8px rgba(10,61,145,.4);border:2px solid #fff;align-self:center}
+.sec .num{position:static;font-size:12.5px;color:#fff;font-weight:900;width:26px;height:26px;background:#bd3511;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 3px 8px rgba(10,61,145,.4);border:2px solid #fff;align-self:center}
 .sec .ti{font-size:var(--fs-base);font-weight:800;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink)}
 .sec .bdgbox{display:flex;gap:4px;flex:none}
 .sec .act{opacity:0;display:flex;gap:5px;color:var(--sub);font-size:var(--fs-mini);font-weight:700}
@@ -378,6 +379,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       </span>
     </span>
     <input type="file" id="imp" accept=".json" style="display:none">
+    <span id="unsavedBadge" style="display:none;align-items:center;height:26px;padding:0 10px;border-radius:13px;background:#ffe6b3;color:#7a4b00;font-size:12px;font-weight:800;margin-right:8px;white-space:nowrap">⚠ 저장 필요</span>
     <button type="button" id="btnSave" class="primary">저장</button>
     <button type="button" id="btnCfgS" style="display:none">Supabase 설정</button>
     <span id="providerTag" style="display:none">Supabase 연결됨</span>
@@ -520,6 +522,8 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   var DRAFT_KEY = "samsung_lions_spec_v4_draft";
   var _dirty = 0;
   var _draftT = null;
+  var _unsynced = false; // 로컬에는 반영됐지만 아직 서버(저장 버튼)로 밀어 넣지 않은 변경사항이 있는지
+  var _navWarned = false; // 같은 미저장 구간에서 이동 경고를 중복으로 띄우지 않기 위한 플래그
   var SCHEMA = 4;
   var STATE = {
     schema:SCHEMA, version:"1.0", updated:todayStr(),
@@ -725,6 +729,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
           }
           _sbRowId = rows[0].id;
           _sbRowVersion = (typeof rows[0].version !== "undefined" && rows[0].version !== null) ? rows[0].version : _sbRowVersion;
+          _unsynced = false; _updateUnsavedBadge();
           _sbChip("서버 저장됨 · "+SB.user+" · "+new Date().toLocaleTimeString(),"#8fe3ab");
         })
         .catch(function(e){ _sbChip("서버 저장 실패 · 로컬은 보관됨","#ff9c96"); try{console.warn("[sb push]",e);}catch(_){} });
@@ -756,22 +761,38 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
           _sbRowId = rows[0].id;
           _sbRowVersion = (typeof rows[0].version !== "undefined" && rows[0].version !== null) ? rows[0].version : _sbRowVersion;
         }
+        _unsynced = false; _updateUnsavedBadge();
         _sbChip("서버 저장됨 · "+SB.user+" · "+new Date().toLocaleTimeString(),"#8fe3ab");
       })
       .catch(function(e){ _sbChip("서버 저장 실패 · 로컬은 보관됨","#ff9c96"); try{console.warn("[sb push]",e);}catch(_){} });
     }catch(e){_sbChip("서버 모듈 예외 · 로컬은 보관됨","#ff9c96"); try{console.warn("[sb push sync]",e);}catch(_){}}
   }
-  function _sbPushDebounced(){ if(!SB.url) return; if(_sbPushT) clearTimeout(_sbPushT); _sbPushT=setTimeout(_sbPushNow, 1500); }
-  function _sbStartAutoPull(){ if(!SB.url) return; if(_sbPullT) clearInterval(_sbPullT); _sbPullT=setInterval(save, 1800000); }
+  // "저장" 버튼 / "이력 등록" 버튼(비밀번호 확인을 통과한 경우)에서만 _sbPushNow()를 직접 호출한다.
+  // _sbPushDebounced()는 더 이상 어디서도 자동으로 호출하지 않는다 — 편집 중 자동으로
+  // 서버에 반영되던 것을 없애고, 서버 반영은 오직 명시적인 저장 동작에서만 일어나게 한다.
+  function _sbPushDebounced(){ /* 자동 저장 비활성화됨 — 사용되지 않음 */ }
+  function _sbStartAutoPull(){ /* 30분 주기 자동 저장 비활성화됨 */ }
   function _sbStopAuto(){ if(_sbPullT) clearInterval(_sbPullT); _sbPullT=null; }
 
+  // 로컬(브라우저)에는 반영됐지만 서버에는 아직 반영 안 된 상태로 표시한다.
+  // 새로 미저장 상태가 시작될 때만 이동 경고 플래그를 초기화한다(같은 구간에서 반복 경고 방지).
+  function _setUnsynced(){
+    if(!_unsynced){ _unsynced = true; _navWarned = false; }
+    _updateUnsavedBadge();
+  }
+  function _updateUnsavedBadge(){
+    var b = document.getElementById("unsavedBadge"); if(!b) return;
+    b.style.display = _unsynced ? "inline-flex" : "none";
+  }
   function save(){
     safe(function(){
       STATE.updated = todayStr();
       _lsSet(JSON.stringify(STATE));
       try{ localStorage.removeItem(DRAFT_KEY); }catch(_){ }
       _dirty = 0;
-      _sbPushDebounced();
+      // 주의: 여기서 서버로 자동 전송하지 않는다. 서버 반영은 "저장"/"이력 등록" 버튼에서
+      // 비밀번호 확인 후 _sbPushNow()를 직접 호출할 때만 일어난다.
+      _setUnsynced();
     }, function(){ toast("저장 실패", true); });
   }
   function _markDirty(){
@@ -780,6 +801,14 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       STATE.updated = todayStr();
       localStorage.setItem(DRAFT_KEY, JSON.stringify(STATE));
     }catch(_){ }
+    _setUnsynced();
+  }
+  // 다른 화면으로 이동하기 전, 서버에 아직 반영되지 않은 변경사항이 있으면 한 번 알려준다.
+  function _maybeWarnUnsaved(){
+    if(_unsynced && !_navWarned){
+      _navWarned = true;
+      toast("저장하지 않으면 수정한 데이터가 사라질 수 있습니다", true);
+    }
   }
   function toast(msg, err){
     var t=document.getElementById("toast"); if(!t) return;
@@ -801,6 +830,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     return todayStr()+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
   }
   function showHistoryScreen(){
+    _maybeWarnUnsaved();
     var main = document.getElementById("mainView"); if(main) main.style.display = "none";
     var hs = document.getElementById("historyScreen"); if(hs) hs.classList.add("show");
     var search = document.getElementById("historySearch"); if(search) search.value = "";
@@ -808,6 +838,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     var ta = document.getElementById("historyInput"); if(ta){ ta.value=""; ta.focus(); }
   }
   function hideHistoryScreen(){
+    _maybeWarnUnsaved();
     var hs = document.getElementById("historyScreen"); if(hs) hs.classList.remove("show");
     var main = document.getElementById("mainView"); if(main) main.style.display = "";
   }
@@ -885,7 +916,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     tbody.innerHTML = list.map(function(h){
       return '<tr>'
         + '<td class="hist-ver">v'+String(h._seq).padStart(3,"0")+'</td>'
-        + '<td>'+_linkifyHistoryText(h.text||"")+'</td>'
+        + '<td class="hist-content">'+_linkifyHistoryText(h.text||"")+'</td>'
         + '<td class="hist-date">'+esc(h.dateStr||"")+'</td>'
         + '<td><span class="hist-del" data-act="del-history" data-hid="'+esc(h.id)+'" title="삭제">🗑</span></td>'
         + '</tr>';
@@ -1755,6 +1786,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     });
   }
   function selScr(sid){
+    if(sid !== STATE.selectedScreenId) _maybeWarnUnsaved();
     STATE.selectedScreenId = sid;
     var s = findScreen(sid);
     var first = s && s.sections && s.sections.length ? (s.sections.slice().sort(function(a,b){return (a.order||0)-(b.order||0);})[0]) : null;
@@ -1997,11 +2029,12 @@ try{
   window.addEventListener("unhandledrejection",function(ev){try{console.warn("[rej]",ev.reason);}catch(_){}});
 }catch(_){}
 try{
+  // 서버로 자동 저장하지 않으므로, 탭을 닫거나 새로고침하려 할 때 저장 안 된 변경사항이
+  // 있으면 브라우저 기본 확인창으로 알려준다(로컬 draft만 남기고, 서버로는 보내지 않는다).
   window.addEventListener("beforeunload",function(e){
     try{
-      if(_dirty){
+      if(_dirty || _unsynced){
         try{ STATE.updated = todayStr(); localStorage.setItem(DRAFT_KEY, JSON.stringify(STATE)); }catch(_){}
-        try{ save(); }catch(_){}
         e.preventDefault(); e.returnValue = "";
         return "";
       }
@@ -2011,7 +2044,6 @@ try{
     try{
       if(document.visibilityState==="hidden" && _dirty){
         try{ STATE.updated = todayStr(); localStorage.setItem(DRAFT_KEY, JSON.stringify(STATE)); }catch(_){}
-        try{ save(); }catch(_){}
       }
     }catch(_){}
   });
