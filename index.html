@@ -558,6 +558,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         if(typeof s.screenId==="string" && /-01-01$/.test(s.screenId)){
           s.screenId = s.screenId.replace(/-01$/,"");
         }
+        s.link = (typeof s.link==="string") ? s.link : "";   // 목적/개요 하단 URL 링크
         s.sections = s.sections||[];
         s.sections.forEach(function(sec){
           sec.related         = Array.isArray(sec.related)         ? sec.related         : [];
@@ -613,7 +614,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       // ID 불변 정책: newScreenShell 은 자리표시(pending) 만 만든다.
       // 실제 화면 ID 는 addScr 핸들러가 사용자 입력값으로 확정할 때만 부여된다.
       screenId: "__pending__",
-      title:ovName||"새 화면", subtitle:"", groupId:grp.id,
+      title:ovName||"새 화면", subtitle:"", link:"", groupId:grp.id,
       status:"작성중", sections:[],
       history:[{v:"0.1", date:todayStr(), by:"세현", note:"신규 생성"}]
     };
@@ -820,7 +821,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   function _checkSavePassword(){
     var pw = prompt("저장하려면 비밀번호를 입력하세요.");
     if(pw===null) return false; // 취소
-    if(pw!=="2026"){ toast("비밀번호가 올바르지 않습니다", true); return false; }
+    if(pw!=="sl2027!"){ toast("비밀번호가 올바르지 않습니다", true); return false; }
     return true;
   }
 
@@ -898,10 +899,11 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     var searchEl = document.getElementById("historySearch");
     if(searchEl) q = (searchEl.value||"").trim().toLowerCase();
 
-    // 오래된 것이 위, 최신 것이 아래로 오도록 정렬 — 새로 등록하면 표 맨 아래에 쌓인다.
+    // 최신 것이 위, 오래된 것이 아래로 오도록 정렬(내림차순) — 새로 등록하면 표 맨 위에 쌓인다.
     // 버전(v001, v002...)은 등록 순서를 기준으로 매 렌더링마다 다시 매긴다.
     var sorted = all.slice().sort(function(a,b){ return (a.ts||0)-(b.ts||0); });
     sorted.forEach(function(h,i){ h._seq = i+1; });
+    sorted.reverse();
 
     var list = sorted;
     if(q){
@@ -921,9 +923,9 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         + '<td><span class="hist-del" data-act="del-history" data-hid="'+esc(h.id)+'" title="삭제">🗑</span></td>'
         + '</tr>';
     }).join("");
-    // 최신 항목(맨 아래)이 바로 보이도록 스크롤을 하단으로 내려준다 (검색 중이 아닐 때만)
+    // 최신 항목(맨 위)이 바로 보이도록 스크롤을 상단으로 올려준다 (검색 중이 아닐 때만)
     var wrap = document.getElementById("historyTableWrap");
-    if(wrap && !q) wrap.scrollTop = wrap.scrollHeight;
+    if(wrap && !q) wrap.scrollTop = 0;
   }
 
   // 그룹 라벨 4개(트리/헤더/select/모달) 단일 표시 소스
@@ -1070,13 +1072,32 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       + '<div class="rower" style="margin-top:10px">'
       +   '<div class="lbl">목적/개요</div>'
       +   '<textarea data-pf="subtitle" data-sid="'+esc(s.screenId)+'" style="min-height:56px">'+esc(s.subtitle||"")+'</textarea>'
+      + '</div>'
+      + '<div class="rower" style="margin-bottom:0">'
+      +   '<div class="lbl">URL 링크</div>'
+      +   '<div style="display:flex;gap:8px;align-items:stretch">'
+      +     '<input type="text" data-pf="link" data-sid="'+esc(s.screenId)+'" value="'+esc(s.link||"")+'" placeholder="https://" style="flex:1;min-width:0;font-family:Consolas,monospace">'
+      +     '<button type="button" data-link-go="1" title="링크 열기 (새 탭)" style="flex:none;padding:0 16px;background:var(--clr-brand);color:#fff;border:none;border-radius:5px;cursor:pointer;font-weight:800;font-size:var(--fs-meta)">이동 ↗</button>'
+      +   '</div>'
       + '</div>';
+
+    // URL 링크 "이동" 버튼: 입력창의 현재 값을 읽어 새 탭으로 연다 (http/https 만 허용)
+    var linkGo = head.querySelector("[data-link-go]");
+    if(linkGo) linkGo.addEventListener("click", function(){
+      var inp = head.querySelector('[data-pf="link"]');
+      var u = ((inp && inp.value) || "").trim();
+      if(!u){ toast("URL을 먼저 입력해 주세요", true); return; }
+      if(/^(javascript|data|vbscript|file|blob):/i.test(u)){ toast("열 수 없는 형식의 주소예요", true); return; }
+      if(!/^https?:\/\//i.test(u)) u = "https://" + u.replace(/^\/\//,"");   // http(s):// 없으면 https:// 자동 보완
+      window.open(u, "_blank", "noopener");
+    });
 
     head.querySelectorAll("[data-pf]").forEach(function(el){
       el.addEventListener("change", function(){
         var k = el.dataset.pf;
         if(k==="group"){ s.groupId = el.value; resyncAllScreenIds(); save(); _markDirty(); renderAll(); }
         else if(k==="status"){ s.status = el.value; save(); _markDirty(); renderMid(); }
+        else if(k==="link"){ s.link = el.value; save(); _markDirty(); }   // 재렌더 없이 저장만 (바로 "이동" 클릭 시 버튼 유실 방지)
         else { s[k]=el.value; save(); _markDirty(); renderTree(); renderMid(); }
       });
       el.addEventListener("input", function(){
