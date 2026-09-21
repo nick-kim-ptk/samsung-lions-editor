@@ -284,6 +284,9 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .acc-panel>textarea:focus,.acc-panel>input:focus,.acc-panel>select:focus{outline:none;border-color:var(--clr-brand);box-shadow:0 0 0 2px rgba(10,61,145,.16)}
 .acc-panel>textarea{flex:1;min-height:160px;resize:vertical}
 .acc-panel>input{min-height:44px}
+/* 구역 상세 입력폼(textarea): 기본 1줄 높이, Enter·줄바꿈이 늘어나면 그만큼 자동으로 높아진다.
+   높이는 저장된 내용에서 매번 계산하므로 저장/새로고침 후에도 각 폼의 줄 수에 맞는 높이가 유지된다. */
+.acc-item .acc-panel textarea[data-pf2]{flex:none;min-height:44px;resize:none;overflow:hidden;line-height:1.5}
 
 .adbox{background:var(--danger-soft);border:1px solid var(--danger);border-radius:6px;padding:10px 12px;color:var(--danger);font-size:13px;font-weight:700;margin-bottom:10px}
 
@@ -1451,7 +1454,38 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       + accHtml;
 
     bindDetailHandlers(box, sec);
+    _autoGrowAll(box);   // 저장된 내용의 줄 수에 맞춰 각 입력폼 높이 복원 (접힌 항목은 펼칠 때 맞춤)
   }
+
+  // ── 구역 상세 입력폼 높이 자동 맞춤 ──
+  // 기본은 1줄. Enter 나 자동 줄바꿈으로 줄 수가 늘면 그만큼 높아지고, 줄이면 다시 줄어든다.
+  // 높이는 저장된 "내용"에서 매번 계산하므로, 저장/새로고침 후에도 폼마다 줄 수에 맞는 높이가 유지된다.
+  function _autoGrow(el){
+    if(!el || el.offsetParent===null) return;      // 접힌 아코디언(display:none) 안은 측정 불가 → 펼칠 때 다시 맞춘다
+    var cs = getComputedStyle(el);
+    // 잠깐 높이를 0 으로 줄이면 스크롤 위치가 튈 수 있어, 상위 스크롤 영역의 위치를 기억했다가 복원한다.
+    var keep = [];
+    for(var p = el.parentElement; p; p = p.parentElement){ if(p.scrollTop > 0) keep.push([p, p.scrollTop]); }
+    el.style.height = "0px";                       // 내용 높이만 정확히 재기 위해 먼저 줄인다 (줄어드는 경우도 반영)
+    var h = el.scrollHeight;
+    if(cs.boxSizing === "border-box") h += el.offsetHeight - el.clientHeight;      // 테두리 두께 보정
+    else h -= (parseFloat(cs.paddingTop)||0) + (parseFloat(cs.paddingBottom)||0);
+    el.style.height = h + "px";
+    keep.forEach(function(k){ k[0].scrollTop = k[1]; });
+  }
+  function _autoGrowAll(root){
+    if(!root) return;
+    root.querySelectorAll("textarea[data-pf2]").forEach(_autoGrow);
+  }
+  // 우측 패널 너비가 바뀌면(창 크기·분할선 이동) 줄바꿈이 달라지므로 다시 맞춘다 — 안 하면 글이 잘려 보일 수 있음
+  (function(){
+    var box = document.getElementById("secEdit");
+    if(!box || typeof ResizeObserver === "undefined") return;
+    var lastW = box.clientWidth;
+    new ResizeObserver(function(){
+      if(box.clientWidth !== lastW){ lastW = box.clientWidth; _autoGrowAll(box); }
+    }).observe(box);
+  })();
 
   function bindDetailHandlers(box, sec){
     // 아코디언 펼침/닫힘 토글 (수동으로 열고 닫을 수 있음. 작성 여부는 최초 렌더링 시 기본 상태만 결정)
@@ -1459,12 +1493,14 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       el.addEventListener("click", function(){
         var item = el.closest ? el.closest(".acc-item") : el.parentNode;
         if(item) item.classList.toggle("is-open");
+        if(item && item.classList.contains("is-open")) _autoGrowAll(item);   // 펼친 뒤에야 높이를 잴 수 있다
       });
     });
 
     // 단일 입력 핸들러
     box.querySelectorAll("[data-pf2]").forEach(function(el){
       el.addEventListener("input", function(){
+        if(el.tagName === "TEXTAREA") _autoGrow(el);      // Enter/줄바꿈에 맞춰 높이 즉시 조정
         var p = el.dataset.pf2;
         sec[p] = el.value;
         // 타이핑 중에는 서버로 자동 저장하지 않음 — "저장" 버튼을 눌러야 실제 저장/전송됨
