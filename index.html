@@ -1417,7 +1417,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
           '<option value="">— 연결할 화면을 선택해 주세요 —</option>'
         + (STATE.screens||[]).filter(function(x){return x.screenId!==s.screenId;})
             .slice()
-            .sort(function(a,b){return (a.seq||0)-(b.seq||0);})
+            .sort(_byScreenIdNum)   // 화면 ID 앞 번호(001, 002 …) 오름차순 — 좌측 화면 리스트와 동일한 순서
             .map(function(x){
               return '<option value="'+esc(x.screenId)+'"'+(x.screenId===sec.linkedScreenId?'selected':'')+'>'
                    + esc(x.screenId)+' · '+esc(x.title||"(제목 없음)")+'</option>';
