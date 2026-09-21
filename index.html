@@ -298,6 +298,12 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .thumb img{width:100%;height:100%;object-fit:cover;display:block}
 .thumb .tx{position:absolute;top:2px;right:2px;width:18px;height:18px;background:rgba(0,0,0,.62);color:#fff;border-radius:50%;font-size:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;line-height:1}
 .thumb .tx:hover{background:var(--danger)}
+/* 관련 자료 이미지: 영역보다 크면 영역 너비에 맞춰 축소(비율 유지), 작으면 원본 크기 그대로 표시 */
+.relimgs{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:8px;border:1px solid var(--line);border-radius:5px;background:#fff}
+.relimg{position:relative;display:block;max-width:100%;border:1px solid var(--line);border-radius:6px;overflow:hidden;cursor:zoom-in;background:var(--panel-2)}
+.relimg img{display:block;max-width:100%;height:auto}
+.relimg .tx{position:absolute;top:6px;right:6px;width:22px;height:22px;background:rgba(0,0,0,.62);color:#fff;border-radius:50%;font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;line-height:1}
+.relimg .tx:hover{background:var(--danger)}
 .imgadd{background:var(--acc-soft);color:var(--clr-brand);border:1px dashed var(--clr-brand);border-radius:6px;padding:10px 14px;font-size:13px;font-weight:700;cursor:pointer}
 .imgadd:hover{background:var(--clr-brand);color:#fff}
 
@@ -1364,14 +1370,14 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
             '<textarea data-sec="'+esc(sec.id)+'" data-pf2="desc">'+esc(sec.desc||"")+'</textarea>')
 
         + accItem("target", "관련 자료", !!((sec.target && sec.target.trim()) || (sec.images && sec.images.length)),
-            '<textarea data-sec="'+esc(sec.id)+'" data-pf2="target">'+esc(sec.target||"")+'</textarea>'
-          + '<div class="imgbox">'
+            '<div class="relimgs">'
           +   (sec.images||[]).map(function(im){
-                return '<span class="thumb" data-act="img-view" data-img="'+esc(im.id)+'" title="클릭하면 크게 보기"><img src="'+esc(im.dataUrl)+'" alt="'+esc(im.name||"")+'"><span class="tx" data-act="img-del" data-img="'+esc(im.id)+'" title="삭제">×</span></span>';
+                return '<span class="relimg" data-act="img-view" data-img="'+esc(im.id)+'" title="클릭하면 크게 보기"><img src="'+esc(im.dataUrl)+'" alt="'+esc(im.name||"")+'"><span class="tx" data-act="img-del" data-img="'+esc(im.id)+'" title="삭제">×</span></span>';
               }).join("")
           +   '<label class="imgadd">+ 이미지 첨부<input type="file" accept="image/*" multiple data-act="img-file" style="display:none"></label>'
           + '</div>'
-          + '<div class="tip">개당 5MB 이하 · Supabase Storage(samsunglion 버킷)에 업로드되며 업로드 중 약간의 지연이 있을 수 있어요</div>')
+          + '<div class="tip">개당 5MB 이하</div>'
+          + '<textarea data-sec="'+esc(sec.id)+'" data-pf2="target" style="margin-top:8px">'+esc(sec.target||"")+'</textarea>')
 
         + accItem("requirement", "고려 요소", !!(sec.requirement && sec.requirement.trim()),
             '<textarea data-sec="'+esc(sec.id)+'" data-pf2="requirement">'+esc(sec.requirement||"")+'</textarea>')
