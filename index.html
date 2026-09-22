@@ -129,10 +129,6 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .scr-row{font-size:14px;padding:7px 10px 7px 26px;border-radius:6px;cursor:pointer;color:var(--sub);display:flex;gap:8px;align-items:center;margin-bottom:3px;border:1px solid transparent}
 .scr-row .sid{color:var(--clr-brand);font-weight:800;font-family:Consolas,monospace;font-size:13.5px}
 .scr-row .nm{font-size:14px;color:var(--ink);font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.scr-row .act{opacity:0;display:flex;gap:6px}
-.scr-row:hover .act{opacity:1}
-.scr-row .act span{cursor:pointer;font-size:var(--fs-mini);color:var(--sub)}
-.scr-row .act span:hover{color:var(--danger)}
 .scr-row.active{background:var(--acc-soft);border-color:var(--clr-brand)}
 .scr-row.active .sid,.scr-row.active .nm{color:var(--clr-brand-deep)}
 .scr-row.dragging{opacity:.4}
@@ -199,7 +195,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .phone-mock .screen .col-h .pill{background:rgba(255,255,255,.22)}
 .phone-mock .screen .col-h span:not(.pill):not(.sp){color:#fff;font-weight:700}
 .phone-mock .screen .col-h button.primary{background:var(--clr-accent);color:var(--clr-brand-deep)}
-.phone-mock .screen .col-h #btnDelScr2{background:#fff;color:var(--danger);border:1px solid #fff}
+.phone-mock .screen .col-h #btnDelScr2{background:#fff;color:var(--danger);border:1px solid #fff;width:26px;height:26px;padding:0;border-radius:50%;font-size:13px;line-height:1}
 .phone-mock .screen .col-h #btnDelScr2:hover{background:#f2f2f2}
 
 /* 폰 화면 안 화면 정보(원래 screen-head) — 앱 안내/타이틀 영역처럼 */
@@ -378,6 +374,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     <h1>삼성라이온즈 기능 정의 및 화면 설계서</h1>
     <span class="credit">BY PTKOREA</span>
     <span class="sp"></span>
+    <button type="button" id="btnHistory">이력</button>
     <span class="syncBlock" role="group" aria-label="서버 상태">
       <span class="syncDot" id="syncDot"></span>
       <span id="syncChip" style="color: rgb(143, 227, 171);">서버 불러옴 · 세현 · 오후 10:34:26</span>
@@ -402,7 +399,6 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     <div class="col">
       <div class="col-h"><span class="info" id="treeInfo">전체 93</span>
         <span class="sp"></span>
-        <button type="button" id="btnHistory">이력</button>
         <button type="button" id="btnAddScr" class="primary">+ 화면</button>
         <button type="button" id="btnAddGrp">+ 그룹</button>
       </div>
@@ -419,7 +415,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
             <span id="midTitle" style="margin-left:6px">스플래시 스크린</span>
             <!-- 가운데 상단 그룹 chip 제거됨 (v22m) -->
             <span class="sp"></span>
-            <button type="button" id="btnDelScr2" class="primary" style="display: inline-block;">화면 삭제</button>
+            <button type="button" id="btnDelScr2" class="primary" style="display: inline-block;" title="화면 삭제" aria-label="화면 삭제">🗑</button>
           </div>
           <div class="screen-head" id="screenHead" style="display: block;"><div class="meta"><span class="chip chip-id">001-SL-CM-01</span></div><div class="title"><input class="bordered" data-pf="title" data-sid="001-SL-CM-01" value="스플래시 스크린"></div><div class="rower" style="margin-top:10px"><div class="lbl">목적/개요</div><textarea data-pf="subtitle" data-sid="001-SL-CM-01" style="min-height:56px">앱이 실행되는 동안 브랜드를 인지시키고, 초기 데이터 로딩 시간을 자연스럽게 대기하도록 유도</textarea></div></div>
           <div class="addsec" id="addsec" style="display: flex;">
@@ -445,7 +441,6 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         <span class="pill" id="historyCountPill" style="background:#eef3fb;color:var(--sub)">0건</span>
         <span class="sp"></span>
         <input id="historySearch" type="text" placeholder="내용 · 화면ID · 작성자 검색" style="height:26px;padding:0 10px;border:1px solid var(--line);border-radius:13px;font-size:12.5px;font-family:inherit;width:220px">
-        <button type="button" id="btnHistoryBack">← 편집 화면으로</button>
       </div>
       <div class="col-b" style="display:flex;flex-direction:column;gap:14px;overflow:hidden">
         <div class="hist-compose">
@@ -676,7 +671,20 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   function _sbSaveCfg(){ localStorage.setItem("samsung_lions_sb", JSON.stringify(SB)); var t=document.getElementById("providerTag"); if(t) t.textContent = SB.url?"Supabase 연결됨":"로컬 only"; }
 
   function _sbH(){ return { "apikey": SB.key, "Authorization": "Bearer "+SB.key, "Content-Type":"application/json", "Prefer":"return=representation" }; }
-  function _sbChip(t,c){ var el=document.getElementById("syncChip"); var dot=document.getElementById("syncDot"); if(!el) return; el.textContent=t; el.style.color=c||"#cfe0ff"; if(dot){ dot.classList.remove("err","busy"); if(/실패|에러|오류|fail|error/i.test(t)) dot.classList.add("err"); else if(/중|가져오|저장|불러오/i.test(t)) dot.classList.add("busy"); } }
+  function _sbChip(t,c){
+    var el=document.getElementById("syncChip"); var dot=document.getElementById("syncDot"); if(!el) return;
+    var color = c||"#cfe0ff";
+    el.textContent=t; el.style.color=color;
+    if(dot){
+      dot.classList.remove("err","busy");
+      // 점(원)의 색을 텍스트와 항상 같은 색으로 맞춘다 — .err/.busy 의 CSS 고정색은
+      // 인라인 style(우선순위가 더 높음)로 덮어써서, 깜빡이는(pulse) 상태에서도 텍스트와 같은 색으로 움직인다.
+      dot.style.background = color;
+      dot.style.boxShadow = "0 0 6px " + color;
+      if(/실패|에러|오류|fail|error/i.test(t)) dot.classList.add("err");
+      else if(/중|가져오|저장|불러오/i.test(t)) dot.classList.add("busy");
+    }
+  }
 
   function _sbPullNow(){
     try{
@@ -898,11 +906,22 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     var search = document.getElementById("historySearch"); if(search) search.value = "";
     renderHistoryList();
     var ta = document.getElementById("historyInput"); if(ta){ ta.value=""; ta.focus(); }
+    _syncHistoryBtnLabel();
   }
   function hideHistoryScreen(){
     _maybeWarnUnsaved();
     var hs = document.getElementById("historyScreen"); if(hs) hs.classList.remove("show");
     var main = document.getElementById("mainView"); if(main) main.style.display = "";
+    _syncHistoryBtnLabel();
+  }
+  // 상단 이력 버튼 라벨을 이력 화면의 열림/닫힘 상태에 맞춰 동기화한다.
+  // (저장 버튼이 상단으로 이동하면서, 이력 화면 안의 "← 편집 화면으로" 버튼 대신
+  //  이 버튼 하나로 이력 화면을 열고 닫는 토글 역할을 겸한다.)
+  function _syncHistoryBtnLabel(){
+    var btn = document.getElementById("btnHistory"); if(!btn) return;
+    var hs = document.getElementById("historyScreen");
+    var open = !!(hs && hs.classList.contains("show"));
+    btn.textContent = open ? "이력 닫기" : "이력";
   }
   function toggleHistoryScreen(){
     var hs = document.getElementById("historyScreen");
@@ -1060,7 +1079,6 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
           html += '<div class="scr-row '+(STATE.selectedScreenId===s.screenId?'active':'')+'" data-sid="'+esc(s.screenId)+'" data-act="sel-scr">'
                 +   '<span class="sid">'+esc(s.screenId)+'</span>'
                 +   '<span class="nm">'+esc(s.title||"")+'</span>'
-                +   '<span class="act"><span data-act="del-scr" data-sid="'+esc(s.screenId)+'" title="삭제">🗑</span></span>'
                 + '</div>';
         });
         if(!items.length) html += '<div class="empty" style="padding:14px 12px">빈 그룹 · "+ 화면"</div>';
@@ -1130,7 +1148,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     head.innerHTML =
         '<div class="meta">'
       +   '<span class="chip chip-id">'+esc(s.screenId||"")+'</span>'
-      +   '<button type="button" class="idcopy" data-act="copy-sid" data-copy="'+esc(s.screenId||"")+'" title="화면 ID 복사">⧉</button>'
+      +   '<button type="button" class="idcopy" data-act="copy-sid" data-copy="#'+esc(s.screenId||"")+'" title="화면 ID 복사 (# 포함)">⧉</button>'
       + '</div>'
       + '<div class="title">'
       +   '<input class="bordered" data-pf="title" data-sid="'+esc(s.screenId)+'" value="'+esc(s.title||"")+'">'
@@ -1999,7 +2017,6 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     };
 
     var btnHist = document.getElementById("btnHistory"); if(btnHist) btnHist.onclick = toggleHistoryScreen;
-    var histBack = document.getElementById("btnHistoryBack"); if(histBack) histBack.onclick = hideHistoryScreen;
     var histAdd = document.getElementById("btnHistoryAdd"); if(histAdd) histAdd.onclick = addHistoryEntry;
     var histSearch = document.getElementById("historySearch"); if(histSearch) histSearch.oninput = renderHistoryList;
 
