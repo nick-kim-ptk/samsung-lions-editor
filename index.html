@@ -148,6 +148,10 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .screen-head .meta .scrId{font-weight:800;letter-spacing:.2px;color:var(--clr-brand);background:#eef3fb;padding:3px 9px;border-radius:5px;font-size:13.5px}
 .chip{display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;font-size:13px;font-weight:700;background:#eef3fb;color:var(--ink);border:1px solid var(--line);white-space:nowrap;letter-spacing:-.1px;flex:none}
 .chip-id{background:#eef3fb;color:var(--clr-brand);font-family:Consolas,monospace;font-weight:800;letter-spacing:.2px;font-size:13.5px}
+.idcopy{flex:none;width:24px;height:24px;border:1px solid var(--line);border-radius:5px;background:#fff;color:var(--clr-brand);cursor:pointer;font-size:13px;display:inline-flex;align-items:center;justify-content:center;padding:0}
+.idcopy:hover{background:var(--acc-soft)}
+.idcopy.ok{color:var(--ok);border-color:var(--ok)}
+.rel-link{color:var(--clr-brand);text-decoration:underline;cursor:pointer}
 .chip-grp{background:#eef3fb;color:#5b6a87;font-weight:600}
 .chip-tp{background:var(--clr-brand);color:#fff;padding:0 10px;height:24px;border-radius:12px;font-size:13px;font-weight:800;letter-spacing:.1px;border:0}
 .chip-sep{display:inline-flex;align-items:center;color:var(--sub);font-weight:700;margin:0 2px;font-size:13px}
@@ -838,12 +842,48 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     clearTimeout(toast._t); toast._t=setTimeout(function(){t.className="toast";},1600);
   }
 
+  // ── 클립보드 복사 (화면 ID 복사 버튼 등에서 공용으로 사용) ──
+  // navigator.clipboard 는 https 등 보안 컨텍스트에서만 동작하므로, 안 되면 예전 방식(execCommand)으로 대체한다.
+  function copyText(text){
+    function fallback(){
+      var ta=document.createElement("textarea");
+      ta.value=text; ta.style.position="fixed"; ta.style.opacity="0";
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      var ok=false; try{ ok=document.execCommand("copy"); }catch(e){}
+      document.body.removeChild(ta);
+      return ok;
+    }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      return navigator.clipboard.writeText(text).catch(fallback);
+    }
+    return Promise.resolve(fallback());
+  }
+
   // ── 저장 시 비밀번호 확인 ──
+  // 파일을 공유해도 평문 비밀번호가 코드에 보이지 않도록, 비밀번호 원문 대신 SHA-256 해시값만 저장해 두고
+  // 입력값을 같은 방식으로 해시로 바꿔 비교한다. (주의: 이 방식은 "소스에 그대로 드러나지 않게" 가리는 것일 뿐,
+  // 브라우저에서 실행되는 코드라는 한계상 완벽한 보안은 아니다. 비밀번호를 바꾸려면 새 비밀번호의 SHA-256
+  // 해시값을 구해 아래 SAVE_PASSWORD_HASH 값을 그 해시로 교체하면 된다.)
+  var SAVE_PASSWORD_HASH = "158a323a7ba44870f23d96f1516dd70aa48e9a72db4ebb026b0a89e212a208ab";
+  function _sha256Hex(text){
+    var buf = new TextEncoder().encode(text);
+    return crypto.subtle.digest("SHA-256", buf).then(function(hashBuf){
+      var bytes = Array.from(new Uint8Array(hashBuf));
+      return bytes.map(function(b){ return b.toString(16).padStart(2,"0"); }).join("");
+    });
+  }
   function _checkSavePassword(){
     var pw = prompt("저장하려면 비밀번호를 입력하세요.");
-    if(pw===null) return false; // 취소
-    if(pw!=="2026"){ toast("비밀번호가 올바르지 않습니다", true); return false; }
-    return true;
+    if(pw===null) return Promise.resolve(false); // 취소
+    if(!(window.crypto && window.crypto.subtle)){
+      // 구형 브라우저 등 SHA-256 계산이 불가능한 환경 — 저장을 막지 않되 알려준다.
+      toast("이 브라우저에서는 비밀번호 확인을 할 수 없어요", true);
+      return Promise.resolve(false);
+    }
+    return _sha256Hex(pw).then(function(hex){
+      if(hex !== SAVE_PASSWORD_HASH){ toast("비밀번호가 올바르지 않습니다", true); return false; }
+      return true;
+    });
   }
 
   // ── 변경 이력(전용 화면) ──
@@ -885,23 +925,25 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     var ta = document.getElementById("historyInput"); if(!ta) return;
     var txt = (ta.value||"").trim();
     if(!txt){ toast("내용을 입력해 주세요", true); return; }
-    if(!_checkSavePassword()) return;
-    STATE.changelog = STATE.changelog || [];
-    STATE.changelog.push({
-      id: uid("hist"),
-      text: txt,
-      author: (SB && SB.user) || "익명",
-      ts: Date.now(),
-      dateStr: _histTimeStr()
+    _checkSavePassword().then(function(ok){
+      if(!ok) return;
+      STATE.changelog = STATE.changelog || [];
+      STATE.changelog.push({
+        id: uid("hist"),
+        text: txt,
+        author: (SB && SB.user) || "익명",
+        ts: Date.now(),
+        dateStr: _histTimeStr()
+      });
+      ta.value = "";
+      save();
+      // "저장" 버튼과 동일하게 디바운스를 기다리지 않고 즉시 서버로 전송한다.
+      if(_sbPushT){ clearTimeout(_sbPushT); _sbPushT=null; }
+      _sbPushNow();
+      var search = document.getElementById("historySearch"); if(search) search.value = "";
+      renderHistoryList();
+      toast("이력 등록됨");
     });
-    ta.value = "";
-    save();
-    // "저장" 버튼과 동일하게 디바운스를 기다리지 않고 즉시 서버로 전송한다.
-    if(_sbPushT){ clearTimeout(_sbPushT); _sbPushT=null; }
-    _sbPushNow();
-    var search = document.getElementById("historySearch"); if(search) search.value = "";
-    renderHistoryList();
-    toast("이력 등록됨");
   }
   function delHistoryEntry(hid){
     if(!confirm("이 이력을 삭제할까요?")) return;
@@ -1088,6 +1130,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     head.innerHTML =
         '<div class="meta">'
       +   '<span class="chip chip-id">'+esc(s.screenId||"")+'</span>'
+      +   '<button type="button" class="idcopy" data-act="copy-sid" data-copy="'+esc(s.screenId||"")+'" title="화면 ID 복사">⧉</button>'
       + '</div>'
       + '<div class="title">'
       +   '<input class="bordered" data-pf="title" data-sid="'+esc(s.screenId)+'" value="'+esc(s.title||"")+'">'
@@ -1103,6 +1146,16 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       +     '<button type="button" data-link-go="1" title="링크 열기 (새 탭)" style="flex:none;padding:0 16px;background:var(--clr-brand);color:#fff;border:none;border-radius:5px;cursor:pointer;font-weight:800;font-size:var(--fs-meta)">이동 ↗</button>'
       +   '</div>'
       + '</div>';
+
+    // 화면 ID 복사 버튼
+    var idCopyBtn = head.querySelector("[data-act='copy-sid']");
+    if(idCopyBtn) idCopyBtn.addEventListener("click", function(){
+      copyText(idCopyBtn.dataset.copy).then(function(){
+        toast("화면 ID를 복사했어요: " + idCopyBtn.dataset.copy);
+        idCopyBtn.classList.add("ok");
+        setTimeout(function(){ idCopyBtn.classList.remove("ok"); }, 900);
+      });
+    });
 
     // URL 링크 "이동" 버튼: 입력창의 현재 값을 읽어 새 탭으로 연다 (http/https 만 허용)
     var linkGo = head.querySelector("[data-link-go]");
@@ -1394,7 +1447,12 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         + accItem("related", "연관 화면 ID", !!(sec.related && sec.related.length),
             '<div class="chipbox">'
           +   (sec.related||[]).map(function(r){
-                return '<span class="chip">'+esc(r)+'  <span class="x" data-act="chip-x" data-value="'+esc(r)+'">×</span></span>';
+                var exists = !!findScreen(r);
+                return '<span class="chip">'
+                     +   (exists
+                            ? '<span class="rel-link" data-act="goto-screen" data-sid="'+esc(r)+'" title="클릭하면 \''+esc(r)+'\' 화면으로 이동">'+esc(r)+'</span>'
+                            : '<span title="존재하지 않는 화면 ID">'+esc(r)+'</span>')
+                     +   '  <span class="x" data-act="chip-x" data-value="'+esc(r)+'">×</span></span>';
               }).join("")
           + '</div>'
           + '<label class="imgadd" data-act="chip-add" style="display:inline-block;margin-top:8px;cursor:pointer">+ 연관 화면 추가</label>')
@@ -1930,12 +1988,14 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     var imp = document.getElementById("imp"); if(imp){ imp.onchange = importJson; }
     var btnReset = document.getElementById("btnReset"); if(btnReset) btnReset.onclick = function(){ if(!confirm("전체 데이터 초기화 — 예시 HM 화면 1개로 돌아가요.")) return; };
     var btnSave = document.getElementById("btnSave"); if(btnSave) btnSave.onclick = function(){
-      if(!_checkSavePassword()) return;
-      save();
-      // "저장" 버튼은 디바운스를 기다리지 않고 즉시 서버로 전송한다.
-      if(_sbPushT){ clearTimeout(_sbPushT); _sbPushT=null; }
-      _sbPushNow();
-      toast("저장됨 · "+new Date().toLocaleTimeString());
+      _checkSavePassword().then(function(ok){
+        if(!ok) return;
+        save();
+        // "저장" 버튼은 디바운스를 기다리지 않고 즉시 서버로 전송한다.
+        if(_sbPushT){ clearTimeout(_sbPushT); _sbPushT=null; }
+        _sbPushNow();
+        toast("저장됨 · "+new Date().toLocaleTimeString());
+      });
     };
 
     var btnHist = document.getElementById("btnHistory"); if(btnHist) btnHist.onclick = toggleHistoryScreen;
