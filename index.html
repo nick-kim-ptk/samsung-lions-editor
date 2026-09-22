@@ -378,7 +378,6 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 <div class="app">
   <header>
     <h1>삼성라이온즈 기능 정의 및 화면 설계서</h1>
-    <span class="credit">BY PTKOREA</span>
     <span class="sp"></span>
     <button type="button" id="btnHistory">이력</button>
     <span class="syncBlock" role="group" aria-label="서버 상태">
@@ -418,7 +417,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         <div class="screen">
           <div class="col-h">
             <span class="pill" id="midTitlePill">CM</span>
-            <span id="midTitle" style="margin-left:6px">스플래시 스크린</span>
+            <span id="midTitle" style="margin-left:6px">스플래시 스크린 화면 구성</span>
             <!-- 가운데 상단 그룹 chip 제거됨 (v22m) -->
             <span class="sp"></span>
             <button type="button" id="btnDelScr2" class="primary" style="display: inline-block;" title="화면 삭제" aria-label="화면 삭제"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" xmlns="http://www.w3.org/2000/svg"><path d="m4.015 5.494h-.253c-.413 0-.747-.335-.747-.747s.334-.747.747-.747h5.253v-1c0-.535.474-1 1-1h4c.526 0 1 .465 1 1v1h5.254c.412 0 .746.335.746.747s-.334.747-.746.747h-.254v15.435c0 .591-.448 1.071-1 1.071-2.873 0-11.127 0-14 0-.552 0-1-.48-1-1.071zm14.5 0h-13v15.006h13zm-4.25 2.506c-.414 0-.75.336-.75.75v8.5c0 .414.336.75.75.75s.75-.336.75-.75v-8.5c0-.414-.336-.75-.75-.75zm-4.5 0c-.414 0-.75.336-.75.75v8.5c0 .414.336.75.75.75s.75-.336.75-.75v-8.5c0-.414-.336-.75-.75-.75zm3.75-4v-.5h-3v.5z"/></svg></button>
@@ -434,7 +433,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     </div>
 
     <div class="col">
-      <div class="col-h"><span class="pill">구역 상세</span><span>구역 설명 상세</span><span class="sp"></span><button type="button" id="btnDelSec2" class="icon-del-btn" data-act="del-sec" title="구역 삭제" aria-label="구역 삭제" style="display:none"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" xmlns="http://www.w3.org/2000/svg"><path d="m4.015 5.494h-.253c-.413 0-.747-.335-.747-.747s.334-.747.747-.747h5.253v-1c0-.535.474-1 1-1h4c.526 0 1 .465 1 1v1h5.254c.412 0 .746.335.746.747s-.334.747-.746.747h-.254v15.435c0 .591-.448 1.071-1 1.071-2.873 0-11.127 0-14 0-.552 0-1-.48-1-1.071zm14.5 0h-13v15.006h13zm-4.25 2.506c-.414 0-.75.336-.75.75v8.5c0 .414.336.75.75.75s.75-.336.75-.75v-8.5c0-.414-.336-.75-.75-.75zm-4.5 0c-.414 0-.75.336-.75.75v8.5c0 .414.336.75.75.75s.75-.336.75-.75v-8.5c0-.414-.336-.75-.75-.75zm3.75-4v-.5h-3v.5z"/></svg></button></div>
+      <div class="col-h"><span class="pill">구역 상세</span><span id="secDetailTitle">배경 스크린 상세 내용</span><span class="sp"></span><button type="button" id="btnDelSec2" class="icon-del-btn" data-act="del-sec" title="구역 삭제" aria-label="구역 삭제" style="display:none"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" xmlns="http://www.w3.org/2000/svg"><path d="m4.015 5.494h-.253c-.413 0-.747-.335-.747-.747s.334-.747.747-.747h5.253v-1c0-.535.474-1 1-1h4c.526 0 1 .465 1 1v1h5.254c.412 0 .746.335.746.747s-.334.747-.746.747h-.254v15.435c0 .591-.448 1.071-1 1.071-2.873 0-11.127 0-14 0-.552 0-1-.48-1-1.071zm14.5 0h-13v15.006h13zm-4.25 2.506c-.414 0-.75.336-.75.75v8.5c0 .414.336.75.75.75s.75-.336.75-.75v-8.5c0-.414-.336-.75-.75-.75zm-4.5 0c-.414 0-.75.336-.75.75v8.5c0 .414.336.75.75.75s.75-.336.75-.75v-8.5c0-.414-.336-.75-.75-.75zm3.75-4v-.5h-3v.5z"/></svg></button></div>
       <div class="sec-edit t-wd" id="secEdit"><div class="rower"><div class="lbl">작성자</div><input data-sec="sec_sbhucb_9vr" data-pf2="author" value=""></div><div class="rower-row"><div class="rower"><div class="lbl">진행 상황</div><div class="typebar"><button type="button" class="typechip on prog" data-act="set-status" data-v="작성중">작성중</button><button type="button" class="typechip  review" data-act="set-status" data-v="검토중">검토중</button><button type="button" class="typechip  ok" data-act="set-status" data-v="확정">확정</button></div></div><div class="rower"><div class="lbl">구역 종류 <span class="req">*</span></div><div class="typebar"><button type="button" class="typechip on func" data-act="set-type" data-v="기능">기능</button><button type="button" class="typechip  ad" data-act="set-type" data-v="광고">광고</button><button type="button" class="typechip  out" data-act="set-type" data-v="아웃링크">아웃링크</button><button type="button" class="typechip  link" data-act="set-type" data-v="페이지연결">페이지연결</button></div></div></div><div class="rower"><div class="lbl">구역 이름 <span class="req">*</span></div><input data-sec="sec_sbhucb_9vr" data-pf2="title" value="배경 스크린"></div><div class="acc-item is-open" data-acc="desc"><div class="acc-head" data-act="acc-toggle" data-acc="desc"><span class="acc-arrow">▶</span><span class="acc-title">기능 설명 <span class="req">*</span></span><span class="acc-dot filled"></span></div><div class="acc-panel"><textarea data-sec="sec_sbhucb_9vr" data-pf2="desc">풀브리드 이미지를 사용하여 스플래시 스크린 이미지를 제공한다.
 초기 값은 기본 이미지로 일괄 제공하며, 추후 마이페이지 내의 기능을 통해서 사용자가 원하는 이미지로 교체 가능하다.</textarea></div></div><div class="acc-item " data-acc="target"><div class="acc-head" data-act="acc-toggle" data-acc="target"><span class="acc-arrow">▶</span><span class="acc-title">관련 자료</span><span class="acc-dot "></span></div><div class="acc-panel"><textarea data-sec="sec_sbhucb_9vr" data-pf2="target"></textarea><div class="imgbox"><label class="imgadd">+ 이미지 첨부<input type="file" accept="image/*" multiple="" data-act="img-file" style="display:none"></label></div><div class="tip">개당 2MB 이하 파일 업로드 권장</div></div></div><div class="acc-item is-open" data-acc="requirement"><div class="acc-head" data-act="acc-toggle" data-acc="requirement"><span class="acc-arrow">▶</span><span class="acc-title">고려 요소</span><span class="acc-dot filled"></span></div><div class="acc-panel"><textarea data-sec="sec_sbhucb_9vr" data-pf2="requirement">마이페이지 기능을 통해 스플래시 스크린을 사용자 선택에 따라 이미지를 변경할 수 있다.</textarea></div></div><div class="acc-item " data-acc="exception"><div class="acc-head" data-act="acc-toggle" data-acc="exception"><span class="acc-arrow">▶</span><span class="acc-title">예외</span><span class="acc-dot "></span></div><div class="acc-panel"><textarea data-sec="sec_sbhucb_9vr" data-pf2="exception"></textarea></div></div><div class="acc-item " data-acc="feedback"><div class="acc-head" data-act="acc-toggle" data-acc="feedback"><span class="acc-arrow">▶</span><span class="acc-title">광고주 요청 / 피드백</span><span class="acc-dot "></span></div><div class="acc-panel"><textarea data-sec="sec_sbhucb_9vr" data-pf2="feedback"></textarea></div></div><div class="acc-item " data-acc="related"><div class="acc-head" data-act="acc-toggle" data-acc="related"><span class="acc-arrow">▶</span><span class="acc-title">연관 화면 ID</span><span class="acc-dot "></span></div><div class="acc-panel"><div class="chipbox"></div><label class="imgadd" data-act="chip-add" style="display:inline-block;margin-top:8px;cursor:pointer">+ 연관 화면 추가</label></div></div><div class="acc-item " data-acc="note"><div class="acc-head" data-act="acc-toggle" data-acc="note"><span class="acc-arrow">▶</span><span class="acc-title">메모</span><span class="acc-dot "></span></div><div class="acc-panel"><textarea data-sec="sec_sbhucb_9vr" data-pf2="note"></textarea></div></div></div>
     </div>
@@ -1140,7 +1139,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     var grp = (STATE.groups||[]).find(function(g){return g.id===s.groupId;}) || {};
     pill.textContent = grp.code || "-";
     delBtn.style.display="inline-block";
-    mid.textContent = s.title || "(제목 없음)";
+    mid.textContent = (s.title || "(제목 없음)") + " 화면 구성";
     head.style.display="block";
 
     var statusOpts = STATUSES.map(function(v){
@@ -1213,7 +1212,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
           // 타이핑 중에는 서버로 자동 저장하지 않음 — 메모리 상태만 갱신하고
           // 새로고침 대비용 로컬 초안(_markDirty)만 남겨둔다. 실제 저장은 "저장" 버튼을 눌렀을 때만.
           s[k]=el.value; _markDirty();
-          if(k==="title"){ document.getElementById("midTitle").textContent = s.title; }
+          if(k==="title"){ document.getElementById("midTitle").textContent = (s.title||"(제목 없음)") + " 화면 구성"; }
         }
       });
     });
@@ -1385,15 +1384,18 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   function renderDetail(){
     var box = document.getElementById("secEdit");
     var delSecBtn = document.getElementById("btnDelSec2");
+    var titleEl = document.getElementById("secDetailTitle");
     var s = findScreen(STATE.selectedScreenId);
-    if(!s){ box.innerHTML = '<div class="placeholder">좌측에서 화면을 선택해 주세요.</div>'; if(delSecBtn) delSecBtn.style.display="none"; return; }
+    if(!s){ box.innerHTML = '<div class="placeholder">좌측에서 화면을 선택해 주세요.</div>'; if(delSecBtn) delSecBtn.style.display="none"; if(titleEl) titleEl.textContent="구역 설명 상세"; return; }
     var sec = (s.sections||[]).find(function(x){return x.id===STATE.selectedSectionId;});
-    if(!sec){ box.innerHTML = '<div class="placeholder">중앙에서 구역을 선택(또는 "+ 구역 추가")해 주세요.</div>'; if(delSecBtn) delSecBtn.style.display="none"; return; }
+    if(!sec){ box.innerHTML = '<div class="placeholder">중앙에서 구역을 선택(또는 "+ 구역 추가")해 주세요.</div>'; if(delSecBtn) delSecBtn.style.display="none"; if(titleEl) titleEl.textContent="구역 설명 상세"; return; }
     if(delSecBtn){
       delSecBtn.style.display = "inline-flex";
       delSecBtn.dataset.sid = s.screenId;
       delSecBtn.dataset.secId = sec.id;
     }
+    // 타이틀: "{구역명} 상세 내용" (예: 구역명이 "경기 기록" 이면 "경기 기록 상세 내용")
+    if(titleEl) titleEl.textContent = (sec.title||"구역") + " 상세 내용";
 
     // 진행 상태에 맞춰 우측 패널 배경 톤 적용 (작성중/검토중/확정 과 조화)
     box.classList.remove("t-wd","t-wr","t-ok");
@@ -1452,14 +1454,13 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
             '<textarea data-sec="'+esc(sec.id)+'" data-pf2="desc">'+esc(sec.desc||"")+'</textarea>')
 
         + accItem("target", "관련 자료", !!((sec.target && sec.target.trim()) || (sec.images && sec.images.length)),
-            '<div class="relimgs">'
+            '<textarea data-sec="'+esc(sec.id)+'" data-pf2="target">'+esc(sec.target||"")+'</textarea>'
+          + '<div class="relimgs" style="margin-top:8px">'
           +   (sec.images||[]).map(function(im){
                 return '<span class="relimg" data-act="img-view" data-img="'+esc(im.id)+'" title="클릭하면 크게 보기"><img src="'+esc(im.dataUrl)+'" alt="'+esc(im.name||"")+'"><span class="tx" data-act="img-del" data-img="'+esc(im.id)+'" title="삭제">×</span></span>';
               }).join("")
           +   '<label class="imgadd">+ 이미지 첨부<input type="file" accept="image/*" multiple data-act="img-file" style="display:none"></label>'
-          + '</div>'
-          + '<div class="tip">개당 5MB 이하</div>'
-          + '<textarea data-sec="'+esc(sec.id)+'" data-pf2="target" style="margin-top:8px">'+esc(sec.target||"")+'</textarea>')
+          + '</div>')
 
         + accItem("requirement", "고려 요소", !!(sec.requirement && sec.requirement.trim()),
             '<textarea data-sec="'+esc(sec.id)+'" data-pf2="requirement">'+esc(sec.requirement||"")+'</textarea>')
@@ -1592,6 +1593,8 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         if(p==="title"){
           var card=document.querySelector('.sec.selected .ti');
           if(card) card.textContent=sec.title||"구역 이름";
+          var dTitle=document.getElementById("secDetailTitle");
+          if(dTitle) dTitle.textContent=(sec.title||"구역")+" 상세 내용";
         }
         // 페이지연결: 드롭다운 바꾸면 미리보기 즉시 갱신
         if(p==="linkedScreenId"){
