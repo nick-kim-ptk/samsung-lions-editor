@@ -452,10 +452,10 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         <div class="hist-compose">
           <div class="hist-compose-label">수정내역</div>
           <div class="hist-compose-row">
-            <textarea id="historyInput" placeholder="예) #001-SL-CM-01 수정, #002-SL-CM-02 수정"></textarea>
+            <textarea id="historyInput" maxlength="5000" placeholder="예) #001-SL-CM-01 수정, #002-SL-CM-02 수정"></textarea>
             <button type="button" id="btnHistoryAdd">등록</button>
           </div>
-          <div class="hist-compose-tip">#화면ID 를 적으면 표에서 클릭 가능한 태그가 되어 해당 화면으로 바로 이동합니다.</div>
+          <div class="hist-compose-tip">#화면ID 를 적으면 표에서 클릭 가능한 태그가 되어 해당 화면으로 바로 이동합니다. (최대 5,000자)</div>
         </div>
         <div id="historyTableWrap" style="flex:1;overflow:auto;min-height:0;border:1px solid var(--line);border-radius:8px">
           <table class="hist-table">
@@ -510,6 +510,18 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   // ── 안전망
   function safe(fn, fb){ try{return fn();}catch(e){console.error("[safe]",e&&(e.stack||e.message||e));return typeof fb==="function"?fb():fb;} }
   function esc(s){ return s==null?"":String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c];}); }
+  // 화면의 "URL 링크"는 http(s):// 주소만 허용한다. javascript:/data:/vbscript: 등은
+  // 절대 저장하지 않는다 — 입력창에서 바로 막는 것과 별개로, 서버(spec)로 보내기 직전과
+  // JSON 가져오기로 들어온 값도 여기서 한 번 더 걸러 우회 경로를 막는다.
+  // 반환값: 안전한 http(s) 주소면 정규화해서 반환, 비어있거나 위험한 값이면 "" 반환.
+  function _sanitizeLinkUrl(u){
+    u = (u==null?"":String(u)).trim();
+    if(!u) return "";
+    if(/^(javascript|data|vbscript|file|blob):/i.test(u)) return "";
+    if(!/^https?:\/\//i.test(u)) u = "https://" + u.replace(/^\/\//,"");
+    if(!/^https?:\/\//i.test(u)) return "";
+    return u;
+  }
   function todayStr(){
     var d=new Date();
     var y=d.getFullYear().toString().slice(2);
@@ -572,7 +584,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         if(typeof s.screenId==="string" && /-01-01$/.test(s.screenId)){
           s.screenId = s.screenId.replace(/-01$/,"");
         }
-        s.link = (typeof s.link==="string") ? s.link : "";   // 목적/개요 하단 URL 링크
+        s.link = _sanitizeLinkUrl((typeof s.link==="string") ? s.link : "");   // 목적/개요 하단 URL 링크 (http/https 외 스킴은 여기서 걸러짐)
         s.sections = s.sections||[];
         s.sections.forEach(function(sec){
           sec.related         = Array.isArray(sec.related)         ? sec.related         : [];
@@ -732,6 +744,15 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   function _specPayload(){
     var copy = Object.assign({}, STATE);
     delete copy.changelog;
+    // 방어 한 겹 더: 화면 입력창을 거치지 않고 들어온 값(JSON 가져오기 등)도
+    // 서버로 나가기 직전에 다시 한번 걸러서, 위험한 스킴의 URL이 저장되지 않게 한다.
+    if(Array.isArray(copy.screens)){
+      copy.screens = copy.screens.map(function(s){
+        var s2 = Object.assign({}, s);
+        s2.link = _sanitizeLinkUrl(s2.link);
+        return s2;
+      });
+    }
     return copy;
   }
   function _sbPushNow(){
@@ -972,10 +993,15 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       return '<span class="hist-chip" data-act="goto-history-screen" data-sid="'+esc(sid)+'" title="'+esc(sid)+' 화면으로 이동">'+esc(sid)+'</span>';
     });
   }
+  var HISTORY_TEXT_MAX = 5000; // 이력 내용 최대 길이 — 화면(textarea maxlength)과 저장 로직 양쪽에서 강제
   function addHistoryEntry(){
     var ta = document.getElementById("historyInput"); if(!ta) return;
     var txt = (ta.value||"").trim();
     if(!txt){ toast("내용을 입력해 주세요", true); return; }
+    if(txt.length > HISTORY_TEXT_MAX){
+      txt = txt.slice(0, HISTORY_TEXT_MAX);
+      toast("이력 내용은 최대 "+HISTORY_TEXT_MAX+"자까지 저장돼요 (초과분은 잘렸어요)", true);
+    }
     _checkSavePassword().then(function(ok){
       if(!ok) return;
       var entry = {
@@ -1240,10 +1266,10 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     var linkGo = head.querySelector("[data-link-go]");
     if(linkGo) linkGo.addEventListener("click", function(){
       var inp = head.querySelector('[data-pf="link"]');
-      var u = ((inp && inp.value) || "").trim();
-      if(!u){ toast("URL을 먼저 입력해 주세요", true); return; }
-      if(/^(javascript|data|vbscript|file|blob):/i.test(u)){ toast("열 수 없는 형식의 주소예요", true); return; }
-      if(!/^https?:\/\//i.test(u)) u = "https://" + u.replace(/^\/\//,"");   // http(s):// 없으면 https:// 자동 보완
+      var raw = ((inp && inp.value) || "").trim();
+      if(!raw){ toast("URL을 먼저 입력해 주세요", true); return; }
+      var u = _sanitizeLinkUrl(raw);
+      if(!u){ toast("열 수 없는 형식의 주소예요", true); return; }
       window.open(u, "_blank", "noopener");
     });
 
@@ -1252,11 +1278,27 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         var k = el.dataset.pf;
         if(k==="group"){ s.groupId = el.value; resyncAllScreenIds(); save(); _markDirty(); renderAll(); }
         else if(k==="status"){ s.status = el.value; save(); _markDirty(); renderMid(); }
-        else if(k==="link"){ s.link = el.value; save(); _markDirty(); }   // 재렌더 없이 저장만 (바로 "이동" 클릭 시 버튼 유실 방지)
+        else if(k==="link"){
+          var raw = el.value;
+          var clean = _sanitizeLinkUrl(raw);
+          if(raw.trim() && !clean){
+            toast("http(s):// 로 시작하는 주소만 저장할 수 있어요", true);
+            el.value = s.link || "";
+            return;
+          }
+          s.link = clean; el.value = clean;
+          save(); _markDirty();
+        }   // 재렌더 없이 저장만 (바로 "이동" 클릭 시 버튼 유실 방지)
         else { s[k]=el.value; save(); _markDirty(); renderTree(); renderMid(); }
       });
       el.addEventListener("input", function(){
         var k=el.dataset.pf;
+        if(k==="link"){
+          // URL 링크는 타이핑 중에는 STATE에 반영하지 않는다(검증 전 위험한 값이 잠깐이라도
+          // s.link에 들어가는 것을 막기 위해) — 입력 완료(change) 시에만 검증 후 반영한다.
+          _markDirty();
+          return;
+        }
         if(k!=="group" && k!=="status"){
           // 타이핑 중에는 서버로 자동 저장하지 않음 — 메모리 상태만 갱신하고
           // 새로고침 대비용 로컬 초안(_markDirty)만 남겨둔다. 실제 저장은 "저장" 버튼을 눌렀을 때만.
