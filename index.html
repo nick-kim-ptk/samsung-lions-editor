@@ -379,6 +379,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   <header>
     <h1>삼성라이온즈 기능 정의 및 화면 설계서</h1>
     <span class="sp"></span>
+    <button type="button" id="btnRequest">요청사항</button>
     <button type="button" id="btnHistory">이력</button>
     <span class="syncBlock" role="group" aria-label="서버 상태">
       <span class="syncDot" id="syncDot"></span>
@@ -726,6 +727,13 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     }catch(e){_sbChip("서버 모듈 예외 · 로컬로 작업","#ff9c96"); try{console.warn("[sb pull sync]",e);}catch(_){}}
   }
 
+  // 이력(changelog)은 이제 별도의 history 테이블에 저장되므로, spec의 JSON payload에는
+  // 중복으로 실어 보내지 않는다(용량 절약 + 두 곳에 데이터가 따로 노는 것을 방지).
+  function _specPayload(){
+    var copy = Object.assign({}, STATE);
+    delete copy.changelog;
+    return copy;
+  }
   function _sbPushNow(){
     try{
     if(!SB.url) return;
@@ -735,7 +743,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     // PATCH + version 조건을 건다. (version이 다르면 PostgREST가 매칭되는 행 0개로 응답 →
     // 그 사이 다른 사용자가 먼저 저장했다는 뜻이므로 이번 저장은 반영하지 않고 알려준다.)
     if(_sbRowId != null && _sbRowVersion != null){
-      var patchBody = { payload: STATE, updated_at: new Date().toISOString(), updated_by: SB.user };
+      var patchBody = { payload: _specPayload(), updated_at: new Date().toISOString(), updated_by: SB.user };
       var patchUrl = SB.url + "/rest/v1/spec?id=eq."+encodeURIComponent(_sbRowId)+"&version=eq."+encodeURIComponent(_sbRowVersion);
       _sbChip("서버 저장 중…","#ffd166");
       fetch(patchUrl, {
@@ -775,7 +783,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         return;
       }
     }
-    var row = { id: _sbRowId || 1, payload: STATE, updated_at: new Date().toISOString(), updated_by: SB.user };
+    var row = { id: _sbRowId || 1, payload: _specPayload(), updated_at: new Date().toISOString(), updated_by: SB.user };
     var url = SB.url + "/rest/v1/spec";
     _sbChip("서버 저장 중…","#ffd166");
     fetch(url, {
@@ -899,10 +907,28 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     });
   }
 
-  // ── 변경 이력(전용 화면) ──
+  // ── 변경 이력(전용 화면, 별도 테이블 "history"에 저장됨 — spec의 JSON payload와 분리) ──
+  var HISTORY_TABLE = "history";
   function _histTimeStr(){
     var d = new Date();
     return todayStr()+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
+  }
+  // history 테이블에서 이력 목록을 새로 가져와 STATE.changelog(화면 표시용 캐시)에 반영한다.
+  // 실패해도 조용히 넘어가고(로컬 캐시로 계속 표시), 완료 후 cb를 호출한다.
+  function _historyPullNow(cb){
+    if(!SB.url){ if(cb) cb(); return; }
+    var url = SB.url + "/rest/v1/" + HISTORY_TABLE + "?select=*&order=ts.desc";
+    fetch(url, { method:"GET", headers:_sbH() })
+      .then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); })
+      .then(function(rows){
+        if(!Array.isArray(rows)) throw new Error("bad response");
+        STATE.changelog = rows.map(function(row){
+          return { id:row.id, text:row.text, author:row.author, ts:row.ts, dateStr:row.date_str };
+        });
+        try{ _lsSet(JSON.stringify(STATE)); }catch(_){}
+        if(cb) cb();
+      })
+      .catch(function(e){ try{console.warn("[history pull]",e);}catch(_){} if(cb) cb(e); });
   }
   function showHistoryScreen(){
     _maybeWarnUnsaved();
@@ -910,6 +936,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     var hs = document.getElementById("historyScreen"); if(hs) hs.classList.add("show");
     var search = document.getElementById("historySearch"); if(search) search.value = "";
     renderHistoryList();
+    _historyPullNow(function(){ renderHistoryList(); });
     var ta = document.getElementById("historyInput"); if(ta){ ta.value=""; ta.focus(); }
     _syncHistoryBtnLabel();
   }
@@ -951,31 +978,53 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     if(!txt){ toast("내용을 입력해 주세요", true); return; }
     _checkSavePassword().then(function(ok){
       if(!ok) return;
-      STATE.changelog = STATE.changelog || [];
-      STATE.changelog.push({
+      var entry = {
         id: uid("hist"),
         text: txt,
         author: (SB && SB.user) || "익명",
         ts: Date.now(),
         dateStr: _histTimeStr()
-      });
-      ta.value = "";
-      save();
-      // "저장" 버튼과 동일하게 디바운스를 기다리지 않고 즉시 서버로 전송한다.
-      if(_sbPushT){ clearTimeout(_sbPushT); _sbPushT=null; }
-      _sbPushNow();
-      var search = document.getElementById("historySearch"); if(search) search.value = "";
-      renderHistoryList();
-      toast("이력 등록됨");
+      };
+      function commitLocal(){
+        STATE.changelog = STATE.changelog || [];
+        STATE.changelog.unshift(entry);
+        try{ _lsSet(JSON.stringify(STATE)); }catch(_){}
+        ta.value = "";
+        var search = document.getElementById("historySearch"); if(search) search.value = "";
+        renderHistoryList();
+        toast("이력 등록됨");
+      }
+      if(!SB.url){ commitLocal(); return; }
+      // 이력은 이제 spec의 JSON payload가 아니라 전용 history 테이블에 직접 저장된다.
+      var url = SB.url + "/rest/v1/" + HISTORY_TABLE;
+      fetch(url, {
+        method:"POST",
+        headers: Object.assign({}, _sbH(), { "Prefer":"return=representation" }),
+        body: JSON.stringify([{ id:entry.id, text:entry.text, author:entry.author, ts:entry.ts, date_str:entry.dateStr }])
+      })
+        .then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.text(); })
+        .then(function(){ commitLocal(); })
+        .catch(function(e){
+          try{console.warn("[history add]",e);}catch(_){}
+          toast("이력 서버 저장 실패 · 잠시 후 다시 시도해 주세요", true);
+        });
     });
   }
   function delHistoryEntry(hid){
     if(!confirm("이 이력을 삭제할까요?")) return;
-    STATE.changelog = (STATE.changelog||[]).filter(function(h){ return h.id!==hid; });
-    save();
-    if(_sbPushT){ clearTimeout(_sbPushT); _sbPushT=null; }
-    _sbPushNow();
-    renderHistoryList();
+    function commitLocal(){
+      STATE.changelog = (STATE.changelog||[]).filter(function(h){ return h.id!==hid; });
+      try{ _lsSet(JSON.stringify(STATE)); }catch(_){}
+      renderHistoryList();
+    }
+    if(!SB.url){ commitLocal(); return; }
+    var url = SB.url + "/rest/v1/" + HISTORY_TABLE + "?id=eq." + encodeURIComponent(hid);
+    fetch(url, { method:"DELETE", headers:_sbH() })
+      .then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); commitLocal(); })
+      .catch(function(e){
+        try{console.warn("[history del]",e);}catch(_){}
+        toast("이력 삭제 실패 · 잠시 후 다시 시도해 주세요", true);
+      });
   }
   function renderHistoryList(){
     var tbody = document.getElementById("historyList"); if(!tbody) return;
@@ -2027,6 +2076,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       });
     };
 
+    var btnReq = document.getElementById("btnRequest"); if(btnReq) btnReq.onclick = function(){ window.open("https://nick-kim-ptk.github.io/lions-request/", "_blank", "noopener"); };
     var btnHist = document.getElementById("btnHistory"); if(btnHist) btnHist.onclick = toggleHistoryScreen;
     var histAdd = document.getElementById("btnHistoryAdd"); if(histAdd) histAdd.onclick = addHistoryEntry;
     var histSearch = document.getElementById("historySearch"); if(histSearch) histSearch.oninput = renderHistoryList;
