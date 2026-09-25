@@ -87,6 +87,8 @@ header button{display:inline-flex;align-items:center;justify-content:center;heig
 header button:hover{background:rgba(255,255,255,.24)}
 header button.primary{background:var(--clr-accent);color:var(--clr-brand-deep);border-color:var(--clr-accent);font-weight:800}
 header button.primary:hover{background:#ffd443}
+header button.closing{background:#fff;color:var(--clr-brand-deep);border-color:#fff;font-weight:800}
+header button.closing:hover{background:#e8eefc}
 header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color:#c97a72}
 
 .main{display:grid;grid-template-columns:minmax(220px,2fr) minmax(360px,4fr) minmax(360px,4fr);gap:var(--sp-4);padding:var(--sp-4);overflow:hidden}
@@ -507,6 +509,9 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .cf-tag.srv{color:var(--clr-brand)}
 .cf-val{font-size:12.5px;color:var(--ink);white-space:pre-wrap;word-break:break-word;max-height:140px;overflow:auto;padding-right:18px}
 /* 연결 화면 한 줄 (연관 화면 ID · 페이지연결 공통) */
+.defpick{display:flex;gap:6px}
+.defpick select{flex:1;min-width:0;border:1px solid var(--line);border-radius:5px;padding:8px 10px;font-size:var(--fs-base);font-family:inherit;background:#fff;color:var(--ink)}
+.defpick select:disabled{opacity:.6}
 .scrlinks{display:flex;flex-direction:column;gap:6px;margin-top:8px}
 .scrlink{display:flex;align-items:center;gap:10px;min-height:40px;padding:0 6px 0 12px;border:1px solid var(--clr-brand);border-radius:6px;background:var(--acc-soft);cursor:pointer;font-family:"Pretendard Variable","Pretendard","Malgun Gothic",sans-serif}
 .scrlink:hover{background:var(--hl)}
@@ -1753,7 +1758,8 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   function _syncHistoryBtnLabel(){
     var btn = document.getElementById("btnHistory"); if(!btn) return;
     var hs = document.getElementById("historyScreen");
-    btn.textContent = (hs && hs.classList.contains("show")) ? "이력 닫기" : "이력";
+    var o = !!(hs && hs.classList.contains("show"));
+    btn.textContent = o ? "✕ 이력 닫기" : "이력"; btn.classList.toggle("closing", o);
   }
   function toggleHistoryScreen(){
     var hs = document.getElementById("historyScreen");
@@ -2602,8 +2608,16 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     });
     return out;
   }
+  // 표시용: "홈화면 / 기능명" , 정렬: 참조 ID(CD01 → CD01-001 → CD01-002 …) 순, 같으면 화면 순
+  function _usageName(u){ return (u.screen.title || u.screen.screenId) + " / " + (u.section.title || "구역"); }
+  function _sortUsages(list){
+    return list.map(function(u, i){ return { u:u, i:i }; })
+      .sort(function(a, b){ return a.u.ref < b.u.ref ? -1 : a.u.ref > b.u.ref ? 1 : a.i - b.i; })
+      .map(function(x){ return x.u; });
+  }
   function _usageText(list){
-    return list.slice(0,10).map(function(u){ return "· #"+u.screen.screenId+" › '"+(u.section.title||"구역")+"'"+(findDef(u.ref) ? "" : " ("+u.ref+")"); }).join("\n")
+    list = _sortUsages(list);
+    return list.slice(0,10).map(function(u){ return "· " + u.ref + "  " + _usageName(u); }).join("\n")
       + (list.length > 10 ? "\n… 외 "+(list.length-10)+"곳" : "");
   }
   function _nextDefCode(){
@@ -2628,7 +2642,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     _syncDefsBtnLabel();
   }
   function _defsOpen(){ var ds = document.getElementById("defsScreen"); return !!(ds && ds.classList.contains("show")); }
-  function _syncDefsBtnLabel(){ var b = document.getElementById("btnDefs"); if(b) b.textContent = _defsOpen() ? "공통 정의 닫기" : "공통 정의"; }
+  function _syncDefsBtnLabel(){ var b = document.getElementById("btnDefs"); if(!b) return; var o = _defsOpen(); b.textContent = o ? "✕ 공통 정의 닫기" : "공통 정의"; b.classList.toggle("closing", o); }
   function toggleDefsScreen(){ if(_defsOpen()) hideDefsScreen(); else showDefsScreen(); }
   function openDef(id, rowId){
     var d = findDef(id); if(!d){ toast("공통 정의를 찾을 수 없어요", true); return; }
@@ -2761,11 +2775,11 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       +   '</tbody></table></div>'
       + '<div class="tip" style="margin-top:6px">엑셀에서 여러 칸을 복사해서 표의 칸에 붙여넣으면 그 위치부터 한 번에 채워지고, 부족한 줄·칸은 자동으로 늘어나요.</div>'
       + '<div class="dusage"><div class="lbl">사용 중인 화면·구역 <span class="dcount">'+used.length+'</span></div>'
-      +   (used.length ? '<div class="scrlinks">' + used.map(function(u){
-            return '<div class="scrlink" data-goto-sec="'+esc(u.section.id)+'" data-goto-sid="'+esc(u.screen.screenId)+'"><span class="sl-id">'+esc(u.screen.screenId)+'</span>'
-              + '<span class="sl-nm">'+esc(u.section.title||"구역")+(u.ref===d.id ? ' <em>· 정의 전체</em>' : ' <em>· '+esc(u.ref)+'</em>')+'</span></div>';
+      +   (used.length ? '<div class="scrlinks">' + _sortUsages(used).map(function(u){
+            return '<div class="scrlink" data-goto-sec="'+esc(u.section.id)+'" data-goto-sid="'+esc(u.screen.screenId)+'" title="#'+esc(u.screen.screenId)+' 로 이동"><span class="sl-id">'+esc(u.ref)+'</span>'
+              + '<span class="sl-nm">'+esc(_usageName(u))+(u.ref===d.id ? ' <em>· 정의 전체</em>' : '')+'</span></div>';
           }).join("") + '</div>'
-          : '<div class="tip">아직 이 공통 정의를 참조하는 구역이 없어요. 구역 상세 → "공통 정의"에서 연결할 수 있어요.</div>')
+          : '<div class="tip">아직 이 공통 정의를 참조하는 구역이 없어요. 구역 상세 → "연관 공통 정의"에서 연결할 수 있어요.</div>')
       + '</div>';
     bindDefDetail(box, head, d);
     box.querySelectorAll("textarea").forEach(_autoGrow);
@@ -2922,15 +2936,25 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   }
 
   // ── 구역 상세: 공통 정의 참조
-  function _defSelect(exclude){
-    var html = '<select data-act="defref-add"><option value="">— 공통 정의 추가 (정의 전체 또는 특정 줄) —</option>';
-    (STATE.defs||[]).slice().sort(function(a,b){ return a.id<b.id?-1:1; }).forEach(function(d){
-      var opts = [];
-      if(exclude.indexOf(d.id)<0) opts.push('<option value="'+esc(d.id)+'">'+esc(d.id)+' · 정의 전체</option>');
-      (d.rows||[]).forEach(function(r){ if(exclude.indexOf(r.id)<0) opts.push('<option value="'+esc(r.id)+'">'+esc(r.id)+' · '+esc(_rowLabel(d, r))+'</option>'); });
-      if(opts.length) html += '<optgroup label="'+esc(d.id+" "+d.name)+'">'+opts.join("")+'</optgroup>';
-    });
-    return html + '</select>';
+  // 연관 공통 정의: ① 공통 정의 고르기 → ② 그 안의 항목(또는 정의 전체) 고르기 = 바로 추가
+  var _defPick = { sec:null, def:"" };
+  function _defSelect(sec){
+    var refs = sec.defRefs||[];
+    var cur = (_defPick.sec===sec.id && findDef(_defPick.def)) ? _defPick.def : "";
+    var h = '<div class="defpick"><select data-act="defref-def"><option value="">— 공통 정의 선택 —</option>'
+      + (STATE.defs||[]).slice().sort(function(a,b){ return a.id<b.id?-1:1; }).map(function(d){
+          return '<option value="'+esc(d.id)+'"'+(d.id===cur?' selected':'')+'>'+esc(d.id)+' · '+esc(d.name||"(이름 없음)")+'</option>';
+        }).join("") + '</select>';
+    h += '<select data-act="defref-add"'+(cur?'':' disabled')+'>';
+    if(!cur) h += '<option value="">← 먼저 공통 정의를 고르세요</option>';
+    else {
+      var d = findDef(cur), opts = [];
+      if(refs.indexOf(d.id)<0) opts.push('<option value="'+esc(d.id)+'">정의 전체</option>');
+      (d.rows||[]).forEach(function(r){ if(refs.indexOf(r.id)<0) opts.push('<option value="'+esc(r.id)+'">'+esc(r.id)+' · '+esc(_rowLabel(d, r))+'</option>'); });
+      h += opts.length ? '<option value="">— 항목 선택 ('+opts.length+') —</option>' + opts.join("")
+                       : '<option value="">이 공통 정의의 항목은 모두 추가됐어요</option>';
+    }
+    return h + '</select></div>';
   }
   function _defLine(ref){
     var x = '<span class="sl-x" data-act="defref-x" data-value="'+esc(ref)+'" title="참조 삭제">×</span>';
@@ -2946,7 +2970,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       (sec.defRefs||[]).forEach(function(ref){ var r = resolveRef(ref); if(r && !seen[r.def.id]){ seen[r.def.id] = 1; list.push(r.def); } });
     });
     if(!list.length) return "";
-    return '<div class="defchips"><span class="lbl">공통 정의</span>' + list.map(function(d){
+    return '<div class="defchips"><span class="lbl">연관 공통 정의</span>' + list.map(function(d){
       return '<span class="defchip" data-act="goto-def" data-def="'+esc(d.id)+'" title="'+esc(d.id)+' 열기">'+esc(d.name||d.id)+'</span>';
     }).join("") + '</div>';
   }
@@ -3050,8 +3074,8 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         + accItem("related", "연관 화면 ID", !!(sec.related && sec.related.length),
             _screenSelect('data-act="rel-add"', "— 연관 화면 추가 —", [s.screenId].concat(sec.related||[]), "")
           + ((sec.related||[]).length ? '<div class="scrlinks">' + sec.related.map(function(r){ return _screenLine(r, "rel-x"); }).join("") + '</div>' : ''))
-        + accItem("defrefs", "공통 정의", !!(sec.defRefs && sec.defRefs.length),
-            ((STATE.defs||[]).length ? _defSelect(sec.defRefs||[]) : '<div class="tip" style="margin:0">아직 공통 정의가 없어요. 상단 "공통 정의"에서 먼저 만들어 주세요.</div>')
+        + accItem("defrefs", "연관 공통 정의", !!(sec.defRefs && sec.defRefs.length) || (_defPick.sec===sec.id && !!_defPick.def),
+            ((STATE.defs||[]).length ? _defSelect(sec) : '<div class="tip" style="margin:0">아직 공통 정의가 없어요. 상단 "공통 정의"에서 먼저 만들어 주세요.</div>')
           + ((sec.defRefs||[]).length ? '<div class="scrlinks">' + sec.defRefs.map(_defLine).join("") + '</div>' : ''))
         + accItem("note", "메모", filled(sec.note), ta("note"));
     } else if(currentType==="광고"){
@@ -3130,6 +3154,13 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       el.onclick=function(){ if(sec.status===el.dataset.v) return; sec.status=el.dataset.v; save(); renderTree(); renderMid(); renderDetail(); };
     });
     // 공통 정의 참조 추가
+    var defPickSel = box.querySelector("[data-act='defref-def']");
+    if(defPickSel) defPickSel.onchange = function(){
+      _defPick = { sec:sec.id, def:defPickSel.value };
+      renderDetail();
+      var nx = document.querySelector("[data-act='defref-add']");
+      if(nx && !nx.disabled) nx.focus();
+    };
     var defAdd = box.querySelector("[data-act='defref-add']");
     if(defAdd) defAdd.onchange = function(){
       var v = defAdd.value; if(!v) return;
