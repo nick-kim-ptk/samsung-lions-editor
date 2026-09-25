@@ -3695,6 +3695,21 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     }catch(_){}
   });
   document.addEventListener("visibilitychange", function(){ if(document.visibilityState==="hidden") persistLocal(); });
+  // 한글 입력 보정: 글자를 조합하는 중에 다른 칸을 누르면(특히 Mac·Safari) 마지막 글자가 확정되면서
+  // input 이벤트가 오지 않는 경우가 있다 → 저장값에 마지막 글자가 빠지고, 화면이 다시 그려질 때 한 글자가 사라져 보임.
+  // 칸을 벗어날 때·조합이 끝날 때 값이 마지막으로 알린 값과 다르면 input 이벤트를 한 번 더 보내 저장값을 맞춘다.
+  (function(){
+    var seen = new WeakMap();
+    function isText(el){ return el && (el.tagName==="TEXTAREA" || (el.tagName==="INPUT" && /^(text|search|url|email|)$/i.test(el.type||""))); }
+    document.addEventListener("input", function(e){ if(isText(e.target)) seen.set(e.target, e.target.value); }, true);
+    function resync(el){
+      if(!isText(el) || !el.isConnected) return;
+      var last = seen.has(el) ? seen.get(el) : el.defaultValue;
+      if(el.value !== last){ seen.set(el, el.value); el.dispatchEvent(new Event("input", { bubbles:true })); }
+    }
+    document.addEventListener("compositionend", function(e){ var el = e.target; setTimeout(function(){ resync(el); }, 0); }, true);
+    document.addEventListener("focusout", function(e){ resync(e.target); }, true);
+  })();
   window.addEventListener("error", function(ev){ console.warn("[win]", ev.message); });
   window.addEventListener("unhandledrejection", function(ev){ console.warn("[rej]", ev.reason); });
 
