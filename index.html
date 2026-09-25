@@ -190,32 +190,12 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .addsec button{display:inline-flex;align-items:center;height:26px;font-size:var(--fs-meta);background:var(--clr-brand);color:#fff;border:1px solid var(--clr-brand);border-radius:13px;padding:0 12px;cursor:pointer;font-weight:700;flex:none}
 .addsec button:hover{background:var(--clr-brand-deep)}
 
-/* ── 가운데 컬럼 전체를 폰 목업으로 (1,3번 컬럼과 동일한 사이즈로 꽉 채움) ── */
-.col.phone-col{background:#12172a;padding:0;align-items:stretch;justify-content:flex-start;border-radius:10px}
-.phone-mock{position:relative;width:100%;height:100%;margin:0;background:#12172a;border-radius:10px;padding:12px 10px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.06);display:flex;flex-direction:column;flex:1;min-height:0}
-.phone-mock .notch{width:84px;height:9px;background:#fff;border-radius:5px;margin:0 auto 10px;position:relative;flex:none;box-shadow:0 0 4px rgba(255,255,255,.35)}
-.phone-mock .signal{position:absolute;top:14px;left:18px;display:flex;align-items:flex-end;gap:2px;z-index:2}
-.phone-mock .signal i{display:block;width:3px;background:#fff;border-radius:1px;opacity:.55}
-.phone-mock .signal i:nth-child(1){height:4px}
-.phone-mock .signal i:nth-child(2){height:6px;opacity:.75}
-.phone-mock .signal i:nth-child(3){height:8px;opacity:.9}
-.phone-mock .signal i:nth-child(4){height:10px;opacity:1}
-.phone-mock .screen{background:#f7f9fd;border-radius:22px;overflow:hidden;flex:1;display:flex;flex-direction:column;min-height:0}
-
-/* 폰 화면 안 상단 앱바(원래 col-h) */
-.phone-mock .screen .col-h{background:linear-gradient(90deg,var(--clr-brand-deep),var(--clr-brand));color:#fff;border-bottom:0;border-radius:0;height:46px;padding:0 16px}
-.phone-mock .screen .col-h .pill{background:rgba(255,255,255,.22)}
-.phone-mock .screen .col-h span:not(.pill):not(.sp){color:#fff;font-weight:700}
-.phone-mock .screen .col-h button.primary{background:var(--clr-accent);color:var(--clr-brand-deep)}
-.phone-mock .screen .col-h #btnDelScr2{background:transparent;color:#fff;border:1px solid #fff;width:26px;height:26px;padding:0;border-radius:6px;font-size:13px;line-height:1;display:inline-flex;align-items:center;justify-content:center}
-.phone-mock .screen .col-h #btnDelScr2:hover{background:rgba(255,255,255,.16)}
-
-/* 폰 화면 안 화면 정보(원래 screen-head) — 앱 안내/타이틀 영역처럼 */
-.phone-mock .screen .screen-head{background:#fff;padding:12px 16px 14px;border-bottom:1px solid var(--line)}
-.phone-mock .screen .screen-head input.bordered{font-size:18px;width:100%}
-
-/* 폰 화면 안 구역 추가 툴바 */
-.phone-mock .screen .addsec{background:#eef2fb}
+/* ── 가운데 컬럼: 좌우 영역과 같은 흰색 카드 ── */
+.col.mid-col .col-h #btnDelScr2{flex:none;width:26px;height:26px;padding:0;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;background:transparent;border:1px solid var(--danger);color:var(--danger);cursor:pointer}
+.col.mid-col .col-h #btnDelScr2:hover{background:var(--danger-soft)}
+.col.mid-col #midTitle{font-weight:800;color:var(--ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.col.mid-col .screen-head{background:#fff;padding:12px 16px 14px;border-bottom:1px solid var(--line)}
+.col.mid-col .screen-head input.bordered{font-size:18px;width:100%}
 
 .sec-list{padding:14px 12px 22px;flex:1;overflow:auto;min-width:0;min-height:0}
 .midsplit{display:flex;align-items:stretch;gap:12px;padding:0 14px 14px;flex:1;min-height:0;overflow:hidden}
@@ -375,6 +355,8 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .imgcard{display:flex;flex-direction:column;gap:5px;max-width:100%}
 .imgbar{display:flex;align-items:center;gap:8px;min-height:26px}
 .imgbar .nm{flex:1;min-width:0;font-size:11.5px;font-weight:700;color:var(--sub);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.scrshot .imgbar{flex-wrap:wrap;gap:4px}
+.scrshot .imgbar .img-rm{padding:0 7px;font-size:11px}
 .imgbar .img-rm{flex:none;display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 9px;border:1px solid var(--line);border-radius:5px;background:#fff;color:var(--sub);font-size:11.5px;font-weight:800;cursor:pointer;font-family:inherit}
 .imgbar .img-rm:hover{border-color:var(--danger);color:var(--danger);background:var(--danger-soft)}
 .imgadd{background:var(--acc-soft);color:var(--clr-brand);border:1px dashed var(--clr-brand);border-radius:6px;padding:10px 14px;font-size:13px;font-weight:700;cursor:pointer}
@@ -539,16 +521,12 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       <div class="col-b" id="tree"></div>
     </div>
 
-    <div class="col phone-col">
-      <div class="phone-mock">
-        <div class="signal"><i></i><i></i><i></i><i></i></div>
-        <div class="notch"></div>
-        <div class="screen">
+    <div class="col mid-col">
           <div class="col-h">
             <span class="pill" id="midTitlePill">-</span>
-            <span id="midTitle" style="margin-left:6px">화면 선택 필요</span>
+            <span id="midTitle">화면 선택 필요</span>
             <span class="sp"></span>
-            <button type="button" id="btnDelScr2" class="primary" style="display:none" title="화면 삭제" aria-label="화면 삭제"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" clip-rule="evenodd" fill-rule="evenodd" xmlns="http://www.w3.org/2000/svg"><path d="m4.015 5.494h-.253c-.413 0-.747-.335-.747-.747s.334-.747.747-.747h5.253v-1c0-.535.474-1 1-1h4c.526 0 1 .465 1 1v1h5.254c.412 0 .746.335.746.747s-.334.747-.746.747h-.254v15.435c0 .591-.448 1.071-1 1.071-2.873 0-11.127 0-14 0-.552 0-1-.48-1-1.071zm14.5 0h-13v15.006h13zm-4.25 2.506c-.414 0-.75.336-.75.75v8.5c0 .414.336.75.75.75s.75-.336.75-.75v-8.5c0-.414-.336-.75-.75-.75zm-4.5 0c-.414 0-.75.336-.75.75v8.5c0 .414.336.75.75.75s.75-.336.75-.75v-8.5c0-.414-.336-.75-.75-.75zm3.75-4v-.5h-3v.5z"/></svg></button>
+            <button type="button" id="btnDelScr2" style="display:none" title="화면 삭제" aria-label="화면 삭제"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" clip-rule="evenodd" fill-rule="evenodd" xmlns="http://www.w3.org/2000/svg"><path d="m4.015 5.494h-.253c-.413 0-.747-.335-.747-.747s.334-.747.747-.747h5.253v-1c0-.535.474-1 1-1h4c.526 0 1 .465 1 1v1h5.254c.412 0 .746.335.746.747s-.334.747-.746.747h-.254v15.435c0 .591-.448 1.071-1 1.071-2.873 0-11.127 0-14 0-.552 0-1-.48-1-1.071zm14.5 0h-13v15.006h13zm-4.25 2.506c-.414 0-.75.336-.75.75v8.5c0 .414.336.75.75.75s.75-.336.75-.75v-8.5c0-.414-.336-.75-.75-.75zm-4.5 0c-.414 0-.75.336-.75.75v8.5c0 .414.336.75.75.75s.75-.336.75-.75v-8.5c0-.414-.336-.75-.75-.75zm3.75-4v-.5h-3v.5z"/></svg></button>
           </div>
           <div class="screen-head" id="screenHead" style="display:none"></div>
           <div class="addsec" id="addsec" style="display:none">
@@ -556,8 +534,6 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
             <button type="button" id="btnAddSec">+ 구역</button>
           </div>
           <div class="sec-list" id="secList"></div>
-        </div>
-      </div>
     </div>
 
     <div class="col">
@@ -2153,8 +2129,9 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     if(s.mockImage && s.mockImage.url){
       shot.innerHTML =
           '<div class="preview"><div class="imgcard">'
-        +   '<div class="imgbar"><span class="nm" title="'+esc(s.mockImage.name||"")+'">'+esc(s.mockImage.name||"이미지")+'</span>'
+        +   '<div class="imgbar">'
         +     '<button type="button" class="img-rm" data-act="area-edit" title="구역 영역(빨간 네모) 지정·수정">▣ 영역 편집</button>'
+        +     '<span class="sp" style="flex:1"></span>'
         +     '<label class="img-rm" title="다른 이미지로 교체 (영역은 유지)">교체<input type="file" accept="image/*" data-act="scrshot-replace" style="display:none"></label>'
         +     '<button type="button" class="img-rm" data-act="scrshot-del" title="이미지 삭제">'+TRASH_SVG+'삭제</button></div>'
         +   '<div class="shotbox"><img src="'+esc(s.mockImage.url)+'" alt="'+esc(s.mockImage.name||"")+'"><div class="area-layer"></div></div>'
