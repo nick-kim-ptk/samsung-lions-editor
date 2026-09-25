@@ -427,7 +427,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   <header>
     <h1>삼성라이온즈 기능 정의 및 화면 설계서</h1>
     <span class="sp"></span>
-    <button type="button" id="btnUser" title="내 이름 변경 (저장·이력에 기록돼요)">👤 이름 입력</button>
+    <button type="button" id="btnUser" title="내 영어 닉네임 변경 (저장·이력에 기록돼요)">👤 닉네임 입력</button>
     <button type="button" id="btnRequest">요청사항</button>
     <button type="button" id="btnHistory">이력</button>
     <span class="syncBlock" role="group" aria-label="서버 상태">
@@ -606,13 +606,23 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   // ── 서버 설정 (기존 편집기와 같은 Supabase 프로젝트, 새 테이블만 사용)
   var SB = { url:"https://gyfldkokgivdqtlytbze.supabase.co", key:"sb_publishable_IjEHGpxgWk3bALJs9lBKug_hqn4GrGH", user:"" };
   var NAME_KEY = "sl_tables_editor_name";
-  try{ SB.user = (localStorage.getItem(NAME_KEY)||"").trim(); }catch(_){}
+  // 본명 대신 회사에서 쓰는 영어 닉네임만 받는다 (예: Nick, Billy)
+  var NICK_RE = /^[A-Za-z][A-Za-z .'-]{0,19}$/;
+  function normNick(v){
+    v = String(v||"").trim().replace(/\s+/g," ");
+    return v ? v.charAt(0).toUpperCase() + v.slice(1) : "";
+  }
+  var _nickReask = false;
+  try{
+    SB.user = normNick(localStorage.getItem(NAME_KEY));
+    if(SB.user && !NICK_RE.test(SB.user)){ SB.user = ""; _nickReask = true; }   // 예전에 한글 이름으로 저장된 경우 다시 입력받음
+  }catch(_){}
   var SB_BUCKET = "samsunglion";
   var T_GROUPS = "sl_groups", T_SCREENS = "sl_screens", T_SECTIONS = "sl_sections", T_HISTORY = "sl_history";
   // ── 내 이름 (로그인 대신, 브라우저에 기억)
   function _renderUserBtn(){
     var b = document.getElementById("btnUser"); if(!b) return;
-    b.textContent = "👤 " + (SB.user || "이름 입력");
+    b.textContent = "👤 " + (SB.user || "닉네임 입력");
     b.style.borderColor = SB.user ? "" : "var(--clr-accent)";
   }
   function askName(opts){
@@ -621,11 +631,12 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       var old = document.getElementById("nameBg"); if(old) old.remove();
       var bg = document.createElement("div"); bg.className = "modalbg show"; bg.id = "nameBg";
       bg.innerHTML = '<div class="modal" style="width:420px">'
-        + '<h3>'+(SB.user ? "이름 변경" : "이름을 알려주세요")+'</h3>'
+        + '<h3>'+(SB.user ? "닉네임 변경" : "영어 닉네임을 알려주세요")+'</h3>'
         + '<div class="body" style="padding:18px">'
-        +   '<div class="rower" style="margin-bottom:0"><div class="lbl">이름 <span class="req">*</span></div>'
-        +   '<input id="nameInput" maxlength="20" placeholder="예: 세현" value="'+esc(SB.user)+'">'
-        +   '<div class="tip">저장한 사람, 이력 작성자, 새 구역 작성자로 기록돼요. 이 브라우저에 기억됩니다.</div></div>'
+        +   (_nickReask && !SB.user ? '<div class="adbox" style="margin-bottom:12px">본명 대신 영어 닉네임을 쓰도록 바뀌었어요. 다시 입력해 주세요.</div>' : '')
+        +   '<div class="rower" style="margin-bottom:0"><div class="lbl">영어 닉네임 <span class="req">*</span></div>'
+        +   '<input id="nameInput" maxlength="20" placeholder="예: Nick, Billy" value="'+esc(SB.user)+'" autocomplete="off" spellcheck="false" lang="en" style="ime-mode:disabled">'
+        +   '<div class="tip">본명 대신 회사에서 쓰는 영어 닉네임을 입력해 주세요. 영문만 가능해요 (공백 · . \' - 포함 20자 이내).<br>저장한 사람과 이력 작성자로 기록되고, 이 브라우저에 기억됩니다.</div></div>'
         + '</div>'
         + '<div class="ft">'+(opts.required && !SB.user ? '' : '<button type="button" data-act="name-cancel">취소</button>')
         +   '<button type="button" class="primary" data-act="name-ok">확인</button></div></div>';
@@ -634,8 +645,9 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       setTimeout(function(){ inp.focus(); inp.select(); }, 30);
       function done(v){ bg.remove(); resolve(v); }
       function ok(){
-        var v = (inp.value||"").trim().replace(/\s+/g," ");
-        if(!v){ inp.focus(); toast("이름을 입력해 주세요", true); return; }
+        var v = normNick(inp.value);
+        if(!v){ inp.focus(); toast("영어 닉네임을 입력해 주세요", true); return; }
+        if(!NICK_RE.test(v)){ inp.focus(); inp.select(); toast("영문으로 입력해 주세요 (예: Nick, Billy)", true); return; }
         SB.user = v; try{ localStorage.setItem(NAME_KEY, v); }catch(_){}
         _renderUserBtn(); done(v);
       }
@@ -689,7 +701,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         if(!c || !c.id) return;
         out.sections[c.id] = {
           id:c.id, screen_id:s.screenId, title:str(c.title), sec_type:normType(c.type), status:normStatus(c.status),
-          author:str(c.author), description:str(c.desc), target:str(c.target), requirement:str(c.requirement),
+          description:str(c.desc), target:str(c.target), requirement:str(c.requirement),
           exception_note:str(c.exception), feedback:str(c.feedback), note:str(c.note),
           out_url:str(c.outUrl), out_label:str(c.outLabel), linked_screen_id:str(c.linkedScreenId),
           related: Array.isArray(c.related) ? c.related.filter(function(x){return typeof x==="string";}) : [],
@@ -715,7 +727,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     cRows.slice().sort(function(a,b){ return (a.sort_order-b.sort_order) || (a.id<b.id?-1:1); }).forEach(function(r){
       var s = byId[r.screen_id]; if(!s) return;
       s.sections.push({
-        id:r.id, title:str(r.title), type:normType(r.sec_type), status:normStatus(r.status), author:str(r.author),
+        id:r.id, title:str(r.title), type:normType(r.sec_type), status:normStatus(r.status),
         desc:str(r.description), target:str(r.target), requirement:str(r.requirement), exception:str(r.exception_note),
         feedback:str(r.feedback), note:str(r.note), outUrl:str(r.out_url), outLabel:str(r.out_label),
         linkedScreenId:str(r.linked_screen_id),
@@ -744,7 +756,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         if(!c || !c.id || cSeen[c.id]) return; cSeen[c.id]=1;
         secs.push({
           id:String(c.id), title:str(c.title||"구역"), type:normType(c.type), status:normStatus(c.status),
-          author:str(c.author), desc:str(c.desc), target:str(c.target), requirement:str(c.requirement),
+          desc:str(c.desc), target:str(c.target), requirement:str(c.requirement),
           exception:str(c.exception), feedback:str(c.feedback), note:str(c.note),
           outUrl:str(c.outUrl), outLabel:str(c.outLabel), linkedScreenId:str(c.linkedScreenId),
           related:Array.isArray(c.related)?c.related.filter(function(x){return typeof x==="string";}):[],
@@ -1276,6 +1288,12 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
      "내가 마지막으로 이력을 등록(또는 '기록 안 함')한 뒤 생긴 내 변경" 을 변경 기록에서 모아 문장으로 만든다.
      [나중에] 를 누르면 그대로 쌓여서 다음 저장 때 합쳐진 초안이 나온다. (서버 기준이라 다른 PC 에서도 이어짐) */
   function _enc(v){ return encodeURIComponent(v); }
+  // 이력 초안 시작 시점 — 이 시각 이전의 변경은 초안에 넣지 않고, 이 시각 전에는 저장 후 초안 창도 띄우지 않는다.
+  // (대대적인 내용 교체 기간에는 이력을 관리하지 않기 위함. 날짜를 바꾸려면 이 한 줄만 고치면 된다)
+  var HISTORY_START = "2026-09-28T00:00:00+09:00";
+  function _histStart(){ return new Date(window.__SL_HISTORY_START || HISTORY_START); }
+  function _histStarted(){ return Date.now() >= _histStart().getTime(); }
+  function _histStartLabel(){ var d = _histStart(); return (d.getMonth()+1) + "/" + d.getDate(); }
   function fetchMark(){
     return fetch(SB.url+"/rest/v1/sl_user_marks?select=change_id&author=eq."+_enc(SB.user), { headers:_sbH() })
       .then(_readJson).then(function(rows){ return (rows && rows[0]) ? Number(rows[0].change_id)||0 : 0; });
@@ -1291,7 +1309,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     if(!SB.url || !SB.user) return Promise.resolve({ text:"", maxId:0, count:0 });
     return fetchMark().then(function(mark){
       var sel = "id,tbl,row_id,screen_id,op,fields,nt:new->>title,ot:old->>title,nn:new->>name,onm:old->>name,nc:new->>code,oc:old->>code,nst:new->>status";
-      return fetch(SB.url+"/rest/v1/sl_changes?select="+sel+"&by_user=eq."+_enc(SB.user)+"&id=gt."+mark+"&order=id.asc&limit=2000", { headers:_sbH() })
+      return fetch(SB.url+"/rest/v1/sl_changes?select="+sel+"&by_user=eq."+_enc(SB.user)+"&id=gt."+mark+"&at=gte."+_enc(_histStart().toISOString())+"&order=id.asc&limit=2000", { headers:_sbH() })
         .then(_readJson);
     }).then(function(rows){ return buildDraft(rows || []); });
   }
@@ -1356,6 +1374,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     });
   }
   function showDraftAfterSave(){
+    if(!_histStarted()) return;   // 시작일 전에는 초안 창을 띄우지 않음
     fetchDraft().then(function(d){
       if(!d.text) return;
       openDraftModal(d);
@@ -1489,6 +1508,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   function loadDraftIntoHistory(){
     ensureName().then(function(n){
       if(!n) return;
+      if(!_histStarted()){ toast("이력 초안은 "+_histStartLabel()+"부터 쌓여요 (지금은 직접 입력만 가능)"); return; }
       fetchDraft().then(function(d){
         if(!d.text){ toast("쌓인 변경이 없어요"); return; }
         var ta = document.getElementById("historyInput");
@@ -1597,38 +1617,55 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     if(FILTER.st.length && FILTER.st.indexOf(screenStatus(s))<0) return false;
     return true;
   }
+  // 검색창은 한 번만 만들고 다시 그리지 않는다.
+  // (입력 중에 검색창을 새로 만들면 한글 조합이 끊겨 "홈"이 "ㅎ홈"처럼 입력되는 문제가 생김)
   function renderFilterBar(){
     var box = document.getElementById("treeFilter"); if(!box) return;
+    var qEl = document.getElementById("tfQ");
+    if(!qEl){
+      box.innerHTML = '<input class="tf-q" id="tfQ" type="search" placeholder="화면 ID · 이름 검색" autocomplete="off"><div id="tfChips"></div>';
+      qEl = document.getElementById("tfQ");
+      qEl.value = FILTER.q;
+      qEl.addEventListener("input", function(){
+        FILTER.q = qEl.value;
+        renderTree(); _updateTreeInfo(); _syncResetBtn(); saveUi();
+      });
+    } else if(qEl.value !== FILTER.q && document.activeElement !== qEl){
+      qEl.value = FILTER.q;
+    }
     var ST_COLORS = {"작성중":"#5a6b85","검토중":"#b7791f","확정":"#2e7d32"};
     var chip = function(kind, key, label, color){
       var on = FILTER[kind].indexOf(key)>=0;
       return '<button type="button" class="tf-chip'+(on?" on":"")+'" data-f="'+kind+'" data-k="'+esc(key)+'" style="--c:'+color+'"><i></i>'+esc(label)+'</button>';
     };
-    box.innerHTML =
-        '<input class="tf-q" id="tfQ" type="search" placeholder="화면 ID · 이름 검색" value="'+esc(FILTER.q)+'">'
-      + '<div class="tf-row"><span class="tf-lbl">연계</span>'
+    var chips = document.getElementById("tfChips");
+    chips.style.cssText = "display:flex;flex-direction:column;gap:7px";
+    chips.innerHTML =
+        '<div class="tf-row"><span class="tf-lbl">연계</span>'
       +   PAGE_TAGS.map(function(t){ return chip("tags", t.key, t.key, t.color); }).join("")
       +   chip("tags", "NONE", "미지정", "#9aa4b8")
       + '</div>'
       + '<div class="tf-row"><span class="tf-lbl">진행</span>'
       +   STATUSES.map(function(v){ return chip("st", v, v, ST_COLORS[v]); }).join("")
-      +   (filterActive() ? '<button type="button" class="tf-reset" id="tfReset">초기화</button>' : '')
+      +   '<button type="button" class="tf-reset" id="tfReset">초기화</button>'
       + '</div>';
-    var qEl = document.getElementById("tfQ");
-    qEl.addEventListener("input", function(){
-      FILTER.q = qEl.value; renderTree(); _updateTreeInfo(); saveUi();
-      var r = document.getElementById("tfReset");
-      if(!!r !== filterActive()){ var pos = qEl.selectionStart; renderFilterBar(); var q2=document.getElementById("tfQ"); q2.focus(); try{ q2.setSelectionRange(pos,pos); }catch(_){} }
-    });
-    box.querySelectorAll(".tf-chip").forEach(function(b){
+    chips.querySelectorAll(".tf-chip").forEach(function(b){
       b.addEventListener("click", function(){
         var arr = FILTER[b.dataset.f], i = arr.indexOf(b.dataset.k);
         if(i>=0) arr.splice(i,1); else arr.push(b.dataset.k);
         renderFilterBar(); renderTree(); _updateTreeInfo(); saveUi();
       });
     });
-    var rs = document.getElementById("tfReset");
-    if(rs) rs.addEventListener("click", function(){ FILTER = {q:"", tags:[], st:[]}; renderFilterBar(); renderTree(); _updateTreeInfo(); saveUi(); });
+    document.getElementById("tfReset").addEventListener("click", function(){
+      FILTER = {q:"", tags:[], st:[]};
+      document.getElementById("tfQ").value = "";
+      renderFilterBar(); renderTree(); _updateTreeInfo(); saveUi();
+    });
+    _syncResetBtn();
+  }
+  function _syncResetBtn(){
+    var r = document.getElementById("tfReset");
+    if(r) r.style.display = filterActive() ? "" : "none";
   }
 
   // ── LEFT
@@ -1999,8 +2036,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         }).join("") + '</div>';
 
     var head =
-        '<div class="rower"><div class="lbl">작성자</div><input data-sec="'+esc(sec.id)+'" data-pf2="author" value="'+esc(sec.author||"")+'"></div>'
-      + '<div class="rower-row"><div class="rower">'+progressPicker+'</div><div class="rower">'+typePicker+'</div></div>'
+        '<div class="rower-row"><div class="rower">'+progressPicker+'</div><div class="rower">'+typePicker+'</div></div>'
       + '<div class="rower"><div class="lbl">구역 이름 <span class="req">*</span></div><input data-sec="'+esc(sec.id)+'" data-pf2="title" value="'+esc(sec.title||"")+'"></div>';
 
     var ta = function(field){ return '<textarea data-sec="'+esc(sec.id)+'" data-pf2="'+field+'">'+esc(sec[field]||"")+'</textarea>'; };
@@ -2233,7 +2269,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   }
   function newSection(title, order){
     return { id:uid("sec"), title:title||"구역", type:"기능", desc:"", target:"", requirement:"", exception:"",
-             feedback:"", author:SB.user||"", outUrl:"", outLabel:"", linkedScreenId:"", images:[], related:[], note:"",
+             feedback:"", outUrl:"", outLabel:"", linkedScreenId:"", images:[], related:[], note:"",
              order:order||0, status:"작성중" };
   }
   function newGrp(){
