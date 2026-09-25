@@ -318,6 +318,14 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .relimg{position:relative;display:block;max-width:100%;border:1px solid var(--line);border-radius:6px;overflow:hidden;cursor:zoom-in;background:var(--panel-2)}
 .relimg img{display:block;max-width:100%;height:auto}
 /* 이미지 위쪽 바: [파일명] ··· [삭제]  — 삭제 버튼이 이미지를 가리지 않게 */
+/* 와이어프레임 화면 링크 */
+.wf-row{display:flex;gap:6px;align-items:center;min-height:40px}
+.wf-row input{flex:1;min-width:0;height:38px;font-family:Consolas,monospace}
+.wf-state{flex:1;min-width:0;display:inline-flex;align-items:center;height:38px;padding:0 12px;border:1px solid var(--line);border-radius:5px;background:var(--panel-2);color:var(--ink);font-size:13px;font-weight:700}
+.wf-btn{flex:none;height:38px;padding:0 14px;border-radius:5px;border:1px solid var(--line);background:#fff;color:var(--ink);font-size:var(--fs-meta);font-weight:800;cursor:pointer}
+.wf-btn:hover{border-color:var(--clr-brand);color:var(--clr-brand)}
+.wf-btn.primary{background:var(--clr-brand);border-color:var(--clr-brand);color:#fff}
+.wf-btn.primary:hover{background:var(--clr-brand-deep);color:#fff}
 .imgcard{display:flex;flex-direction:column;gap:5px;max-width:100%}
 .imgbar{display:flex;align-items:center;gap:8px;min-height:26px}
 .imgbar .nm{flex:1;min-width:0;font-size:11.5px;font-weight:700;color:var(--sub);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -1111,7 +1119,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   // ── 충돌 선택 창
   var FIELD_LABELS = {
     groups:  { code:"약칭", name:"그룹명", sort_order:"순서" },
-    screens: { title:"제목", subtitle:"목적/개요", link:"URL 링크", tags:"연계 구분", mock_image:"화면 이미지", group_id:"그룹", seq:"순번", status:"진행 상황" },
+    screens: { title:"제목", subtitle:"목적/개요", link:"와이어프레임 화면 링크", tags:"연계 구분", mock_image:"화면 이미지", group_id:"그룹", seq:"순번", status:"진행 상황" },
     sections:{ title:"구역 이름", sec_type:"구역 종류", status:"진행 상황", author:"작성자", description:"기능 설명", target:"관련 자료",
                images:"관련 자료 이미지", requirement:"고려 요소", exception_note:"예외", feedback:"광고주 요청", note:"메모",
                out_url:"이동 URL", out_label:"표시 라벨", linked_screen_id:"연결할 화면", related:"연관 화면 ID", sort_order:"순서", screen_id:"화면" }
@@ -1876,13 +1884,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       +   '<div class="lbl">목적/개요</div>'
       +   '<textarea data-pf="subtitle" data-sid="'+esc(s.screenId)+'">'+esc(s.subtitle||"")+'</textarea>'
       + '</div>'
-      + '<div class="rower" style="margin-bottom:0">'
-      +   '<div class="lbl">URL 링크</div>'
-      +   '<div style="display:flex;gap:8px;align-items:stretch">'
-      +     '<input type="text" data-pf="link" data-sid="'+esc(s.screenId)+'" value="'+esc(s.link||"")+'" placeholder="https://" style="flex:1;min-width:0;font-family:Consolas,monospace">'
-      +     '<button type="button" data-link-go="1" title="링크 열기 (새 탭)" style="flex:none;padding:0 16px;background:var(--clr-brand);color:#fff;border:none;border-radius:5px;cursor:pointer;font-weight:800;font-size:var(--fs-meta)">이동 ↗</button>'
-      +   '</div>'
-      + '</div>';
+      + '<div class="rower" style="margin-bottom:0" id="wfBox"></div>';
 
     var idCopyBtn = head.querySelector("[data-act='copy-sid']");
     if(idCopyBtn) idCopyBtn.addEventListener("click", function(){
@@ -1919,15 +1921,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     var subtitleEl = head.querySelector('[data-pf="subtitle"]');
     if(subtitleEl){ _autoGrow(subtitleEl); subtitleEl.addEventListener("input", function(){ _autoGrow(subtitleEl); }); }
 
-    var linkGo = head.querySelector("[data-link-go]");
-    if(linkGo) linkGo.addEventListener("click", function(){
-      var inp = head.querySelector('[data-pf="link"]');
-      var raw = ((inp && inp.value) || "").trim();
-      if(!raw){ toast("URL을 먼저 입력해 주세요", true); return; }
-      var u = _sanitizeLinkUrl(raw);
-      if(!u){ toast("열 수 없는 형식의 주소예요", true); return; }
-      window.open(u, "_blank", "noopener");
-    });
+    renderWfLink(s);
 
     head.querySelectorAll("[data-pf]").forEach(function(el){
       el.addEventListener("change", function(){
@@ -1989,6 +1983,63 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         save(); renderMid(); renderDetail();
       });
     });
+  }
+
+  // ── 와이어프레임 화면 링크: 등록 후에는 주소를 숨기고 [수정] [이동 ↗] 만 보여준다
+  var _wfEditSid = null;   // 수정 중인 화면 ID
+  function renderWfLink(s){
+    var box = document.getElementById("wfBox"); if(!box) return;
+    var editing = !s.link || _wfEditSid === s.screenId;
+    var html = '<div class="lbl">와이어프레임 화면 링크</div>';
+    if(!editing){
+      html += '<div class="wf-row"><span class="wf-state">🔗 링크 등록됨</span>'
+            + '<button type="button" class="wf-btn" data-wf="edit">수정</button>'
+            + '<button type="button" class="wf-btn primary" data-wf="go">이동 ↗</button></div>';
+    } else {
+      html += '<div class="wf-row"><input type="url" id="wfInput" value="'+esc(s.link||"")+'" placeholder="https://" autocomplete="off" spellcheck="false">'
+            + '<button type="button" class="wf-btn primary" data-wf="apply">'+(s.link ? "저장" : "등록")+'</button>'
+            + (s.link ? '<button type="button" class="wf-btn" data-wf="cancel">취소</button>' : '')
+            + '</div>'
+            + (s.link ? '<div class="tip">비우고 저장하면 링크가 삭제돼요.</div>' : '');
+    }
+    box.innerHTML = html;
+    var inp = document.getElementById("wfInput");
+    var done = false;   // 적용/취소가 한 번 처리되면 이후 입력칸 이벤트(change 등)는 무시
+    function apply(){
+      if(done) return;
+      var raw = (inp.value||"").trim(), clean = _sanitizeLinkUrl(raw);
+      if(raw && !clean){ toast("http(s):// 로 시작하는 주소만 등록할 수 있어요", true); inp.focus(); return; }
+      var before = s.link || "";
+      done = true;
+      _wfEditSid = null;
+      if(clean !== before){
+        s.link = clean; save();
+        toast(clean ? (before ? "링크 수정됨" : "링크 등록됨") + " · 저장을 눌러야 서버에 반영돼요" : "링크 삭제됨 · 저장을 눌러야 서버에 반영돼요");
+      }
+      renderWfLink(s);
+    }
+    function cancel(){ if(done) return; done = true; _wfEditSid = null; renderWfLink(s); }
+    box.querySelectorAll("[data-wf]").forEach(function(b){
+      b.addEventListener("mousedown", function(e){ e.preventDefault(); });   // 입력칸 blur(자동 적용)보다 버튼이 먼저 처리되게
+      b.addEventListener("click", function(){
+        var a = b.dataset.wf;
+        if(a==="go"){
+          var u = _sanitizeLinkUrl(s.link);
+          if(!u){ toast("열 수 없는 형식의 주소예요", true); return; }
+          window.open(u, "_blank", "noopener");
+        }
+        else if(a==="edit"){ _wfEditSid = s.screenId; renderWfLink(s); var i = document.getElementById("wfInput"); if(i){ i.focus(); i.select(); } }
+        else if(a==="apply") apply();
+        else if(a==="cancel") cancel();
+      });
+    });
+    if(inp){
+      inp.addEventListener("keydown", function(e){
+        if(e.key==="Enter"){ e.preventDefault(); apply(); }
+        else if(e.key==="Escape" && s.link){ e.preventDefault(); cancel(); }
+      });
+      inp.addEventListener("change", function(){ if(!done) apply(); });  // 입력 후 바깥을 눌러도 적용
+    }
   }
 
   function _storageDelete(path){
@@ -2520,6 +2571,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     resyncAllScreenIds(); save(); renderAll();
   }
   function selScr(sid){
+    _wfEditSid = null;
     if(sid !== STATE.selectedScreenId) _maybeWarnUnsaved();
     STATE.selectedScreenId = sid;
     var s = findScreen(sid);
