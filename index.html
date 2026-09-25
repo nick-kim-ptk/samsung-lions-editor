@@ -327,7 +327,13 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .dtable .c-id{width:92px;white-space:nowrap}
 .dtable td.c-id{padding-top:10px}
 .dtable .rid{font-family:Consolas,monospace;font-weight:800;color:var(--clr-brand);font-size:12px}
-.dtable .ruse{display:table;margin-left:0;margin-top:4px;padding:0 6px;border-radius:9px;background:#e7f4ec;color:var(--ok);font-size:10.5px;font-weight:800;cursor:pointer}
+.dtable .c-use{width:84px;text-align:center;white-space:nowrap;font-size:12px;color:var(--sub);font-weight:700}
+.dtable td.c-use{padding-top:9px;background:var(--panel-2)}
+.dtable .ruse0{display:inline-block;padding:0 6px;border-radius:9px;background:#eef1f6;color:var(--sub-2);font-size:10.5px;font-weight:700}
+.dtable-head .ruse{display:inline-block;padding:0 7px;border-radius:9px;background:#e7f4ec;color:var(--ok);font-size:11px;font-weight:800;cursor:pointer;line-height:18px}
+.usage-list .sl-go{flex:none;color:var(--sub);font-size:18px;padding:0 6px}
+.usage-list{max-height:52vh;overflow:auto}
+.dtable .ruse{display:inline-block;margin-left:0;margin-top:0;padding:0 6px;border-radius:9px;background:#e7f4ec;color:var(--ok);font-size:10.5px;font-weight:800;cursor:pointer}
 .dtable .c-act{width:62px;white-space:nowrap;text-align:center;color:var(--sub-2)}
 .dtable td.c-act{padding-top:9px}
 .dtable .c-act span{cursor:pointer;padding:0 3px;font-size:11px}
@@ -2616,6 +2622,27 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       .sort(function(a, b){ return a.u.ref < b.u.ref ? -1 : a.u.ref > b.u.ref ? 1 : a.i - b.i; })
       .map(function(x){ return x.u; });
   }
+  // 연결된 구역 목록 팝업 — 한 줄을 누르면 그 구역으로 이동
+  function _openUsageModal(d, ref){
+    var u = _sortUsages(defUsages(d, ref));
+    var whole = ref === d.id;
+    var body = '<div class="body" style="padding:14px 18px 6px">'
+      + '<div class="tip" style="margin:0 0 8px">' + esc(whole ? d.id + " 정의 전체" : ref) + '을(를) 연결한 구역 ' + u.length + '곳 · 누르면 해당 구역으로 이동해요</div>'
+      + '<div class="scrlinks usage-list">' + u.map(function(x){
+          return '<div class="scrlink" data-goto-sec="'+esc(x.section.id)+'" data-goto-sid="'+esc(x.screen.screenId)+'" title="#'+esc(x.screen.screenId)+' 로 이동">'
+            + '<span class="sl-id">'+esc(x.screen.screenId)+'</span>'
+            + '<span class="sl-nm"><em>(화면)</em> '+esc(x.screen.title||"-")+' <em>-</em> <em>(구역)</em> '+esc(x.section.title||"-")+'</span>'
+            + '<span class="sl-go">›</span></div>';
+        }).join("") + '</div></div>';
+    _uiModal({ title:"연결 화면 · " + ref, ok:"닫기", cancel:false, width:640 }, body, null);
+    var bg = document.querySelectorAll(".modalbg[data-ui]"); bg = bg[bg.length-1];
+    if(bg) bg.querySelectorAll("[data-goto-sec]").forEach(function(el){
+      el.addEventListener("click", function(){
+        var ok = bg.querySelector('[data-ui="ok"]'); if(ok) ok.click();
+        gotoSection(el.dataset.gotoSid, el.dataset.gotoSec);
+      });
+    });
+  }
   function _usageText(list){
     list = _sortUsages(list);
     return list.slice(0,10).map(function(u){ return "· " + u.ref + "  " + _usageName(u); }).join("\n")
@@ -2754,9 +2781,11 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     box.innerHTML =
         '<div class="rower"><div class="lbl">공통 정의명 <span class="req">*</span></div><input data-df="name" value="'+esc(d.name)+'"></div>'
       + '<div class="rower"><div class="lbl">설명</div><textarea data-df="desc" class="dgrow" placeholder="이 공통 정의가 무엇을 정하는지 적어 주세요">'+esc(d.desc)+'</textarea></div>'
-      + '<div class="dtable-head"><span class="lbl">항목 표</span><span class="dhint">'+esc(_defUpdatedText(d))+'</span><span class="sp"></span>'
+      + '<div class="dtable-head"><span class="lbl">항목 표</span><span class="dhint">'+esc(_defUpdatedText(d))+'</span>'
+      +   ((usedBy[d.id]||[]).length ? '<span class="ruse" data-ruse="'+esc(d.id)+'" title="정의 전체를 연결한 구역 보기">정의 전체 사용 '+usedBy[d.id].length+'</span>' : '')
+      +   '<span class="sp"></span>'
       +   '<button type="button" class="dbtn" data-dd="addcol">+ 칸</button><button type="button" class="dbtn primary" data-dd="addrow">+ 줄</button></div>'
-      + '<div class="dtable-wrap"><table class="dtable"><thead><tr><th class="c-id">ID</th>'
+      + '<div class="dtable-wrap"><table class="dtable"><thead><tr><th class="c-id">ID</th><th class="c-use" title="이 줄을 연결한 구역 수 (자동으로 표시돼요 · 수정 불가)">연결 화면</th>'
       +   d.columns.map(function(c){
             return '<th><div class="colh"><input data-colname="'+esc(c.id)+'" value="'+esc(c.name)+'" placeholder="칸 이름">'
               + (d.columns.length > 1 ? '<span class="colx" data-coldel="'+esc(c.id)+'" title="이 칸 삭제">×</span>' : '') + '</div></th>';
@@ -2764,25 +2793,18 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       +   '<th class="c-act"></th></tr></thead><tbody>'
       +   (d.rows.length ? d.rows.map(function(r, i){
             var u = usedBy[r.id] || [];
-            return '<tr data-row="'+esc(r.id)+'"><td class="c-id"><span class="rid">'+esc(r.id)+'</span>'
-              + (u.length ? '<span class="ruse" data-ruse="'+esc(r.id)+'" title="이 줄을 쓰는 구역 보기">사용 '+u.length+'</span>' : '') + '</td>'
+            return '<tr data-row="'+esc(r.id)+'"><td class="c-id"><span class="rid">'+esc(r.id)+'</span></td>'
+              + '<td class="c-use">' + (u.length ? '<span class="ruse" data-ruse="'+esc(r.id)+'" title="이 줄을 연결한 구역 보기">사용 '+u.length+'</span>' : '<span class="ruse0">사용 0</span>') + '</td>'
               + d.columns.map(function(c){
                   return '<td><textarea class="dcell" rows="1" data-cell-row="'+esc(r.id)+'" data-cell-col="'+esc(c.id)+'">'+esc((r.cells||{})[c.id]||"")+'</textarea></td>';
                 }).join("")
               + '<td class="c-act"><span data-rmove="up" data-r="'+i+'" title="위로"'+(i===0?' class="dis"':'')+'>▲</span>'
               + '<span data-rmove="down" data-r="'+i+'" title="아래로"'+(i===d.rows.length-1?' class="dis"':'')+'>▼</span>'
               + '<span data-rdel="'+esc(r.id)+'" class="rx" title="줄 삭제">×</span></td></tr>';
-          }).join("") : '<tr><td colspan="'+(d.columns.length+2)+'" class="dempty">줄이 없어요. "+ 줄"로 추가하세요.</td></tr>')
+          }).join("") : '<tr><td colspan="'+(d.columns.length+3)+'" class="dempty">줄이 없어요. "+ 줄"로 추가하세요.</td></tr>')
       +   '</tbody></table></div>'
       + '<div class="tip" style="margin-top:6px">엑셀에서 여러 칸을 복사해서 표의 칸에 붙여넣으면 그 위치부터 한 번에 채워지고, 부족한 줄·칸은 자동으로 늘어나요.</div>'
-      + '<div class="dusage"><div class="lbl">사용 중인 화면·구역 <span class="dcount">'+used.length+'</span></div>'
-      +   (used.length ? '<div class="scrlinks">' + _sortUsages(used).map(function(u){
-            return '<div class="scrlink" data-goto-sec="'+esc(u.section.id)+'" data-goto-sid="'+esc(u.screen.screenId)+'" title="#'+esc(u.screen.screenId)+' 로 이동"><span class="sl-id">'+esc(u.ref)+'</span>'
-              + '<span class="sl-scr">'+esc(u.screen.screenId)+'</span>'
-              + '<span class="sl-nm"><em>(화면)</em> '+esc(u.screen.title||"-")+' <em>-</em> <em>(구역)</em> '+esc(u.section.title||"-")+(u.ref===d.id ? ' <em>· 정의 전체</em>' : '')+'</span></div>';
-          }).join("") + '</div>'
-          : '<div class="tip">아직 이 공통 정의를 참조하는 구역이 없어요. 구역 상세 → "연관 공통 정의"에서 연결할 수 있어요.</div>')
-      + '</div>';
+      ;
     bindDefDetail(box, head, d);
     box.querySelectorAll("textarea").forEach(_autoGrow);
   }
@@ -2892,8 +2914,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     });
     box.querySelectorAll("[data-ruse]").forEach(function(el){
       el.addEventListener("click", function(){
-        var u = defUsages(d, el.dataset.ruse);
-        uiAlert("'"+el.dataset.ruse+"' 줄을 참조하는 구역 "+u.length+"곳\n\n"+_usageText(u), "사용 중인 구역");
+        _openUsageModal(d, el.dataset.ruse);
       });
     });
     box.querySelectorAll("[data-goto-sec]").forEach(function(el){
