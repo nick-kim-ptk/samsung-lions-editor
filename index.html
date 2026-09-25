@@ -112,6 +112,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .hist-date{white-space:nowrap;color:var(--sub);font-size:12.5px}
 .hist-del{cursor:pointer;color:var(--sub-2)}
 .hist-del:hover{color:var(--danger)}
+.hist-by{font-weight:700;color:var(--text);white-space:nowrap}
 .hist-author{color:var(--sub);font-weight:700;font-size:11.5px;margin-right:6px}
 .hist-empty{text-align:center;color:var(--sub-2);font-size:13px;padding:40px 10px}
 .col{background:var(--panel);border-radius:10px;display:flex;flex-direction:column;overflow:hidden;border:1px solid rgba(255,255,255,.35);box-shadow:0 6px 18px rgba(0,0,0,.18);min-width:0}
@@ -311,7 +312,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .dtable-head{display:flex;align-items:center;gap:8px;margin:18px 0 6px}
 .dtable-head .lbl{font-size:var(--fs-meta);font-weight:800}
 .dtable-head .sp{flex:1}
-.dhint{font-size:11.5px;color:var(--sub);font-family:Consolas,monospace}
+.dhint{font-size:11.5px;color:var(--sub)}
 .dbtn{height:26px;padding:0 12px;border-radius:13px;border:1px solid var(--line);background:#fff;color:var(--ink);font-size:var(--fs-meta);font-weight:700;cursor:pointer}
 .dbtn:hover{border-color:var(--clr-brand);color:var(--clr-brand)}
 .dbtn.primary{background:var(--clr-brand);border-color:var(--clr-brand);color:#fff}
@@ -631,7 +632,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         </div>
         <div id="historyTableWrap" style="flex:1;overflow:auto;min-height:0;border:1px solid var(--line);border-radius:8px">
           <table class="hist-table">
-            <thead><tr><th style="width:70px">버전</th><th>이력내용</th><th style="width:150px">등록날짜</th><th style="width:36px"></th></tr></thead>
+            <thead><tr><th style="width:70px">버전</th><th>이력내용</th><th style="width:110px">등록자</th><th style="width:150px">등록날짜</th><th style="width:36px"></th></tr></thead>
             <tbody id="historyList"></tbody>
           </table>
         </div>
@@ -1434,6 +1435,13 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       built.changes.screens_delete.forEach(function(x){ delete VER.screens[x.id]; });
       built.changes.sections_delete.forEach(function(x){ delete VER.sections[x.id]; });
       built.changes.defs_delete.forEach(function(x){ if(VER.defs) delete VER.defs[x.id]; });
+      var _nowIso = new Date().toISOString();
+      ["groups","screens","sections","defs"].forEach(function(t){
+        META[t] = META[t] || {};
+        Object.keys(res[t] || {}).forEach(function(k){ META[t][k] = { by:SB.user, at:_nowIso }; });
+      });
+      var _dh = document.querySelector("#defDetail .dhint"), _dd = _defSel && findDef(_defSel);
+      if(_dh && _dd) _dh.textContent = _defUpdatedText(_dd);
       if(res.txid != null){ _myTx.push(String(res.txid)); if(_myTx.length > 100) _myTx.shift(); }
       BASE = cur;   // 저장 버튼을 누른 시점의 내용이 새 기준본 (저장 도중 고친 내용은 다음 저장에 반영됨)
       _unsynced = buildChanges(BASE, rowsFromState(STATE), VER).count > 0;
@@ -1819,13 +1827,14 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       return (h.text||"").toLowerCase().indexOf(q)>=0 || (h.author||"").toLowerCase().indexOf(q)>=0;
     }) : sorted;
     if(!list.length){
-      tbody.innerHTML = '<tr><td colspan="4" class="hist-empty">'+(q ? "검색 결과가 없습니다." : "등록된 이력이 없습니다.")+'</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="5" class="hist-empty">'+(q ? "검색 결과가 없습니다." : "등록된 이력이 없습니다.")+'</td></tr>';
       return;
     }
     tbody.innerHTML = list.map(function(h){
       return '<tr>'
         + '<td class="hist-ver">v'+String(h._seq).padStart(3,"0")+'</td>'
         + '<td class="hist-content">'+_linkifyHistoryText(h.text||"")+'</td>'
+        + '<td class="hist-by">'+esc(h.author||"—")+'</td>'
         + '<td class="hist-date">'+esc(h.dateStr||"")+'</td>'
         + '<td><span class="hist-del" data-act="del-history" data-hid="'+esc(h.id)+'" title="삭제">🗑</span></td>'
         + '</tr>';
@@ -2657,12 +2666,20 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       box.innerHTML = '<div class="empty">' + (q ? "검색 결과가 없어요." : '아직 공통 정의가 없어요.<br>"+ 공통 정의"로 만들어 보세요.') + '</div>'; return;
     }
     box.innerHTML = list.map(function(d){
-      return '<div class="scr-row '+_defStCls(d)+(d.id===_defSel?' active':'')+'" data-def-id="'+esc(d.id)+'" title="진행: '+esc(d.status)+'">'
+      return '<div class="scr-row'+(d.id===_defSel?' active':'')+'" data-def-id="'+esc(d.id)+'">'
         + '<span class="sid">'+esc(d.id)+'</span><span class="nm">'+esc(d.name||"(이름 없음)")+'</span></div>';
     }).join("");
     box.querySelectorAll("[data-def-id]").forEach(function(el){
       el.addEventListener("click", function(){ _defSel = el.dataset.defId; renderDefsScreen(); });
     });
+  }
+  // 마지막 업데이트 = 서버에 마지막으로 저장된 시각 · 저장한 사람
+  function _defUpdatedText(d){
+    var m = META.defs && META.defs[d.id];
+    if(!m || !m.at) return "마지막 업데이트: 아직 저장 전";
+    var t = new Date(m.at), p = function(n){ return String(n).padStart(2,"0"); };
+    return "마지막 업데이트: " + t.getFullYear()+"-"+p(t.getMonth()+1)+"-"+p(t.getDate())+" "+p(t.getHours())+":"+p(t.getMinutes())
+      + (m.by ? " · " + m.by : "");
   }
   function _defStCls(d){ return d.status==="확정" ? "st-ok" : d.status==="검토중" ? "st-wr" : ""; }
 
@@ -2721,12 +2738,8 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     var usedBy = {}; used.forEach(function(u){ (usedBy[u.ref] = usedBy[u.ref] || []).push(u); });
     box.innerHTML =
         '<div class="rower"><div class="lbl">공통 정의명 <span class="req">*</span></div><input data-df="name" value="'+esc(d.name)+'"></div>'
-      + '<div class="rower"><div class="lbl">진행 상황</div><div class="typebar">'
-      +   STATUSES.map(function(v){ var k = v==="확정"?"ok":v==="검토중"?"review":"prog";
-            return '<button type="button" class="typechip '+(d.status===v?"on ":"")+k+'" data-dstatus="'+v+'">'+v+'</button>'; }).join("")
-      + '</div></div>'
       + '<div class="rower"><div class="lbl">설명</div><textarea data-df="desc" class="dgrow" placeholder="이 공통 정의가 무엇을 정하는지 적어 주세요">'+esc(d.desc)+'</textarea></div>'
-      + '<div class="dtable-head"><span class="lbl">항목 표</span><span class="dhint">줄 ID: '+esc(d.prefix)+'-001 …</span><span class="sp"></span>'
+      + '<div class="dtable-head"><span class="lbl">항목 표</span><span class="dhint">'+esc(_defUpdatedText(d))+'</span><span class="sp"></span>'
       +   '<button type="button" class="dbtn" data-dd="addcol">+ 칸</button><button type="button" class="dbtn primary" data-dd="addrow">+ 줄</button></div>'
       + '<div class="dtable-wrap"><table class="dtable"><thead><tr><th class="c-id">ID</th>'
       +   d.columns.map(function(c){
@@ -2791,9 +2804,6 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         var k = el.dataset.df;
         if(k==="name"){ d.name = el.value.trim(); save(); renderDefList(); }
       });
-    });
-    box.querySelectorAll("[data-dstatus]").forEach(function(b){
-      b.addEventListener("click", function(){ if(d.status===b.dataset.dstatus) return; d.status = b.dataset.dstatus; save(); renderDefsScreen(); });
     });
     // 칸 이름
     box.querySelectorAll("[data-colname]").forEach(function(el){
