@@ -376,6 +376,17 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .ptag{--c:#64748b;display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:12px;border:1px solid var(--c);color:var(--c);background:#fff;font-size:11px;font-weight:800;letter-spacing:.4px;cursor:pointer;opacity:.38;user-select:none;font-family:inherit;transition:opacity .12s,background .12s}
 .ptag:hover{opacity:.75}
 .ptag.on{opacity:1;background:var(--c);color:#fff}
+.screen-head .meta .ptag-lbl{margin-left:auto;display:inline-flex;align-items:center;gap:4px;font-family:"Pretendard","Malgun Gothic",sans-serif;font-size:12px;font-weight:800;color:var(--ink);white-space:nowrap}
+.screen-head .meta{position:relative}
+.screen-head .meta .ptag-lbl + .ptags{margin-left:0}
+.ptag-help{width:18px;height:18px;border-radius:50%;border:1px solid var(--line-2);background:#fff;color:var(--sub);font-size:11px;font-weight:900;line-height:1;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;font-family:inherit}
+.ptag-help:hover,.ptag-help.open{background:var(--clr-brand);border-color:var(--clr-brand);color:#fff}
+.ptag-pop{display:none;position:absolute;top:calc(100% + 6px);right:0;z-index:50;width:340px;max-width:calc(100vw - 40px);background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 28px rgba(8,31,86,.22);padding:12px 14px;white-space:normal;cursor:default}
+.ptag-pop.show{display:block}
+.ptag-pop .pp-h{font-size:12.5px;font-weight:800;color:var(--ink);margin-bottom:8px}
+.ptag-pop .pp-row{display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-top:1px solid #eef2f8}
+.ptag-pop .pp-key{flex:none;width:58px;display:inline-flex;align-items:center;justify-content:center;height:20px;border-radius:10px;background:var(--c);color:#fff;font-size:10.5px;font-weight:800;letter-spacing:.4px}
+.ptag-pop .pp-desc{font-size:12px;font-weight:500;color:var(--ink);line-height:1.5}
 .tagdots{display:inline-flex;gap:3px;flex:none;align-items:center}
 .tagdots i{display:block;width:8px;height:8px;border-radius:50%;background:var(--c)}
 </style>
@@ -532,10 +543,10 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   ];
   // 페이지 성향 뱃지 — 순서·색상 고정
   var PAGE_TAGS = [
-    {key:"STATIC", color:"#64748b"},
-    {key:"ADMIN",  color:"#7c3aed"},
-    {key:"API",    color:"#0891b2"},
-    {key:"USER",   color:"#e8590c"}
+    {key:"STATIC", color:"#64748b", desc:"DB에서 조회한 값을 노출하거나, 별도 데이터 연계 없이 제공하는 페이지"},
+    {key:"ADMIN",  color:"#7c3aed", desc:"운영자가 어드민을 통해 콘텐츠 및 데이터를 등록·수정·관리하는 페이지"},
+    {key:"API",    color:"#0891b2", desc:"외부 시스템의 데이터를 API를 통해 연동하여 노출하는 페이지"},
+    {key:"USER",   color:"#e8590c", desc:"사용자가 직접 입력하거나 선택하여 데이터를 전송·변경하는 페이지"}
   ];
   function normTags(v){
     var arr = Array.isArray(v) ? v : [];
@@ -1185,10 +1196,19 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         '<div class="meta">'
       +   '<span class="chip chip-id">'+esc(s.screenId||"")+'</span>'
       +   '<button type="button" class="idcopy" data-act="copy-sid" data-copy="#'+esc(s.screenId||"")+'" title="화면 ID 복사 (# 포함)">⧉</button>'
-      +   '<span class="ptags" title="페이지 성향 (여러 개 선택 가능)">'
+      +   '<span class="ptag-lbl">연계 구분'
+      +     '<button type="button" class="ptag-help" aria-label="연계 구분 설명 보기" aria-expanded="false">?</button>'
+      +     '<span class="ptag-pop" role="tooltip">'
+      +       '<div class="pp-h">연계 구분 안내 <span style="font-weight:600;color:var(--sub)">· 여러 개 선택 가능</span></div>'
+      +       PAGE_TAGS.map(function(t){
+                return '<div class="pp-row"><span class="pp-key" style="--c:'+t.color+'">'+t.key+'</span><span class="pp-desc">'+esc(t.desc)+'</span></div>';
+              }).join("")
+      +     '</span>'
+      +   '</span>'
+      +   '<span class="ptags">'
       +     PAGE_TAGS.map(function(t){
               var on = normTags(s.tags).indexOf(t.key)>=0;
-              return '<button type="button" class="ptag'+(on?" on":"")+'" data-tag="'+t.key+'" style="--c:'+t.color+'" aria-pressed="'+on+'">'+t.key+'</button>';
+              return '<button type="button" class="ptag'+(on?" on":"")+'" data-tag="'+t.key+'" style="--c:'+t.color+'" aria-pressed="'+on+'" title="'+esc(t.desc)+'">'+t.key+'</button>';
             }).join("")
       +   '</span>'
       + '</div>'
@@ -1215,6 +1235,17 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         setTimeout(function(){ idCopyBtn.classList.remove("ok"); }, 900);
       });
     });
+
+    var helpBtn = head.querySelector(".ptag-help"), helpPop = head.querySelector(".ptag-pop");
+    if(helpBtn && helpPop){
+      helpBtn.addEventListener("click", function(e){
+        e.stopPropagation();
+        var open = !helpPop.classList.contains("show");
+        helpPop.classList.toggle("show", open); helpBtn.classList.toggle("open", open);
+        helpBtn.setAttribute("aria-expanded", String(open));
+      });
+      helpPop.addEventListener("click", function(e){ e.stopPropagation(); });
+    }
 
     head.querySelectorAll(".ptag").forEach(function(btn){
       btn.addEventListener("click", function(){
@@ -1903,6 +1934,12 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     document.getElementById("btnModalOk").onclick = function(){ closeAddRelatedModal(true); };
     document.getElementById("btnModalCancel").onclick = function(){ closeAddRelatedModal(false); };
     document.getElementById("imglb").onclick = function(){ document.getElementById("imglb").classList.remove("show"); };
+    function closeTagHelp(){
+      document.querySelectorAll(".ptag-pop.show").forEach(function(p){ p.classList.remove("show"); });
+      document.querySelectorAll(".ptag-help.open").forEach(function(b){ b.classList.remove("open"); b.setAttribute("aria-expanded","false"); });
+    }
+    document.addEventListener("click", closeTagHelp);
+    document.addEventListener("keydown", function(e){ if(e.key==="Escape") closeTagHelp(); });
     document.addEventListener("keydown", function(e){
       if((e.ctrlKey || e.metaKey) && (e.key==="s" || e.key==="S")){ e.preventDefault(); saveToServer(); }
     });
