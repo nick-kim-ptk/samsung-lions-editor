@@ -601,7 +601,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     <div class="col">
       <div class="col-h"><span class="info" id="defInfo">전체 0</span><span class="sp"></span>
         <button type="button" id="btnAddDef" class="primary">+ 공통 정의</button></div>
-      <div class="tree-filter"><input class="tf-q" id="defQ" type="search" placeholder="ID · 이름 · 약칭 검색" autocomplete="off"></div>
+      <div class="tree-filter"><input class="tf-q" id="defQ" type="search" placeholder="ID · 이름 검색" autocomplete="off"></div>
       <div class="col-b" id="defList"></div>
     </div>
     <div class="col">
@@ -1064,9 +1064,12 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   var _defsReady = false, _defCodeMax = 0;
   // 지금까지 만들어진 공통 정의 번호 중 가장 큰 값 (지워진 번호도 재사용하지 않기 위해 변경 기록에서 찾는다)
   function fetchDefCodeMax(){
-    return fetch(SB.url+"/rest/v1/sl_changes?select=row_id&tbl=eq.def&order=row_id.desc&limit=1", { headers:_sbH() })
+    // 정의가 "만들어진" 기록(op=I)만 읽는다 — 정의마다 한 번뿐이라 수정이 많아도 가볍다
+    return fetch(SB.url+"/rest/v1/sl_changes?select=row_id&tbl=eq.def&op=eq.I&limit=10000", { headers:_sbH() })
       .then(_readJson).then(function(rows){
-        var m = rows && rows[0] && /^CD-(\d+)$/.exec(rows[0].row_id); return m ? parseInt(m[1],10) : 0;
+        var mx = 0;
+        (rows||[]).forEach(function(r){ var m = /^CD-?(\d+)$/.exec(r.row_id||""); if(m) mx = Math.max(mx, parseInt(m[1],10)); });
+        return mx;
       }).catch(function(){ return 0; });
   }
   function fetchLastChangeId(){
@@ -1256,7 +1259,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   // ── 충돌 선택 창
   var FIELD_LABELS = {
     groups:  { code:"약칭", name:"그룹명", sort_order:"순서" },
-    defs:    { name:"정의명", description:"설명", category:"분류", status:"진행 상황", columns:"칸 구성", rows:"항목 표", prefix:"줄 ID 약칭", next_row:"줄 번호" },
+    defs:    { name:"정의명", description:"설명", category:"분류", status:"진행 상황", columns:"칸 구성", rows:"항목 표", prefix:"줄 ID 앞부분", next_row:"줄 번호" },
     screens: { title:"제목", subtitle:"목적/개요", link:"와이어프레임 화면 링크", tags:"연계 구분", mock_image:"화면 이미지", group_id:"그룹", seq:"순번", status:"진행 상황" },
     sections:{ title:"구역 이름", sec_type:"구역 종류", status:"진행 상황", author:"작성자", description:"기능 설명", target:"관련 자료",
                images:"관련 자료 이미지", requirement:"고려 요소", exception_note:"예외", feedback:"광고주 요청", note:"메모",
@@ -1445,8 +1448,8 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       console.warn("[save]", e);
       var body = e && e.body;
       if(/sl_defs_prefix_key/.test((body && (body.message||"")) + " " + (e && e.message))){
-        _sbChip("저장 안 됨 · 줄 ID 약칭 중복","#ff9c96");
-        uiAlert("다른 사람이 같은 줄 ID 약칭으로 공통 정의를 먼저 만들었어요.\n'서버 최신 불러오기'를 한 뒤, 새로 만든 공통 정의의 약칭을 바꿔서 다시 만들어 주세요.\n(이번 저장은 전부 취소됐어요)");
+        _sbChip("저장 안 됨 · 공통 정의 번호 겹침","#ff9c96");
+        uiAlert("다른 사람이 같은 번호로 공통 정의를 먼저 만들었어요.\n'서버 최신 불러오기'를 한 뒤, 공통 정의를 다시 만들어 주세요.\n(이번 저장은 전부 취소됐어요)");
         return;
       }
       if(body && body.message === "SL_CONFLICT"){
@@ -1751,7 +1754,8 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   function gotoHistoryScreen(sid){ hideHistoryScreen(); selScr(sid); }
   function _linkifyHistoryText(text){
     return esc(text).replace(/#([A-Za-z0-9\-]+)/g, function(m, sid){
-      if(findDef(sid)) return '<span class="hist-chip" data-act="goto-def" data-def="'+esc(sid)+'" title="공통 정의 '+esc(sid)+' 열기">'+esc(sid)+'</span>';
+      var rr = resolveRef(sid);
+      if(rr) return '<span class="hist-chip" data-act="goto-def" data-def="'+esc(rr.def.id)+'" data-row="'+esc(rr.row ? rr.row.id : "")+'" title="공통 정의 '+esc(sid)+' 열기">'+esc(sid)+'</span>';
       if(!findScreen(sid)) return m;
       return '<span class="hist-chip" data-act="goto-history-screen" data-sid="'+esc(sid)+'" title="'+esc(sid)+' 화면으로 이동">'+esc(sid)+'</span>';
     });
@@ -2556,8 +2560,8 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
      정의 하나 = "칸(열)을 자유롭게 정하는 표" 하나.
        · 정책형: 칸이 [항목 | 내용] 2개인 표 (Push 발송 정책, 금칙어 정책, 외부 연계 …)
        · 목록형: 칸을 직접 정한 표 (API 목록, 토스트·팝업 문구, Push 메시지 목록 …)
-     정의 ID(CD-001)와 줄 ID(TST-001)는 한번 정하면 바뀌지 않고, 지워진 번호도 재사용하지 않는다.
-     구역은 정의 전체(CD-001) 또는 특정 줄(TST-012)을 참조한다. 정의를 지워도 구역은 절대 지워지지 않는다. */
+     정의 ID(CD01)와 줄 ID(CD01-001)는 한번 정하면 바뀌지 않고, 지워진 번호도 재사용하지 않는다.
+     구역은 정의 전체(CD01) 또는 특정 줄(CD01-012)을 참조한다. 정의를 지워도 구역은 절대 지워지지 않는다. */
   var _defSel = null;          // 공통 정의 화면에서 선택된 정의 ID
   var _defQ = "";              // 공통 정의 목록 검색어
   function findDef(id){ return (STATE.defs||[]).find(function(d){ return d.id===id; }) || null; }
@@ -2590,13 +2594,13 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     return out;
   }
   function _usageText(list){
-    return list.slice(0,10).map(function(u){ return "· #"+u.screen.screenId+" › '"+(u.section.title||"구역")+"'"+(u.ref.indexOf("CD-")===0 ? "" : " ("+u.ref+")"); }).join("\n")
+    return list.slice(0,10).map(function(u){ return "· #"+u.screen.screenId+" › '"+(u.section.title||"구역")+"'"+(findDef(u.ref) ? "" : " ("+u.ref+")"); }).join("\n")
       + (list.length > 10 ? "\n… 외 "+(list.length-10)+"곳" : "");
   }
   function _nextDefCode(){
     var mx = _defCodeMax;
-    (STATE.defs||[]).forEach(function(d){ var m = /^CD-(\d+)$/.exec(d.id); if(m) mx = Math.max(mx, parseInt(m[1],10)); });
-    return "CD-" + String(mx+1).padStart(3,"0");
+    (STATE.defs||[]).forEach(function(d){ var m = /^CD-?(\d+)$/.exec(d.id); if(m) mx = Math.max(mx, parseInt(m[1],10)); });
+    return "CD" + String(mx+1).padStart(2,"0");   // CD01, CD02 … (100번째부터는 CD100)
   }
 
   // ── 화면 전환: 편집 화면 ↔ 공통 정의
@@ -2667,36 +2671,27 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     if(document.getElementById("newDefBg")) return;
     if(!_defsReady){ uiAlert("서버 설정이 최신이 아니에요.\n설정 SQL 을 한 번 더 실행하면 공통 정의를 쓸 수 있어요."); return; }
     var code = _nextDefCode();
-    var sugg = "D" + code.slice(3);
     var bg = document.createElement("div"); bg.className = "modalbg show"; bg.id = "newDefBg";
     bg.innerHTML = '<div class="modal" style="width:540px">'
       + '<h3>새 공통 정의 <span class="sp"></span><span style="font-family:Consolas,monospace;font-size:13px;color:var(--clr-brand)">'+esc(code)+'</span></h3>'
       + '<div class="body" style="padding:18px 20px 6px">'
       +   '<div class="rower"><div class="lbl">공통 정의명 <span class="req">*</span></div><input id="ndName" placeholder="예: 금칙어 정책, 토스트·팝업 메시지, API 목록"></div>'
-      +   '<div class="rower"><div class="lbl">줄 ID 약칭 <span class="req">*</span></div><input id="ndPrefix" value="'+esc(sugg)+'" maxlength="8" style="font-family:Consolas,monospace;text-transform:uppercase;width:200px">'
-      +     '<div class="tip" id="ndPrefixTip">줄마다 <b>'+esc(sugg)+'-001</b>처럼 번호가 붙어요. 영문 대문자·숫자 2~8자, 한번 정하면 바꿀 수 없어요.</div></div>'
-      +   '<div class="tip" style="margin:4px 0 10px">처음엔 <b>항목 | 내용</b> 두 칸으로 시작해요. 칸이 더 필요하면 "+ 칸"으로 늘리거나, 엑셀에서 붙여넣으면 자동으로 늘어나요.</div>'
+      +   '<div class="tip" style="margin:4px 0 10px">줄마다 <b>'+esc(code)+'-001</b>처럼 번호가 자동으로 붙어요.<br>처음엔 <b>항목 | 내용</b> 두 칸으로 시작해요. 칸이 더 필요하면 "+ 칸"으로 늘리거나, 엑셀에서 붙여넣으면 자동으로 늘어나요.</div>'
       + '</div>'
       + '<div class="ft"><button type="button" data-nd="cancel">취소</button><button type="button" class="primary" data-nd="ok">만들기</button></div></div>';
     document.body.appendChild(bg);
     var $ = function(id){ return document.getElementById(id); };
     _focusSoon(bg, $("ndName"));
-    $("ndPrefix").addEventListener("input", function(){
-      var p = ($("ndPrefix").value||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
-      $("ndPrefixTip").innerHTML = '줄마다 <b>'+esc(p||"??")+'-001</b>처럼 번호가 붙어요. 영문 대문자·숫자 2~8자, 한번 정하면 바꿀 수 없어요.';
-    });
     function close(){ bg.remove(); }
     function create(){
       var name = ($("ndName").value||"").trim();
-      var prefix = ($("ndPrefix").value||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+      var prefix = code;   // 줄 ID = 정의 ID + 번호 (예: CD-001-001)
       if(!name){ toast("공통 정의명을 입력해 주세요", true); $("ndName").focus(); return; }
-      if(!/^[A-Z][A-Z0-9]{1,7}$/.test(prefix)){ toast("줄 ID 약칭은 영문으로 시작하는 대문자·숫자 2~8자예요", true); $("ndPrefix").focus(); return; }
-      if(prefix==="CD" || (STATE.defs||[]).some(function(d){ return d.prefix.toUpperCase()===prefix; })){ toast("이미 쓰고 있는 약칭이에요: "+prefix, true); $("ndPrefix").focus(); return; }
       var d = normDef({ id:code, prefix:prefix, name:name, desc:"", category:"", status:"작성중",
                         columns:[{ id:uid("c"), name:"항목" }, { id:uid("c"), name:"내용" }],
                         rows:[{ id:prefix+"-001", cells:{} }], nextRow:2 });
       STATE.defs = (STATE.defs||[]).concat([d]);
-      var m = /^CD-(\d+)$/.exec(code); if(m) _defCodeMax = Math.max(_defCodeMax, parseInt(m[1],10));
+      var m = /^CD-?(\d+)$/.exec(code); if(m) _defCodeMax = Math.max(_defCodeMax, parseInt(m[1],10));
       _defSel = d.id; close(); save(); renderDefsScreen();
       toast("공통 정의 "+code+" 만들어짐 · 저장을 눌러야 서버에 반영돼요");
     }
@@ -2731,7 +2726,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
             return '<button type="button" class="typechip '+(d.status===v?"on ":"")+k+'" data-dstatus="'+v+'">'+v+'</button>'; }).join("")
       + '</div></div>'
       + '<div class="rower"><div class="lbl">설명</div><textarea data-df="desc" class="dgrow" placeholder="이 공통 정의가 무엇을 정하는지 적어 주세요">'+esc(d.desc)+'</textarea></div>'
-      + '<div class="dtable-head"><span class="lbl">항목 표</span><span class="dhint">줄 ID: '+esc(d.prefix)+'-###</span><span class="sp"></span>'
+      + '<div class="dtable-head"><span class="lbl">항목 표</span><span class="dhint">줄 ID: '+esc(d.prefix)+'-001 …</span><span class="sp"></span>'
       +   '<button type="button" class="dbtn" data-dd="addcol">+ 칸</button><button type="button" class="dbtn primary" data-dd="addrow">+ 줄</button></div>'
       + '<div class="dtable-wrap"><table class="dtable"><thead><tr><th class="c-id">ID</th>'
       +   d.columns.map(function(c){
