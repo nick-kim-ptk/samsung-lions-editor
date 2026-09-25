@@ -318,6 +318,52 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .relimg{position:relative;display:block;max-width:100%;border:1px solid var(--line);border-radius:6px;overflow:hidden;cursor:zoom-in;background:var(--panel-2)}
 .relimg img{display:block;max-width:100%;height:auto}
 /* 이미지 위쪽 바: [파일명] ··· [삭제]  — 삭제 버튼이 이미지를 가리지 않게 */
+/* 화면 이미지 위 구역 영역 */
+.shotbox{position:relative;display:block;width:100%}
+.shotbox img{width:100%!important;max-width:none!important}
+.area-layer{position:absolute;inset:0;pointer-events:none}
+.area-box{position:absolute;border:2px solid #bd3511;border-radius:3px;background:rgba(189,53,17,.05);pointer-events:auto;cursor:pointer}
+.area-box:hover{background:rgba(189,53,17,.12)}
+.area-box.sel{border-width:3px;background:rgba(189,53,17,.16);box-shadow:0 0 0 2px rgba(255,255,255,.9)}
+.area-no{position:absolute;top:-11px;left:-11px;width:22px;height:22px;border-radius:50%;background:#bd3511;color:#fff;border:2px solid #fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 5px rgba(0,0,0,.3);pointer-events:none;font-family:"Pretendard Variable","Pretendard","Malgun Gothic",sans-serif}
+.imgbar label.img-rm{cursor:pointer}
+/* 영역 편집 창 */
+.ae{position:fixed;inset:16px;background:#fff;border-radius:12px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+.ae-head{flex:none;display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--panel-2)}
+.ae-head b{font-size:15px}
+.ae-head .sp{flex:1}
+.ae-sub{font-size:12.5px;color:var(--sub);font-weight:700}
+.ae-btn{height:32px;padding:0 13px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);font-weight:800;font-size:12.5px;cursor:pointer}
+.ae-btn:hover:not(:disabled){border-color:var(--clr-brand);color:var(--clr-brand)}
+.ae-btn:disabled{opacity:.4;cursor:default}
+.ae-btn.primary{background:var(--clr-brand);border-color:var(--clr-brand);color:#fff}
+.ae-btn.primary:hover:not(:disabled){background:var(--clr-brand-deep);color:#fff}
+.ae-body{flex:1;min-height:0;display:flex}
+.ae-stage{flex:1;min-width:0;overflow:auto;background:#e6ebf3;display:flex;justify-content:center;align-items:flex-start;padding:28px}
+.ae-canvas{position:relative;width:min(520px,100%);flex:none;user-select:none;touch-action:none;cursor:crosshair}
+.ae-canvas img{display:block;width:100%;pointer-events:none;box-shadow:0 4px 18px rgba(0,0,0,.18);background:#fff}
+.ae-layer{position:absolute;inset:0}
+.ae-box{position:absolute;border:2px solid #bd3511;border-radius:3px;background:rgba(189,53,17,.06);cursor:move}
+.ae-box.cur{border-width:3px;background:rgba(189,53,17,.16)}
+.ae-box .h{position:absolute;width:12px;height:12px;background:#fff;border:2px solid #bd3511;border-radius:2px}
+.ae-box .h.nw{left:-8px;top:-8px;cursor:nwse-resize}
+.ae-box .h.ne{right:-8px;top:-8px;cursor:nesw-resize}
+.ae-box .h.sw{left:-8px;bottom:-8px;cursor:nesw-resize}
+.ae-box .h.se{right:-8px;bottom:-8px;cursor:nwse-resize}
+.ae-side{width:300px;flex:none;border-left:1px solid var(--line);display:flex;flex-direction:column;background:#fff}
+.ae-tip{padding:12px 14px;font-size:12.5px;color:var(--sub);line-height:1.6;border-bottom:1px solid var(--line)}
+.ae-tip b{color:var(--clr-brand)}
+.ae-list{flex:1;overflow:auto;padding:10px}
+.ae-row{display:flex;align-items:center;gap:8px;min-height:40px;padding:0 8px 0 10px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;cursor:pointer}
+.ae-row:hover{border-color:var(--line-2)}
+.ae-row.cur{border-color:var(--clr-brand);background:var(--acc-soft);outline:1px solid var(--clr-brand)}
+.ae-no{flex:none;width:22px;height:22px;border-radius:50%;background:#bd3511;color:#fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center}
+.ae-nm{flex:1;min-width:0;font-size:13.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ae-st{flex:none;font-size:11px;font-weight:800;color:var(--sub-2)}
+.ae-st.ok{color:var(--ok)}
+.ae-x{flex:none;width:22px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--sub);font-size:15px;cursor:pointer}
+.ae-x:hover{background:var(--danger-soft);color:var(--danger)}
+.ae-empty{padding:24px 12px;text-align:center;color:var(--sub);font-size:13px;line-height:1.7}
 /* 와이어프레임 화면 링크 */
 .wf-row{display:flex;gap:6px;align-items:center;min-height:40px}
 .wf-row input{flex:1;min-width:0;height:38px;font-family:Consolas,monospace}
@@ -340,7 +386,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .scrshot .add .plus{font-size:26px;font-weight:400;line-height:1}
 .scrshot .preview{flex:1;min-height:0;position:relative;display:flex;justify-content:center;align-items:flex-start;padding:10px;background:var(--panel-2);border-radius:10px;overflow:auto}
 .scrshot .preview img{width:412px;max-width:100%;display:block;border:1px solid var(--line);border-radius:4px;background:#fff;cursor:zoom-in}
-.scrshot .preview .imgcard{width:412px}
+.scrshot .preview .imgcard{width:412px;max-width:100%}
 #secList.sec-list{flex:1}
 
 .imglb{position:fixed;inset:0;background:rgba(5,15,40,.86);display:none;align-items:center;justify-content:center;z-index:400;cursor:zoom-out;flex-direction:column}
@@ -737,6 +783,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
           out_url:str(c.outUrl), out_label:str(c.outLabel), linked_screen_id:str(c.linkedScreenId),
           related: Array.isArray(c.related) ? c.related.filter(function(x){return typeof x==="string";}) : [],
           images:  Array.isArray(c.images) ? c.images : [],
+          area:    normArea(c.area),
           sort_order:toInt(c.order, i)
         };
       });
@@ -763,7 +810,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         feedback:str(r.feedback), note:str(r.note), outUrl:str(r.out_url), outLabel:str(r.out_label),
         linkedScreenId:str(r.linked_screen_id),
         related:Array.isArray(r.related)?r.related:[], images:Array.isArray(r.images)?r.images:[],
-        order:toInt(r.sort_order,0)
+        area:normArea(r.area), order:toInt(r.sort_order,0)
       });
     });
     return { groups:groups, screens:screens };
@@ -791,7 +838,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
           exception:str(c.exception), feedback:str(c.feedback), note:str(c.note),
           outUrl:str(c.outUrl), outLabel:str(c.outLabel), linkedScreenId:str(c.linkedScreenId),
           related:Array.isArray(c.related)?c.related.filter(function(x){return typeof x==="string";}):[],
-          images:Array.isArray(c.images)?c.images:[], order:toInt(c.order, i)
+          images:Array.isArray(c.images)?c.images:[], area:normArea(c.area), order:toInt(c.order, i)
         });
       });
       screens.push({
@@ -957,9 +1004,9 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       res[1].forEach(function(r){ ver.screens[r.screen_id] = r.version; meta.screens[r.screen_id] = {by:r.updated_by, at:r.updated_at}; });
       res[2].forEach(function(r){ ver.sections[r.id] = r.version; meta.sections[r.id] = {by:r.updated_by, at:r.updated_at}; });
       var st = stateFromRows(res[0], res[1], res[2]);
-      if(!_schemaWarned && ((res[1].length && !("tags" in res[1][0])) || lastId === null)){
+      if(!_schemaWarned && ((res[1].length && !("tags" in res[1][0])) || (res[2].length && !("area" in res[2][0])) || lastId === null)){
         _schemaWarned = true;
-        uiAlert("서버 설정이 최신이 아니에요.\n설정 SQL 파일을 SQL Editor에서 한 번 더 실행해 주세요.\n(실행 전에는 연계 구분 저장·새 변경 알림·이력 초안이 동작하지 않아요)");
+        uiAlert("서버 설정이 최신이 아니에요.\n설정 SQL 파일을 SQL Editor에서 한 번 더 실행해 주세요.\n(실행 전에는 연계 구분·구역 영역 저장, 새 변경 알림, 이력 초안이 동작하지 않아요)");
       }
       return { g:res[0], s:res[1], c:res[2], ver:ver, meta:meta, lastId:lastId, rows:rowsFromState(st) };
     });
@@ -1122,13 +1169,14 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     screens: { title:"제목", subtitle:"목적/개요", link:"와이어프레임 화면 링크", tags:"연계 구분", mock_image:"화면 이미지", group_id:"그룹", seq:"순번", status:"진행 상황" },
     sections:{ title:"구역 이름", sec_type:"구역 종류", status:"진행 상황", author:"작성자", description:"기능 설명", target:"관련 자료",
                images:"관련 자료 이미지", requirement:"고려 요소", exception_note:"예외", feedback:"광고주 요청", note:"메모",
-               out_url:"이동 URL", out_label:"표시 라벨", linked_screen_id:"연결할 화면", related:"연관 화면 ID", sort_order:"순서", screen_id:"화면" }
+               out_url:"이동 URL", out_label:"표시 라벨", linked_screen_id:"연결할 화면", related:"연관 화면 ID", sort_order:"순서", screen_id:"화면", area:"이미지 영역" }
   };
   function _fieldLabel(t, f){ return (FIELD_LABELS[t] && FIELD_LABELS[t][f]) || f; }
   function _showVal(t, f, v){
     if(v===null || v===undefined || v==="" || (Array.isArray(v) && !v.length)) return "(비어 있음)";
     if(f==="images") return "이미지 " + v.length + "개" + (v.length ? " · " + v.map(function(x){return x && x.name;}).filter(Boolean).join(", ") : "");
     if(f==="mock_image") return (v && v.name) || "이미지";
+    if(f==="area") return "영역 지정됨 (가로 "+Math.round(v.x*100)+"% · 폭 "+Math.round(v.w*100)+"%)";
     if(f==="group_id"){ var g = (STATE.groups||[]).find(function(x){return x.id===v;}); return g ? _fmtGroup(g,"tree") : v; }
     if(Array.isArray(v)) return v.join(", ");
     var s = String(v);
@@ -2082,35 +2130,82 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     return '<div class="imgbar"><span class="nm" title="'+esc(name||"")+'">'+esc(name||"이미지")+'</span>'
          + '<button type="button" class="img-rm" '+attrs+' title="이미지 삭제">'+TRASH_SVG+'삭제</button></div>';
   }
+  /* ===================== 화면 이미지 + 구역 영역(빨간 네모) =====================
+     원칙: 구역 리스트가 주인이고, 네모는 각 구역의 "area" 칸에 붙는 표시일 뿐이다.
+       · 이미지 쪽에서 무엇을 해도(삭제·교체·네모 지우기·전체 지우기·취소) 구역은 절대 생기거나 지워지지 않는다.
+       · 네모 위치는 이미지 "가로 폭" 기준 비율 {x,y,w,h} — 해상도가 달라지거나 아래로 길어진 이미지로 바꿔도 위쪽은 제자리.
+       · 번호는 구역 순서를 그대로 따른다 (이미지에 굽지 않고 위에 겹쳐 그림). */
+  var AREA_COLOR = "#dd3327";
+  function normArea(a){
+    if(!a || typeof a!=="object") return null;
+    var r = function(v){ v = Number(v); return isFinite(v) ? Math.round(v*10000)/10000 : NaN; };
+    var o = { x:r(a.x), y:r(a.y), w:r(a.w), h:r(a.h) };
+    if([o.x,o.y,o.w,o.h].some(isNaN) || o.w <= 0 || o.h <= 0) return null;
+    return o;
+  }
+  // ratio = 이미지 세로/가로. 가로 폭 기준 좌표를 이미지 박스 안의 % 위치로 바꾼다.
+  function _areaCss(a, ratio){
+    return "left:"+(a.x*100)+"%;top:"+(a.y/ratio*100)+"%;width:"+(a.w*100)+"%;height:"+(a.h/ratio*100)+"%";
+  }
+  function _orderedSecs(s){ return (s.sections||[]).slice().sort(function(a,b){return (a.order||0)-(b.order||0);}); }
+
   function renderScrShot(shot, s){
     if(s.mockImage && s.mockImage.url){
       shot.innerHTML =
           '<div class="preview"><div class="imgcard">'
-        +   _imgBar(s.mockImage.name, 'data-act="scrshot-del"')
-        +   '<img src="'+esc(s.mockImage.url)+'" alt="'+esc(s.mockImage.name||"")+'">'
+        +   '<div class="imgbar"><span class="nm" title="'+esc(s.mockImage.name||"")+'">'+esc(s.mockImage.name||"이미지")+'</span>'
+        +     '<button type="button" class="img-rm" data-act="area-edit" title="구역 영역(빨간 네모) 지정·수정">▣ 영역 편집</button>'
+        +     '<label class="img-rm" title="다른 이미지로 교체 (영역은 유지)">교체<input type="file" accept="image/*" data-act="scrshot-replace" style="display:none"></label>'
+        +     '<button type="button" class="img-rm" data-act="scrshot-del" title="이미지 삭제">'+TRASH_SVG+'삭제</button></div>'
+        +   '<div class="shotbox"><img src="'+esc(s.mockImage.url)+'" alt="'+esc(s.mockImage.name||"")+'"><div class="area-layer"></div></div>'
         + '</div></div>';
     } else {
       shot.innerHTML =
           '<label class="add"><span class="plus">+</span><span>화면을 등록하세요</span>'
+        +   '<span style="font-size:11.5px;font-weight:600">등록하면서 구역 영역을 지정할 수 있어요</span>'
         +   '<input type="file" accept="image/*" data-act="scrshot-file" style="display:none"></label>';
     }
-    var fileInp = shot.querySelector("[data-act='scrshot-file']");
-    if(fileInp) fileInp.onchange = function(e){
+    var pick = function(sel){ var el = shot.querySelector(sel); if(el) el.onchange = function(e){
       var f = e.target.files && e.target.files[0]; e.target.value = "";
-      if(f) handleScrShotFile(f, s);
-    };
+      if(f) openAreaEditor(s, f);
+    }; };
+    pick("[data-act='scrshot-file']"); pick("[data-act='scrshot-replace']");
+    var ed = shot.querySelector("[data-act='area-edit']");
+    if(ed) ed.onclick = function(){ openAreaEditor(s, null); };
     var rm = shot.querySelector("[data-act='scrshot-del']");
     if(rm) rm.onclick = function(e){
       e.stopPropagation();
-      uiConfirm({ title:"화면 이미지 삭제", ok:"삭제", danger:true, message:"'"+s.screenId+"' 화면 이미지를 삭제할까요?\n저장을 눌러야 서버에 반영돼요." }).then(function(y){
+      uiConfirm({ title:"화면 이미지 삭제", ok:"삭제", danger:true,
+        message:"'"+s.screenId+"' 화면 이미지를 삭제할까요?\n구역과 구역 영역 표시는 그대로 남아서, 새 이미지를 올리면 다시 쓸 수 있어요.\n저장을 눌러야 서버에 반영돼요." }).then(function(y){
         if(!y) return;
         var old = s.mockImage; s.mockImage = null;
         save(); renderMid(); toast("화면 이미지 삭제됨 · 저장을 눌러야 서버에 반영돼요");
         if(old) queueDelete(old.path);
       });
     };
-    var previewImg = shot.querySelector(".preview img");
-    if(previewImg) previewImg.onclick = function(e){ e.stopPropagation(); openShotLightbox(s.mockImage); };
+    var img = shot.querySelector(".shotbox img");
+    if(img){
+      var draw = function(){ _drawAreaLayer(shot, s, img); };
+      if(img.complete && img.naturalWidth) draw(); else img.addEventListener("load", draw);
+      img.onclick = function(e){ e.stopPropagation(); openShotLightbox(s.mockImage); };
+    }
+  }
+  // 가운데 이미지 위에 구역 번호 네모를 겹쳐 그린다. 네모를 누르면 그 구역이 선택된다.
+  function _drawAreaLayer(shot, s, img){
+    var layer = shot.querySelector(".area-layer"); if(!layer || !img.naturalWidth) return;
+    var ratio = img.naturalHeight / img.naturalWidth;
+    layer.innerHTML = _orderedSecs(s).map(function(sec, i){
+      var a = normArea(sec.area); if(!a) return "";
+      var sel = STATE.selectedSectionId===sec.id ? " sel" : "";
+      return '<div class="area-box'+sel+'" data-sec-id="'+esc(sec.id)+'" style="'+_areaCss(a, ratio)+'" title="'+esc((i+1)+". "+(sec.title||"구역"))+'"><span class="area-no">'+(i+1)+'</span></div>';
+    }).join("");
+    layer.querySelectorAll(".area-box").forEach(function(b){
+      b.addEventListener("click", function(e){
+        e.stopPropagation();
+        STATE.selectedSectionId = b.dataset.secId; saveUi();
+        renderMid(); renderDetail();
+      });
+    });
   }
   function openShotLightbox(im){
     if(!im || !im.url) return;
@@ -2118,21 +2213,230 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     document.getElementById("imglbCap").textContent = (im.name||"화면 이미지")+" · 클릭하면 닫힘";
     document.getElementById("imglb").classList.add("show");
   }
-  function handleScrShotFile(f, s){
-    if(!SB.url){ toast("서버 연결이 없어 이미지 업로드가 안 돼요", true); return; }
-    if(f.size > 5*1024*1024){ toast("5MB 초과라 제외: "+f.name, true); return; }
-    var extMatch = /\.([a-zA-Z0-9]+)$/.exec(f.name || "");
-    var ext = extMatch ? extMatch[1].toLowerCase() : "png";
-    var path = "screens/" + s.screenId + "." + ext;
-    var old = s.mockImage;
-    if(old && old.path && old.path !== path) queueDelete(old.path);
-    _storageUpload(path, f).then(function(){
-      var publicUrl = SB.url + "/storage/v1/object/public/" + SB_BUCKET + "/" + path + "?v=" + Date.now();
-      s.mockImage = { id:uid("shot"), name:f.name, path:path, url:publicUrl };
-      save(); renderMid();
-      toast("화면 이미지 등록됨 · 저장을 눌러야 서버에 반영돼요");
-    }).catch(function(){ toast("업로드 실패: "+f.name, true); });
+
+  // 5MB 가 넘는 이미지는 가로 1600px 이하로 줄여서 올린다 (영역은 비율이라 크기가 바뀌어도 그대로 맞음)
+  function _prepareUpload(f){
+    if(f.size <= 5*1024*1024) return Promise.resolve({ blob:f, ext:((/\.([a-zA-Z0-9]+)$/.exec(f.name||"")||[])[1]||"png").toLowerCase(), type:f.type });
+    return new Promise(function(resolve, reject){
+      var url = URL.createObjectURL(f), im = new Image();
+      im.onload = function(){
+        var w = Math.min(1600, im.naturalWidth), h = Math.round(im.naturalHeight * w / im.naturalWidth);
+        var c = document.createElement("canvas"); c.width = w; c.height = h;
+        c.getContext("2d").drawImage(im, 0, 0, w, h);
+        URL.revokeObjectURL(url);
+        c.toBlob(function(b){
+          if(!b) return reject(new Error("encode"));
+          if(b.size > 5*1024*1024) return reject(new Error("too big"));
+          resolve({ blob:b, ext:"jpg", type:"image/jpeg" });
+        }, "image/jpeg", 0.88);
+      };
+      im.onerror = function(){ URL.revokeObjectURL(url); reject(new Error("load")); };
+      im.src = url;
+    });
   }
+  function _uploadScreenImage(s, f){
+    return _prepareUpload(f).then(function(p){
+      var path = "screens/" + s.screenId + "." + p.ext;
+      return fetch(SB.url + "/storage/v1/object/" + SB_BUCKET + "/" + path, {
+        method:"POST",
+        headers:{ "apikey":SB.key, "Authorization":"Bearer "+SB.key, "Content-Type":p.type||"application/octet-stream", "x-upsert":"true" },
+        body:p.blob
+      }).then(function(res){
+        if(!res.ok) return res.text().then(function(t){ throw new Error(t || ("HTTP "+res.status)); });
+        return { id:uid("shot"), name:f.name, path:path, url:SB.url + "/storage/v1/object/public/" + SB_BUCKET + "/" + path + "?v=" + Date.now() };
+      });
+    });
+  }
+
+  /* ── 영역 편집 창 ──
+     file 이 있으면 "새 이미지 등록/교체", 없으면 "지금 이미지에서 영역만 편집".
+     [완료] 전에는 아무것도 바뀌지 않고, [취소]하면 업로드도 하지 않는다. */
+  function openAreaEditor(s, file){
+    if(document.getElementById("areaEd")) return;
+    if(file && !SB.url){ toast("서버 연결이 없어 이미지 업로드가 안 돼요", true); return; }
+    if(file && !/^image\//.test(file.type||"")){ toast("이미지 파일만 올릴 수 있어요", true); return; }
+    var secs = _orderedSecs(s);
+    var work = {};                   // 구역 id → area (편집 중인 사본)
+    secs.forEach(function(x){ var a = normArea(x.area); if(a) work[x.id] = a; });
+    var start = stable(work);
+    var undo = [];
+    var cur = (STATE.selectedSectionId && secs.some(function(x){return x.id===STATE.selectedSectionId;})) ? STATE.selectedSectionId
+            : ((secs.find(function(x){ return !work[x.id]; }) || secs[0] || {}).id || null);
+    var src = file ? URL.createObjectURL(file) : s.mockImage.url;
+    var ratio = 1;
+
+    var bg = document.createElement("div"); bg.className = "modalbg show"; bg.id = "areaEd";
+    bg.innerHTML =
+        '<div class="ae">'
+      +   '<div class="ae-head"><b>'+(file ? (s.mockImage ? "이미지 교체 · 구역 영역 지정" : "화면 등록 · 구역 영역 지정") : "구역 영역 편집")+'</b>'
+      +     '<span class="ae-sub">'+esc(s.screenId)+' '+esc(s.title||"")+'</span><span class="sp"></span>'
+      +     '<button type="button" class="ae-btn" data-ae="undo" title="되돌리기 (Ctrl+Z)">↶ 되돌리기</button>'
+      +     '<button type="button" class="ae-btn" data-ae="clear">전체 지우기</button>'
+      +     '<button type="button" class="ae-btn" data-ae="cancel">취소</button>'
+      +     '<button type="button" class="ae-btn primary" data-ae="done">'+(file ? "완료 · 업로드" : "완료")+'</button></div>'
+      +   '<div class="ae-body">'
+      +     '<div class="ae-stage"><div class="ae-canvas"><img alt="" draggable="false"><div class="ae-layer"></div></div></div>'
+      +     '<div class="ae-side"><div class="ae-tip">오른쪽에서 구역을 고르고, 이미지 위를 <b>드래그</b>해서 영역을 그리세요.<br>네모는 끌어서 옮기고, 모서리(□)로 크기를 바꿀 수 있어요.<br><span style="font-size:11.5px">되돌리기 Ctrl+Z · 선택한 영역 지우기 Delete</span></div>'
+      +       '<div class="ae-list"></div></div>'
+      +   '</div>'
+      + '</div>';
+    document.body.appendChild(bg);
+    var imgEl = bg.querySelector(".ae-canvas img"), layer = bg.querySelector(".ae-layer"), canvasEl = bg.querySelector(".ae-canvas");
+    var listEl = bg.querySelector(".ae-list");
+
+    function no(id){ for(var i=0;i<secs.length;i++) if(secs[i].id===id) return i+1; return 0; }
+    function renderList(){
+      if(!secs.length){ listEl.innerHTML = '<div class="ae-empty">이 화면에 아직 구역이 없어요.<br>이미지만 먼저 등록하고, 구역을 추가한 뒤 [영역 편집]에서 지정할 수 있어요.</div>'; return; }
+      listEl.innerHTML = secs.map(function(x, i){
+        var has = !!work[x.id];
+        return '<div class="ae-row'+(x.id===cur?" cur":"")+'" data-id="'+esc(x.id)+'">'
+          + '<span class="ae-no">'+(i+1)+'</span><span class="ae-nm">'+esc(x.title||"구역")+'</span>'
+          + (has ? '<span class="ae-st ok">지정됨</span><span class="ae-x" data-x="'+esc(x.id)+'" title="이 구역의 영역만 지우기 (구역은 그대로)">×</span>'
+                 : '<span class="ae-st">미지정</span>')
+          + '</div>';
+      }).join("");
+    }
+    function renderBoxes(){
+      layer.innerHTML = secs.map(function(x){
+        var a = work[x.id]; if(!a) return "";
+        return '<div class="ae-box'+(x.id===cur?" cur":"")+'" data-id="'+esc(x.id)+'" style="'+_areaCss(a, ratio)+'">'
+          + '<span class="area-no">'+no(x.id)+'</span>'
+          + (x.id===cur ? '<i class="h ne" data-h="ne"></i><i class="h sw" data-h="sw"></i><i class="h se" data-h="se"></i>' : '')   // 왼쪽 위는 번호 자리
+          + '</div>';
+      }).join("");
+    }
+    function render(){ renderList(); renderBoxes(); bg.querySelector('[data-ae="undo"]').disabled = !undo.length; }
+    function pushUndo(){ undo.push(clone(work)); if(undo.length > 50) undo.shift(); }
+    function nextUnmapped(){ var n = secs.find(function(x){ return !work[x.id]; }); return n ? n.id : cur; }
+
+    imgEl.onload = function(){ ratio = imgEl.naturalHeight / imgEl.naturalWidth;
+      // 교체한 이미지가 더 짧아서 네모가 아래로 벗어나면 이미지 안으로 끌어올린다
+      Object.keys(work).forEach(function(k){ var a = work[k];
+        a.w = Math.min(a.w, 1); a.x = Math.max(0, Math.min(a.x, 1 - a.w));
+        a.h = Math.min(a.h, ratio); a.y = Math.max(0, Math.min(a.y, ratio - a.h));
+      });
+      render(); };
+    imgEl.onerror = function(){ toast("이미지를 불러오지 못했어요", true); };
+    imgEl.src = src;
+
+    // ── 그리기 / 옮기기 / 크기 조절 (포인터 좌표 → 가로 폭 기준 비율)
+    function pt(e){ var r = canvasEl.getBoundingClientRect(); return { x:(e.clientX - r.left)/r.width, y:(e.clientY - r.top)/r.width, W:r.width }; }
+    var drag = null;
+    canvasEl.addEventListener("pointerdown", function(e){
+      if(e.button !== 0 || !imgEl.naturalWidth) return;
+      e.preventDefault();
+      var p = pt(e), t = e.target, box = t.closest ? t.closest(".ae-box") : null;
+      if(t.dataset && t.dataset.h && box){ drag = { mode:"resize", id:box.dataset.id, h:t.dataset.h, p0:p, a0:clone(work[box.dataset.id]), moved:false }; }
+      else if(box){ cur = box.dataset.id; drag = { mode:"move", id:cur, p0:p, a0:clone(work[cur]), moved:false }; render(); }
+      else {
+        if(!cur){ toast(secs.length ? "오른쪽에서 구역을 먼저 골라 주세요" : "구역을 먼저 추가해 주세요", true); return; }
+        drag = { mode:"draw", id:cur, p0:p, a0:work[cur] ? clone(work[cur]) : null, moved:false };
+      }
+      drag.snap = clone(work);
+      canvasEl.setPointerCapture(e.pointerId);
+    });
+    canvasEl.addEventListener("pointermove", function(e){
+      if(!drag) return;
+      var p = pt(e), dx = p.x - drag.p0.x, dy = p.y - drag.p0.y;
+      if(!drag.moved && Math.abs(dx*p.W) < 3 && Math.abs(dy*p.W) < 3) return;
+      drag.moved = true;
+      var clampX = function(v){ return Math.max(0, Math.min(1, v)); }, clampY = function(v){ return Math.max(0, Math.min(ratio, v)); };
+      if(drag.mode==="draw"){
+        var x1 = clampX(drag.p0.x), y1 = clampY(drag.p0.y), x2 = clampX(p.x), y2 = clampY(p.y);
+        work[drag.id] = { x:Math.min(x1,x2), y:Math.min(y1,y2), w:Math.abs(x2-x1), h:Math.abs(y2-y1) };
+      } else if(drag.mode==="move"){
+        var a = drag.a0;
+        work[drag.id] = { x:Math.max(0, Math.min(1-a.w, a.x+dx)), y:Math.max(0, Math.min(ratio-a.h, a.y+dy)), w:a.w, h:a.h };
+      } else {
+        var b = drag.a0, L = b.x, T = b.y, R = b.x+b.w, B = b.y+b.h;
+        if(drag.h.indexOf("w")>=0) L = clampX(Math.min(R - 0.01, b.x + dx));
+        if(drag.h.indexOf("e")>=0) R = clampX(Math.max(L + 0.01, R + dx));
+        if(drag.h.indexOf("n")>=0) T = clampY(Math.min(B - 0.01, b.y + dy));
+        if(drag.h.indexOf("s")>=0) B = clampY(Math.max(T + 0.01, B + dy));
+        work[drag.id] = { x:L, y:T, w:R-L, h:B-T };
+      }
+      renderBoxes();
+    });
+    function endDrag(){
+      if(!drag) return;
+      var d = drag; drag = null;
+      if(!d.moved){ if(d.mode==="draw" && !d.a0) delete work[d.id]; renderBoxes(); return; }
+      var a = work[d.id];
+      if(d.mode==="draw" && a && (a.w < 0.01 || a.h < 0.01)){ if(d.a0) work[d.id] = d.a0; else delete work[d.id]; renderBoxes(); return; }
+      work[d.id] = normArea(a);
+      undo.push(d.snap); if(undo.length > 50) undo.shift();
+      if(d.mode==="draw") cur = nextUnmapped();   // 새로 그렸으면 다음 미지정 구역으로 자동 이동
+      render();
+    }
+    canvasEl.addEventListener("pointerup", endDrag);
+    canvasEl.addEventListener("pointercancel", endDrag);
+
+    // ── 오른쪽 구역 목록
+    listEl.addEventListener("click", function(e){
+      var x = e.target.dataset && e.target.dataset.x;
+      if(x){ pushUndo(); delete work[x]; cur = x; render(); return; }
+      var row = e.target.closest(".ae-row"); if(!row) return;
+      cur = row.dataset.id; render();
+      var box = layer.querySelector('.ae-box[data-id="'+cur+'"]');
+      if(box) box.scrollIntoView({ block:"nearest", behavior:"smooth" });
+    });
+
+    function close(){
+      document.removeEventListener("keydown", onKey, true);
+      if(file) URL.revokeObjectURL(src);
+      bg.remove();
+    }
+    function changed(){ return !!file || stable(work) !== start; }
+    function cancel(){
+      if(!changed()){ close(); return; }
+      uiConfirm({ title:"편집 취소", ok:"편집 버리기", danger:true, focusCancel:true,
+        message: file ? "이미지를 올리지 않고 닫을까요?\n지금까지 지정한 영역도 반영되지 않아요." : "지금까지 바꾼 영역을 반영하지 않고 닫을까요?" })
+        .then(function(y){ if(y) close(); });
+    }
+    function applyAreas(){
+      // 구역은 건드리지 않고 area 칸만 바꾼다
+      (s.sections||[]).forEach(function(x){ x.area = work[x.id] ? normArea(work[x.id]) : null; });
+    }
+    function done(){
+      if(!file){
+        if(stable(work) !== start){ applyAreas(); save(); renderMid(); renderDetail(); toast("구역 영역 반영됨 · 저장을 눌러야 서버에 반영돼요"); }
+        close(); return;
+      }
+      var btn = bg.querySelector('[data-ae="done"]'); btn.disabled = true; btn.textContent = "업로드 중…";
+      var old = s.mockImage;
+      _uploadScreenImage(s, file).then(function(mi){
+        if(old && old.path && old.path !== mi.path) queueDelete(old.path);
+        s.mockImage = mi; applyAreas();
+        save(); renderMid(); renderDetail();
+        toast((old ? "이미지 교체됨" : "화면 이미지 등록됨") + " · 저장을 눌러야 서버에 반영돼요");
+        close();
+      }).catch(function(err){
+        console.warn("[upload]", err);
+        btn.disabled = false; btn.textContent = "완료 · 업로드";
+        toast("업로드 실패 · 다시 시도해 주세요" + (/too big/.test(err && err.message) ? " (이미지가 너무 커요)" : ""), true);
+      });
+    }
+    bg.querySelector(".ae-head").addEventListener("click", function(e){
+      var a = e.target.dataset && e.target.dataset.ae; if(!a) return;
+      if(a==="undo" && undo.length){ work = undo.pop(); render(); }
+      else if(a==="clear"){
+        if(!Object.keys(work).length) return;
+        uiConfirm({ title:"영역 전체 지우기", ok:"전체 지우기", danger:true, message:"이 화면의 구역 영역 표시를 모두 지울까요?\n구역 자체는 그대로 남아요." })
+          .then(function(y){ if(y){ pushUndo(); work = {}; cur = secs[0] ? secs[0].id : null; render(); } });
+      }
+      else if(a==="cancel") cancel();
+      else if(a==="done") done();
+    });
+    function onKey(e){
+      if(document.querySelector('.modalbg[data-ui]')) return;   // 확인 모달이 떠 있으면 그쪽이 처리
+      if((e.ctrlKey || e.metaKey) && (e.key==="z" || e.key==="Z")){ e.preventDefault(); if(undo.length){ work = undo.pop(); render(); } }
+      else if((e.key==="Delete" || e.key==="Backspace") && cur && work[cur]){ e.preventDefault(); pushUndo(); delete work[cur]; render(); }
+      else if(e.key==="Escape"){ e.preventDefault(); cancel(); }
+    }
+    document.addEventListener("keydown", onKey, true);
+    render();
+  }
+
   function badgeCls(v){ return v==="확정" ? "b-ok" : v==="검토중" ? "b-wr" : "b-wd"; }
   function secSt(v){ return v==="확정" ? "s-ok" : v==="검토중" ? "s-wr" : "s-wd"; }
   function tpCls(t){ return t==="광고" ? "b-tp-ad" : t==="아웃링크" ? "b-tp-out" : t==="페이지연결" ? "b-tp-link" : "b-tp-func"; }
@@ -2623,7 +2927,9 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   function delSection(sid, secid){
     var sc = findScreen(sid), se = sc && (sc.sections||[]).find(function(x){return x.id===secid;});
     uiConfirm({ title:"구역 삭제", ok:"삭제", danger:true,
-      message:"'"+((se && se.title) || "구역")+"' 구역을 삭제할까요?\n저장을 눌러야 서버에 반영돼요." }).then(function(y){ if(y) _delSectionNow(sid, secid); });
+      message:"'"+((se && se.title) || "구역")+"' 구역을 삭제할까요?"
+        + (se && normArea(se.area) ? "\n이 구역의 이미지 영역 표시도 함께 삭제되고, 뒤 구역 번호가 하나씩 당겨져요." : "")
+        + "\n저장을 눌러야 서버에 반영돼요." }).then(function(y){ if(y) _delSectionNow(sid, secid); });
   }
   function _delSectionNow(sid, secid){
     var s = findScreen(sid); if(!s) return;
