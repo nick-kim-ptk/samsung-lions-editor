@@ -545,7 +545,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 <div class="app">
   <header>
     <h1>삼성라이온즈 기능 정의 및 화면 설계서</h1>
-    <button type="button" id="btnUser" title="내 영어 닉네임 변경 (저장·이력에 기록돼요)">👤 닉네임 입력</button>
+    <button type="button" id="btnUser" title="닉네임 변경">👤 닉네임 입력</button>
     <span id="unsavedBadge" title="서버에 아직 저장되지 않은 변경이 있어요 · 저장 버튼 또는 Ctrl+S">저장 필요</span>
     <span class="sp"></span>
     <button type="button" id="btnDefs" title="Push·금칙어·API·토스트 등 여러 화면이 함께 쓰는 정의를 관리해요">공통 정의</button>
@@ -758,12 +758,12 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       var old = document.getElementById("nameBg"); if(old) old.remove();
       var bg = document.createElement("div"); bg.className = "modalbg show"; bg.id = "nameBg";
       bg.innerHTML = '<div class="modal" style="width:420px">'
-        + '<h3>'+(SB.user ? "닉네임 변경" : "영어 닉네임을 알려주세요")+'</h3>'
+        + '<h3>'+(SB.user ? "닉네임 변경" : "닉네임을 알려주세요")+'</h3>'
         + '<div class="body" style="padding:18px">'
         +   (_nickReask && !SB.user ? '<div class="adbox" style="margin-bottom:12px">본명 대신 영어 닉네임을 쓰도록 바뀌었어요. 다시 입력해 주세요.</div>' : '')
-        +   '<div class="rower" style="margin-bottom:0"><div class="lbl">영어 닉네임 <span class="req">*</span></div>'
+        +   '<div class="rower" style="margin-bottom:0"><div class="lbl">닉네임 <span class="req">*</span></div>'
         +   '<input id="nameInput" maxlength="20" placeholder="예: Nick, Billy" value="'+esc(SB.user)+'" autocomplete="off" spellcheck="false" lang="en" style="ime-mode:disabled">'
-        +   '<div class="tip">본명 대신 회사에서 쓰는 영어 닉네임을 입력해 주세요. 영문만 가능해요 (공백 · . \' - 포함 20자 이내).<br>저장한 사람과 이력 작성자로 기록되고, 이 브라우저에 기억됩니다.</div></div>'
+        +   '<div class="tip">회사에서 쓰는 영어 닉네임을 입력해 주세요. (20자 이내. 예: Nick)<br>저장한 사람과 이력 작성자로 기록되고, 이 브라우저에 기억됩니다.</div></div>'
         + '</div>'
         + '<div class="ft">'+(opts.required && !SB.user ? '' : '<button type="button" data-act="name-cancel">취소</button>')
         +   '<button type="button" class="primary" data-act="name-ok">확인</button></div></div>';
