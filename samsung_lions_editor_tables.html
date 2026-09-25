@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>삼성라이온즈 기능 정의 및 화면 설계서 (테이블 버전)</title>
+<title>삼성라이온즈 기능 정의 및 화면 설계서</title>
 <style>
 :root{
   --clr-brand:#0a3d91;
@@ -371,12 +371,19 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .syncBlock .data-menu select option{background:#fff;color:#222}
 
 
+/* 페이지 성향 뱃지 (STATIC / ADMIN / API / USER) */
+.screen-head .meta .ptags{margin-left:auto;display:flex;gap:5px;flex-wrap:wrap;font-family:"Pretendard","Malgun Gothic",sans-serif}
+.ptag{--c:#64748b;display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:12px;border:1px solid var(--c);color:var(--c);background:#fff;font-size:11px;font-weight:800;letter-spacing:.4px;cursor:pointer;opacity:.38;user-select:none;font-family:inherit;transition:opacity .12s,background .12s}
+.ptag:hover{opacity:.75}
+.ptag.on{opacity:1;background:var(--c);color:#fff}
+.tagdots{display:inline-flex;gap:3px;flex:none;align-items:center}
+.tagdots i{display:block;width:8px;height:8px;border-radius:50%;background:var(--c)}
 </style>
 </head>
 <body>
 <div class="app">
   <header>
-    <h1>삼성라이온즈 기능 정의 및 화면 설계서 <span class="sub">테이블 버전</span></h1>
+    <h1>삼성라이온즈 기능 정의 및 화면 설계서</h1>
     <span class="sp"></span>
     <button type="button" id="btnRequest">요청사항</button>
     <button type="button" id="btnHistory">이력</button>
@@ -482,7 +489,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 "use strict";
 (function(){
   /* =====================================================================
-     삼성라이온즈 기능 정의 및 화면 설계서 — 테이블 버전
+     삼성라이온즈 기능 정의 및 화면 설계서
      · 데이터는 Supabase 의 sl_groups / sl_screens / sl_sections / sl_history 테이블에 행 단위로 저장
      · [저장] 을 누르면 "바뀐 행만" 골라서 sl_save 함수 한 번으로 보낸다 (한 트랜잭션 — 전부 성공 or 전부 취소)
      · 다른 사람이 먼저 고친 행을 덮어쓰려 하면 서버가 거절 → 충돌 목록을 보여주고 아무것도 저장하지 않음
@@ -523,6 +530,18 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     {code:"HM", name:"홈"}, {code:"GM", name:"게임"}, {code:"TK", name:"예매"}, {code:"LG", name:"라운지"},
     {code:"MY", name:"마이페이지"}, {code:"AL", name:"전체 메뉴"}, {code:"CM", name:"공통"}
   ];
+  // 페이지 성향 뱃지 — 순서·색상 고정
+  var PAGE_TAGS = [
+    {key:"STATIC", color:"#64748b"},
+    {key:"ADMIN",  color:"#7c3aed"},
+    {key:"API",    color:"#0891b2"},
+    {key:"USER",   color:"#e8590c"}
+  ];
+  function normTags(v){
+    var arr = Array.isArray(v) ? v : [];
+    return PAGE_TAGS.map(function(t){return t.key;}).filter(function(k){ return arr.indexOf(k)>=0; });
+  }
+  function tagColor(k){ var t = PAGE_TAGS.find(function(x){return x.key===k;}); return t ? t.color : "#999"; }
   function normStatus(v){ return STATUSES.indexOf(v)>=0 ? v : "작성중"; }
   function normType(v){ return SECTION_TYPES.indexOf(v)>=0 ? v : "기능"; }
 
@@ -562,7 +581,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       out.screens[s.screenId] = {
         screen_id:s.screenId, group_id: gids[s.groupId] ? s.groupId : null,
         title:str(s.title), subtitle:str(s.subtitle), link:_sanitizeLinkUrl(s.link),
-        status:normStatus(s.status), seq:toInt(s.seq, 0), mock_image:mi
+        status:normStatus(s.status), seq:toInt(s.seq, 0), mock_image:mi, tags:normTags(s.tags)
       };
       (s.sections||[]).forEach(function(c, i){
         if(!c || !c.id) return;
@@ -588,7 +607,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     var screens = sRows.map(function(r){
       var s = { screenId:r.screen_id, groupId:r.group_id||"", title:str(r.title), subtitle:str(r.subtitle),
                 link:str(r.link), status:normStatus(r.status), seq:toInt(r.seq,0),
-                mockImage:(r.mock_image && typeof r.mock_image==="object") ? r.mock_image : null, sections:[] };
+                mockImage:(r.mock_image && typeof r.mock_image==="object") ? r.mock_image : null, tags:normTags(r.tags), sections:[] };
       byId[s.screenId] = s; return s;
     });
     cRows.slice().sort(function(a,b){ return (a.sort_order-b.sort_order) || (a.id<b.id?-1:1); }).forEach(function(r){
@@ -634,7 +653,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         screenId:sid, groupId:str(s.groupId), title:str(s.title), subtitle:str(s.subtitle),
         link:_sanitizeLinkUrl(s.link), status:normStatus(s.status), seq:toInt(s.seq,0),
         mockImage:(s.mockImage && typeof s.mockImage==="object" && !Array.isArray(s.mockImage)) ? s.mockImage : null,
-        sections:secs
+        tags:normTags(s.tags), sections:secs
       });
     });
     return { groups:groups, screens:screens };
@@ -792,6 +811,9 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     if(!SB.url) return Promise.resolve();
     _sbChip("서버에서 불러오는 중…","#ffd166");
     return fetchServer().then(function(d){
+      if(d.s.length && !("tags" in d.s[0])){
+        alert("서버에 페이지 성향 뱃지(tags) 칸이 아직 없어요.\n설정 SQL 파일을 SQL Editor에서 한 번 더 실행해 주세요.\n(실행 전에는 뱃지를 눌러도 서버에 저장되지 않아요)");
+      }
       var st = stateFromRows(d.g, d.s, d.c);
       STATE.groups = st.groups; STATE.screens = st.screens;
       VER = d.ver;
@@ -1100,6 +1122,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
           html += '<div class="scr-row '+(STATE.selectedScreenId===s.screenId?'active':'')+'" data-sid="'+esc(s.screenId)+'" data-act="sel-scr">'
                 +   '<span class="sid">'+esc(s.screenId)+'</span>'
                 +   '<span class="nm">'+esc(s.title||"")+'</span>'
+                +   _tagDots(s)
                 + '</div>';
         });
         if(!items.length) html += '<div class="empty" style="padding:14px 12px">빈 그룹 · "+ 화면"</div>';
@@ -1111,11 +1134,17 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       orphans.slice().sort(_byScreenIdNum).forEach(function(s){
         html += '<div class="scr-row '+(STATE.selectedScreenId===s.screenId?'active':'')+'" data-sid="'+esc(s.screenId)+'" data-act="sel-scr">'
               +   '<span class="sid">'+esc(s.screenId)+'</span>'
-              +   '<span class="nm">'+esc(s.title||"")+'</span></div>';
+              +   '<span class="nm">'+esc(s.title||"")+'</span>'+_tagDots(s)+'</div>';
       });
     }
     if(!groups.length && !orphans.length) html='<div class="empty">그룹이 없습니다. "+ 그룹" 으로 추가해 주세요.</div>';
     tree.innerHTML = html;
+  }
+  function _tagDots(s){
+    var tags = normTags(s.tags);
+    if(!tags.length) return "";
+    return '<span class="tagdots" title="'+esc(tags.join(" · "))+'">'
+         + tags.map(function(k){ return '<i style="--c:'+tagColor(k)+'"></i>'; }).join("") + '</span>';
   }
   function _byScreenIdNum(a,b){
     function num(s){ var m = typeof s.screenId==="string" && s.screenId.match(/^(\d+)/); return m ? parseInt(m[1],10) : (s.seq||0); }
@@ -1156,6 +1185,12 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         '<div class="meta">'
       +   '<span class="chip chip-id">'+esc(s.screenId||"")+'</span>'
       +   '<button type="button" class="idcopy" data-act="copy-sid" data-copy="#'+esc(s.screenId||"")+'" title="화면 ID 복사 (# 포함)">⧉</button>'
+      +   '<span class="ptags" title="페이지 성향 (여러 개 선택 가능)">'
+      +     PAGE_TAGS.map(function(t){
+              var on = normTags(s.tags).indexOf(t.key)>=0;
+              return '<button type="button" class="ptag'+(on?" on":"")+'" data-tag="'+t.key+'" style="--c:'+t.color+'" aria-pressed="'+on+'">'+t.key+'</button>';
+            }).join("")
+      +   '</span>'
       + '</div>'
       + '<div class="title">'
       +   '<input class="bordered" data-pf="title" data-sid="'+esc(s.screenId)+'" value="'+esc(s.title||"")+'">'
@@ -1178,6 +1213,18 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         toast("화면 ID를 복사했어요: " + idCopyBtn.dataset.copy);
         idCopyBtn.classList.add("ok");
         setTimeout(function(){ idCopyBtn.classList.remove("ok"); }, 900);
+      });
+    });
+
+    head.querySelectorAll(".ptag").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var k = btn.dataset.tag, cur = normTags(s.tags);
+        var i = cur.indexOf(k);
+        if(i>=0) cur.splice(i,1); else cur.push(k);
+        s.tags = normTags(cur);
+        var on = s.tags.indexOf(k)>=0;
+        btn.classList.toggle("on", on); btn.setAttribute("aria-pressed", String(on));
+        save(); renderTree();
       });
     });
 
@@ -1392,7 +1439,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
           + '</div>')
         + accItem("requirement", "고려 요소", filled(sec.requirement), ta("requirement"))
         + accItem("exception", "예외", filled(sec.exception), ta("exception"))
-        + accItem("feedback", "광고주 요청 / 피드백", filled(sec.feedback), ta("feedback"))
+        + accItem("feedback", "광고주 요청", filled(sec.feedback), ta("feedback"))
         + accItem("related", "연관 화면 ID", !!(sec.related && sec.related.length),
             '<div class="chipbox">'
           +   (sec.related||[]).map(function(r){
@@ -1601,7 +1648,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   /* ===================== 추가 / 삭제 ===================== */
   function newScreenShell(groupCode){
     var grp = (STATE.groups||[]).find(function(g){return g.code===groupCode;}) || (STATE.groups||[])[0] || {id:""};
-    return { screenId:"__pending__", title:"새 화면", subtitle:"", link:"", groupId:grp.id, status:"작성중", seq:0, mockImage:null, sections:[] };
+    return { screenId:"__pending__", title:"새 화면", subtitle:"", link:"", groupId:grp.id, status:"작성중", seq:0, mockImage:null, tags:[], sections:[] };
   }
   function newSection(title, order){
     return { id:uid("sec"), title:title||"구역", type:"기능", desc:"", target:"", requirement:"", exception:"",
@@ -1781,11 +1828,11 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       var groups = {};
       (STATE.groups||[]).forEach(function(g){ groups[g.id]=g; });
       var q = function(v){ if(v==null) return ""; var s=String(v).replace(/"/g,'""'); return /[",\r\n]/.test(s) ? ('"'+s+'"') : s; };
-      var lines = ["screenId,title,group,status,sections,sectionTitles"];
+      var lines = ["screenId,title,group,tags,status,sections,sectionTitles"];
       (STATE.screens||[]).slice().sort(_byScreenIdNum).forEach(function(s){
         var g = groups[s.groupId];
         var secs = (s.sections||[]).slice().sort(function(a,b){return (a.order||0)-(b.order||0);});
-        lines.push([ q(s.screenId), q(s.title), q(g ? (g.code+" "+(g.name||"")) : ""), q(s.status||""),
+        lines.push([ q(s.screenId), q(s.title), q(g ? (g.code+" "+(g.name||"")) : ""), q(normTags(s.tags).join(" ")), q(s.status||""),
                      secs.length, q(secs.map(function(x){return x.title;}).join(" / ")) ].join(","));
       });
       _download("samsung_lions_"+todayStr()+".csv", new Blob(["﻿" + lines.join("\r\n") + "\r\n"], {type:"text/csv;charset=utf-8"}));
