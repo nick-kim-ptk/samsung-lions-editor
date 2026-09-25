@@ -387,6 +387,37 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .ptag-pop .pp-row{display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-top:1px solid #eef2f8}
 .ptag-pop .pp-key{flex:none;width:58px;display:inline-flex;align-items:center;justify-content:center;height:20px;border-radius:10px;background:var(--c);color:#fff;font-size:10.5px;font-weight:800;letter-spacing:.4px}
 .ptag-pop .pp-desc{font-size:12px;font-weight:500;color:var(--ink);line-height:1.5}
+/* 충돌 선택 / 초안 창 */
+.cf-guide{padding:10px 18px;font-size:12.5px;color:var(--sub);background:#f8faff;border-bottom:1px solid var(--line);line-height:1.6}
+.cf-item{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-top:10px}
+.cf-h{display:flex;flex-direction:column;gap:2px;margin-bottom:6px;font-family:"Pretendard","Malgun Gothic",sans-serif}
+.cf-h b{font-size:13px;color:var(--ink)}
+.cf-h span{font-size:11.5px;color:var(--sub);font-weight:600}
+.cf-field{border-top:1px dashed var(--line);padding-top:6px;margin-top:6px}
+.cf-fl{font-size:11.5px;font-weight:800;color:var(--clr-brand);margin-bottom:4px}
+.cf-opts{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.cf-opt{display:flex;flex-direction:column;gap:3px;border:1px solid var(--line);border-radius:6px;padding:7px 9px;cursor:pointer;font-family:"Pretendard","Malgun Gothic",sans-serif;position:relative}
+.cf-opt:has(input:checked){border-color:var(--clr-brand);background:var(--acc-soft)}
+.cf-opt input{position:absolute;top:8px;right:8px}
+.cf-tag{font-size:11px;font-weight:800;color:#a25b00}
+.cf-tag.srv{color:var(--clr-brand)}
+.cf-val{font-size:12.5px;color:var(--ink);white-space:pre-wrap;word-break:break-word;max-height:140px;overflow:auto;padding-right:18px}
+/* 검색·필터 */
+.tree-filter{flex:none;padding:10px 12px 8px;border-bottom:1px solid var(--line);background:#fff;display:flex;flex-direction:column;gap:7px}
+.tree-filter .tf-q{width:100%;height:30px;padding:0 10px;border:1px solid var(--line);border-radius:6px;font-size:13px;font-family:inherit}
+.tree-filter .tf-q:focus{outline:none;border-color:var(--clr-brand);box-shadow:0 0 0 2px rgba(10,61,145,.14)}
+.tree-filter .tf-row{display:flex;flex-wrap:wrap;gap:3px;align-items:center}
+.tree-filter .tf-lbl{font-size:11px;font-weight:800;color:var(--sub);width:28px;flex:none}
+.tf-chip{--c:#5b6a87;height:22px;padding:0 6px;border-radius:11px;border:1px solid var(--line);background:#fff;color:var(--sub);font-size:10.5px;font-weight:800;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:4px}
+.tf-chip i{width:7px;height:7px;border-radius:50%;background:var(--c);display:inline-block}
+.tf-chip.on{background:var(--c);border-color:var(--c);color:#fff}
+.tf-chip.on i{background:#fff}
+.tf-reset{margin-left:auto;font-size:11px;font-weight:700;color:var(--clr-brand);cursor:pointer;background:none;border:0;padding:0 2px;font-family:inherit}
+.scr-row{border-left:3px solid transparent}
+.scr-row.st-wr{border-left-color:#e0a33a}
+.scr-row.st-ok{border-left-color:#2e9d5b}
+.grp-row .n .prog{display:inline-block;width:34px;height:5px;border-radius:3px;background:#dfe5ef;margin-left:6px;vertical-align:middle;overflow:hidden}
+.grp-row .n .prog b{display:block;height:100%;background:#2e9d5b}
 .tagdots{display:inline-flex;gap:3px;flex:none;align-items:center}
 .tagdots i{display:block;width:8px;height:8px;border-radius:50%;background:var(--c)}
 </style>
@@ -396,6 +427,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   <header>
     <h1>삼성라이온즈 기능 정의 및 화면 설계서</h1>
     <span class="sp"></span>
+    <button type="button" id="btnUser" title="내 이름 변경 (저장·이력에 기록돼요)">👤 이름 입력</button>
     <button type="button" id="btnRequest">요청사항</button>
     <button type="button" id="btnHistory">이력</button>
     <span class="syncBlock" role="group" aria-label="서버 상태">
@@ -405,7 +437,8 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       <span class="data-menu"><span class="lbl">데이터</span>
         <select id="dataMenu" aria-label="데이터 관리 메뉴">
           <option value="" selected>관리</option>
-          <option value="pull">서버 최신 불러오기</option>
+          <option value="pull">서버 최신 불러오기 (내 변경 유지)</option>
+          <option value="discard">내 변경 버리고 서버 데이터로</option>
           <option value="exp">JSON 내보내기</option>
           <option value="csv">CSV 내보내기</option>
           <option value="imp">JSON 가져오기</option>
@@ -413,6 +446,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       </span>
     </span>
     <input type="file" id="imp" accept=".json" style="display:none">
+    <button type="button" id="syncBanner" style="display:none;margin-right:8px;background:#e6f0ff;color:var(--clr-brand-deep);border-color:#9fbdf0;font-size:12px;font-weight:800">🔄 새 변경</button>
     <span id="unsavedBadge" style="display:none;align-items:center;height:26px;padding:0 10px;border-radius:13px;background:#ffe6b3;color:#7a4b00;font-size:12px;font-weight:800;margin-right:8px;white-space:nowrap">⚠ 저장 필요</span>
     <button type="button" id="btnSave" class="primary">저장</button>
   </header>
@@ -424,6 +458,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         <button type="button" id="btnAddScr" class="primary">+ 화면</button>
         <button type="button" id="btnAddGrp">+ 그룹</button>
       </div>
+      <div class="tree-filter" id="treeFilter"></div>
       <div class="col-b" id="tree"></div>
     </div>
 
@@ -464,7 +499,9 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       </div>
       <div class="col-b" style="display:flex;flex-direction:column;gap:14px;overflow:hidden">
         <div class="hist-compose">
-          <div class="hist-compose-label">수정내역</div>
+          <div class="hist-compose-label" style="display:flex;align-items:center;gap:8px">수정내역
+            <button type="button" id="btnHistoryDraft" style="margin-left:auto;height:24px;padding:0 10px;border:1px solid var(--clr-brand);background:#fff;color:var(--clr-brand);border-radius:12px;font-size:11.5px;font-weight:800;cursor:pointer;font-family:inherit" title="마지막 이력 등록 이후 내가 저장한 변경을 초안으로 불러와요">쌓인 초안 불러오기</button>
+          </div>
           <div class="hist-compose-row">
             <textarea id="historyInput" maxlength="5000" placeholder="예) #001-SL-CM-01 수정, #002-SL-CM-02 수정"></textarea>
             <button type="button" id="btnHistoryAdd">등록</button>
@@ -553,13 +590,65 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     return PAGE_TAGS.map(function(t){return t.key;}).filter(function(k){ return arr.indexOf(k)>=0; });
   }
   function tagColor(k){ var t = PAGE_TAGS.find(function(x){return x.key===k;}); return t ? t.color : "#999"; }
+  // 화면 진행 상황 = 구역 상태에서 자동 계산
+  //   구역이 모두 확정 → 확정 / 하나라도 검토중·확정 → 검토중 / 그 외(구역 없음 포함) → 작성중
+  function screenStatus(s){
+    var secs = (s && s.sections) || [];
+    if(!secs.length) return "작성중";
+    var st = secs.map(function(x){ return STATUSES.indexOf(x.status)>=0 ? x.status : "작성중"; });
+    if(st.every(function(v){return v==="확정";})) return "확정";
+    if(st.some(function(v){return v!=="작성중";})) return "검토중";
+    return "작성중";
+  }
   function normStatus(v){ return STATUSES.indexOf(v)>=0 ? v : "작성중"; }
   function normType(v){ return SECTION_TYPES.indexOf(v)>=0 ? v : "기능"; }
 
   // ── 서버 설정 (기존 편집기와 같은 Supabase 프로젝트, 새 테이블만 사용)
-  var SB = { url:"https://gyfldkokgivdqtlytbze.supabase.co", key:"sb_publishable_IjEHGpxgWk3bALJs9lBKug_hqn4GrGH", user:"세현" };
+  var SB = { url:"https://gyfldkokgivdqtlytbze.supabase.co", key:"sb_publishable_IjEHGpxgWk3bALJs9lBKug_hqn4GrGH", user:"" };
+  var NAME_KEY = "sl_tables_editor_name";
+  try{ SB.user = (localStorage.getItem(NAME_KEY)||"").trim(); }catch(_){}
   var SB_BUCKET = "samsunglion";
   var T_GROUPS = "sl_groups", T_SCREENS = "sl_screens", T_SECTIONS = "sl_sections", T_HISTORY = "sl_history";
+  // ── 내 이름 (로그인 대신, 브라우저에 기억)
+  function _renderUserBtn(){
+    var b = document.getElementById("btnUser"); if(!b) return;
+    b.textContent = "👤 " + (SB.user || "이름 입력");
+    b.style.borderColor = SB.user ? "" : "var(--clr-accent)";
+  }
+  function askName(opts){
+    opts = opts || {};
+    return new Promise(function(resolve){
+      var old = document.getElementById("nameBg"); if(old) old.remove();
+      var bg = document.createElement("div"); bg.className = "modalbg show"; bg.id = "nameBg";
+      bg.innerHTML = '<div class="modal" style="width:420px">'
+        + '<h3>'+(SB.user ? "이름 변경" : "이름을 알려주세요")+'</h3>'
+        + '<div class="body" style="padding:18px">'
+        +   '<div class="rower" style="margin-bottom:0"><div class="lbl">이름 <span class="req">*</span></div>'
+        +   '<input id="nameInput" maxlength="20" placeholder="예: 세현" value="'+esc(SB.user)+'">'
+        +   '<div class="tip">저장한 사람, 이력 작성자, 새 구역 작성자로 기록돼요. 이 브라우저에 기억됩니다.</div></div>'
+        + '</div>'
+        + '<div class="ft">'+(opts.required && !SB.user ? '' : '<button type="button" data-act="name-cancel">취소</button>')
+        +   '<button type="button" class="primary" data-act="name-ok">확인</button></div></div>';
+      document.body.appendChild(bg);
+      var inp = document.getElementById("nameInput");
+      setTimeout(function(){ inp.focus(); inp.select(); }, 30);
+      function done(v){ bg.remove(); resolve(v); }
+      function ok(){
+        var v = (inp.value||"").trim().replace(/\s+/g," ");
+        if(!v){ inp.focus(); toast("이름을 입력해 주세요", true); return; }
+        SB.user = v; try{ localStorage.setItem(NAME_KEY, v); }catch(_){}
+        _renderUserBtn(); done(v);
+      }
+      bg.addEventListener("click", function(e){
+        var a = e.target.dataset && e.target.dataset.act;
+        if(a==="name-ok") ok();
+        if(a==="name-cancel") done(null);
+      });
+      inp.addEventListener("keydown", function(e){ if(e.key==="Enter"){ e.preventDefault(); ok(); } });
+    });
+  }
+  function ensureName(){ return SB.user ? Promise.resolve(SB.user) : askName({required:true}); }
+
   function _sbH(){ return { "apikey": SB.key, "Authorization": "Bearer "+SB.key, "Content-Type":"application/json", "Prefer":"return=representation" }; }
 
   // ── 브라우저 보관 키 (기존 편집기와 겹치지 않는 새 이름 — 같은 주소에서 열어도 서로 안 섞임)
@@ -570,10 +659,12 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   var STATE = { groups:[], screens:[], selectedScreenId:null, selectedSectionId:null, changelog:[] };
   var BASE = null;                              // 마지막으로 서버와 맞춘 시점의 행 스냅샷 (변경 비교 기준)
   var VER  = { groups:{}, screens:{}, sections:{} };   // 행별 서버 version (충돌 감지용)
+  var PENDING_DEL = [];                         // 저장이 성공한 뒤 지울 스토리지 파일 경로
   var _pulled  = false;                         // 서버 기준본(BASE)을 갖고 있는지
   var _saving  = false;
   var _unsynced = false;                        // 서버에 아직 저장 안 된 변경이 있는지
   var _navWarned = false;
+  var FILTER = { q:"", tags:[], st:[] };        // 화면 목록 검색·필터 (브라우저에 유지)
 
   /* ===================== 상태 ↔ 테이블 행 변환 ===================== */
 
@@ -592,7 +683,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       out.screens[s.screenId] = {
         screen_id:s.screenId, group_id: gids[s.groupId] ? s.groupId : null,
         title:str(s.title), subtitle:str(s.subtitle), link:_sanitizeLinkUrl(s.link),
-        status:normStatus(s.status), seq:toInt(s.seq, 0), mock_image:mi, tags:normTags(s.tags)
+        status:screenStatus(s), seq:toInt(s.seq, 0), mock_image:mi, tags:normTags(s.tags)
       };
       (s.sections||[]).forEach(function(c, i){
         if(!c || !c.id) return;
@@ -698,7 +789,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     try{
       localStorage.setItem(LOCAL_KEY, JSON.stringify({
         state:{ groups:STATE.groups, screens:STATE.screens },
-        base:BASE, ver:VER, pulled:_pulled, unsynced:_unsynced, t:Date.now()
+        base:BASE, ver:VER, pulled:_pulled, unsynced:_unsynced, pendingDel:PENDING_DEL, t:Date.now()
       }));
     }catch(e){ console.warn("[local save]", e); }
   }
@@ -709,7 +800,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   function saveUi(){
     try{
       localStorage.setItem(UI_KEY, JSON.stringify({
-        sel:STATE.selectedScreenId, sec:STATE.selectedSectionId,
+        sel:STATE.selectedScreenId, sec:STATE.selectedSectionId, filter:FILTER,
         closed:(STATE.groups||[]).filter(function(g){return g._open===false;}).map(function(g){return g.id;})
       }));
     }catch(_){}
@@ -717,6 +808,9 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   function applyUi(){
     var u = null; try{ u = JSON.parse(localStorage.getItem(UI_KEY)||"null"); }catch(_){}
     var closed = (u && Array.isArray(u.closed)) ? u.closed : [];
+    if(u && u.filter && typeof u.filter==="object"){
+      FILTER = { q:str(u.filter.q), tags:Array.isArray(u.filter.tags)?u.filter.tags:[], st:Array.isArray(u.filter.st)?u.filter.st:[] };
+    }
     (STATE.groups||[]).forEach(function(g){ g._open = closed.indexOf(g.id)<0; });
     var want = (u && u.sel) || STATE.selectedScreenId;
     var s = want ? findScreen(want) : null;
@@ -797,17 +891,34 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     }
     return next(0);
   }
+  // 서버 3개 테이블 + 마지막 변경 번호를 읽는다.
+  // 변경 번호를 "먼저" 읽어야 그 사이 생긴 변경을 놓치지 않는다 (중복 알림은 괜찮고, 누락은 안 됨)
+  var _schemaWarned = false;
+  function fetchLastChangeId(){
+    return fetch(SB.url+"/rest/v1/sl_changes?select=id&order=id.desc&limit=1", { headers:_sbH() })
+      .then(_readJson).then(function(rows){ return (rows && rows[0]) ? Number(rows[0].id) : 0; })
+      .catch(function(){ return null; });   // 변경 기록 테이블이 없으면(SQL 미갱신) 알림 기능만 꺼진다
+  }
   function fetchServer(){
-    return Promise.all([
-      sbGetAll(T_GROUPS,   "sort_order.asc,id.asc"),
-      sbGetAll(T_SCREENS,  "screen_id.asc"),
-      sbGetAll(T_SECTIONS, "screen_id.asc,sort_order.asc,id.asc")
-    ]).then(function(res){
-      var ver = { groups:{}, screens:{}, sections:{} };
-      res[0].forEach(function(r){ ver.groups[r.id] = r.version; });
-      res[1].forEach(function(r){ ver.screens[r.screen_id] = r.version; });
-      res[2].forEach(function(r){ ver.sections[r.id] = r.version; });
-      return { g:res[0], s:res[1], c:res[2], ver:ver };
+    var lastId = null;
+    return fetchLastChangeId().then(function(id){
+      lastId = id;
+      return Promise.all([
+        sbGetAll(T_GROUPS,   "sort_order.asc,id.asc"),
+        sbGetAll(T_SCREENS,  "screen_id.asc"),
+        sbGetAll(T_SECTIONS, "screen_id.asc,sort_order.asc,id.asc")
+      ]);
+    }).then(function(res){
+      var ver = { groups:{}, screens:{}, sections:{} }, meta = { groups:{}, screens:{}, sections:{} };
+      res[0].forEach(function(r){ ver.groups[r.id] = r.version; meta.groups[r.id] = {by:r.updated_by, at:r.updated_at}; });
+      res[1].forEach(function(r){ ver.screens[r.screen_id] = r.version; meta.screens[r.screen_id] = {by:r.updated_by, at:r.updated_at}; });
+      res[2].forEach(function(r){ ver.sections[r.id] = r.version; meta.sections[r.id] = {by:r.updated_by, at:r.updated_at}; });
+      var st = stateFromRows(res[0], res[1], res[2]);
+      if(!_schemaWarned && ((res[1].length && !("tags" in res[1][0])) || lastId === null)){
+        _schemaWarned = true;
+        alert("서버 설정이 최신이 아니에요.\n설정 SQL 파일을 SQL Editor에서 한 번 더 실행해 주세요.\n(실행 전에는 연계 구분 저장·새 변경 알림·이력 초안이 동작하지 않아요)");
+      }
+      return { g:res[0], s:res[1], c:res[2], ver:ver, meta:meta, lastId:lastId, rows:rowsFromState(st) };
     });
   }
   function _missingTableMsg(e){
@@ -816,29 +927,36 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       return "서버에 새 테이블/함수가 없어요 — 설정 SQL 을 먼저 실행해 주세요";
     return null;
   }
+  function _rowsToArrays(rows){
+    function vals(o){ return Object.keys(o||{}).map(function(k){ return o[k]; }); }
+    return stateFromRows(vals(rows.groups), vals(rows.screens), vals(rows.sections));
+  }
+  function _hasLocalChanges(){ return !!(BASE && buildChanges(BASE, rowsFromState(STATE), VER).count > 0); }
+
+  // 서버에서 받은 내용으로 기준본을 바꾸고, 화면은 rows(합쳐진 결과 또는 서버 그대로)로 채운다
+  function _applyServer(d, rows){
+    var st = _rowsToArrays(rows || d.rows);
+    STATE.groups = st.groups; STATE.screens = st.screens;
+    BASE = d.rows; VER = d.ver; META = d.meta; _pulled = true; _navWarned = false;
+    if(d.lastId !== null) _lastChangeId = d.lastId;
+    _unsynced = buildChanges(BASE, rowsFromState(STATE), VER).count > 0;
+    _hideSyncBanner();
+    applyUi(); persistLocal(); _updateUnsavedBadge(); renderAll();
+    flushDeletes();
+  }
 
   // 서버 최신 데이터로 화면을 새로 채운다 (지금 화면의 미저장 변경은 버려짐 — 호출 전에 확인할 것)
   function pullAll(){
     if(!SB.url) return Promise.resolve();
     _sbChip("서버에서 불러오는 중…","#ffd166");
     return fetchServer().then(function(d){
-      if(d.s.length && !("tags" in d.s[0])){
-        alert("서버에 페이지 성향 뱃지(tags) 칸이 아직 없어요.\n설정 SQL 파일을 SQL Editor에서 한 번 더 실행해 주세요.\n(실행 전에는 뱃지를 눌러도 서버에 저장되지 않아요)");
-      }
-      var st = stateFromRows(d.g, d.s, d.c);
-      STATE.groups = st.groups; STATE.screens = st.screens;
-      VER = d.ver;
-      BASE = rowsFromState(STATE);
-      _pulled = true; _unsynced = false; _navWarned = false;
-      if(!STATE.groups.length && !STATE.screens.length){
+      if(!d.g.length && !d.s.length){
         // 서버가 완전히 비어 있으면 기본 그룹 7개를 준비해 둔다 (저장해야 서버에 올라감)
-        STATE.groups = GROUPS_DEF.map(function(g,i){ return {id:"grp_"+g.code, code:g.code, name:g.name, order:i, _open:true}; });
-        _unsynced = true;
+        _applyServer(d, { groups:GROUPS_DEF.reduce(function(o,g,i){ o["grp_"+g.code] = {id:"grp_"+g.code, code:g.code, name:g.name, sort_order:i}; return o; }, {}), screens:{}, sections:{} });
         toast("서버가 비어 있어 기본 그룹을 준비했어요. 저장하면 서버에 올라갑니다.");
+      } else {
+        _applyServer(d);
       }
-      applyUi();
-      persistLocal(); _updateUnsavedBadge();
-      renderAll();
       _sbChip("서버 불러옴 · "+new Date().toLocaleTimeString(),"#8fe3ab");
     }).catch(function(e){
       console.warn("[pull]", e);
@@ -849,42 +967,251 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     });
   }
 
-  function _conflictText(list){
-    return list.map(function(c){
-      if(c.t==="group"){
-        var g = (STATE.groups||[]).find(function(x){return x.id===c.id;});
-        return "· 그룹 " + (g ? _fmtGroup(g,"tree") : c.id);
+  /* ===================== 합치기 (내 변경 유지 + 서버 최신 반영) =====================
+     기준본(BASE) · 내 것(cur) · 서버 것(srv) 세 가지를 칸 단위로 비교한다.
+       - 나만 바꾼 칸 → 내 값 / 서버만 바꾼 칸 → 서버 값 / 둘 다 같은 값 → 그대로
+       - 둘 다 다르게 바꾼 칸 → 충돌 (선택 창에서 고름)
+       - 내가 지웠는데 서버가 고침, 내가 고쳤는데 서버가 지움, 같은 ID 를 둘 다 추가 → 행 단위 충돌 */
+  var DERIVED = { screens:{ status:1 } };   // 자동 계산되는 칸은 충돌로 보지 않는다
+  function rebase(base, cur, srv){
+    var merged = clone(srv), conflicts = [];
+    ["groups","screens","sections"].forEach(function(t){
+      var b = base[t]||{}, c = cur[t]||{}, s = srv[t]||{};
+      var ids = {}; Object.keys(b).forEach(function(k){ids[k]=1;}); Object.keys(c).forEach(function(k){ids[k]=1;});
+      Object.keys(ids).forEach(function(id){
+        var B = b[id], C = c[id], S = s[id];
+        if(B && C && stable(B)===stable(C)) return;                 // 내가 안 건드림 → 서버 값
+        if(!B && C){                                                 // 내가 추가
+          if(!S) merged[t][id] = clone(C);
+          else if(stable(S)!==stable(C)) conflicts.push({kind:"dup", t:t, id:id, mine:C, server:S});
+          return;
+        }
+        if(B && !C){                                                 // 내가 삭제
+          if(!S) return;
+          if(stable(S)===stable(B)) delete merged[t][id];
+          else conflicts.push({kind:"delEdited", t:t, id:id, mine:null, server:S});
+          return;
+        }
+        if(!S){ conflicts.push({kind:"editDeleted", t:t, id:id, mine:C, server:null}); return; }   // 내가 고쳤는데 서버에서 삭제됨
+        var row = clone(S), fields = [];
+        Object.keys(C).forEach(function(f){
+          if(DERIVED[t] && DERIVED[t][f]) return;
+          if(stable(C[f])===stable(B[f])) return;                    // 내가 안 바꾼 칸
+          if(stable(S[f])===stable(B[f])) row[f] = clone(C[f]);      // 서버는 안 바꿈 → 내 값
+          else if(stable(S[f])!==stable(C[f])) fields.push(f);       // 둘 다 다르게 바꿈 → 충돌
+        });
+        merged[t][id] = row;
+        if(fields.length) conflicts.push({kind:"field", t:t, id:id, fields:fields, mine:C, server:S});
+      });
+    });
+    // 서버에서 화면이 삭제됐는데 내가 그 안의 구역을 고친 경우 → "화면" 하나의 충돌로 묶는다
+    var scrGone = {};
+    conflicts.forEach(function(x){ if(x.t==="screens" && x.kind==="editDeleted") scrGone[x.id]=1; });
+    conflicts = conflicts.filter(function(x){
+      if(x.t!=="sections" || x.kind!=="editDeleted") return true;
+      var sid = x.mine && x.mine.screen_id;
+      if(!sid || (srv.screens||{})[sid]) return true;
+      if(!scrGone[sid] && cur.screens[sid]){
+        scrGone[sid] = 1;
+        conflicts.push({kind:"editDeleted", t:"screens", id:sid, mine:cur.screens[sid], server:null});
       }
-      if(c.t==="screen"){
-        var s = findScreen(c.id);
-        return "· 화면 " + c.id + (s && s.title ? " ("+s.title+")" : "");
+      return false;
+    });
+    return { merged:merged, conflicts:conflicts, cur:cur };
+  }
+  // 충돌에서 고른 값을 합친 결과에 반영
+  function applyChoices(r, choices){
+    var m = r.merged;
+    r.conflicts.forEach(function(x, i){
+      var ch = choices[i] || {};
+      if(x.kind==="field"){
+        x.fields.forEach(function(f){ if(ch[f]==="mine") m[x.t][x.id][f] = clone(x.mine[f]); });
+      } else if(ch.row==="mine"){
+        if(x.kind==="delEdited") delete m[x.t][x.id];
+        else {
+          m[x.t][x.id] = clone(x.mine);
+          if(x.t==="screens"){   // 화면을 되살리면 내 화면의 구역도 함께 되살린다
+            Object.keys(r.cur.sections).forEach(function(k){
+              if(r.cur.sections[k].screen_id===x.id) m.sections[k] = clone(r.cur.sections[k]);
+            });
+          }
+        }
       }
-      var sc = c.screen_id ? findScreen(c.screen_id) : null;
-      var sec = sc ? (sc.sections||[]).find(function(x){return x.id===c.id;}) : null;
-      return "· 구역 " + (c.screen_id||"") + " › " + (sec && sec.title ? sec.title : c.id);
-    }).join("\n");
+    });
+    // 정리: 화면이 없는 구역은 버리고, 없는 그룹을 가리키는 화면은 "분류 미지정"으로
+    Object.keys(m.sections).forEach(function(k){ if(!m.screens[m.sections[k].screen_id]) delete m.sections[k]; });
+    Object.keys(m.screens).forEach(function(k){ if(m.screens[k].group_id && !m.groups[m.screens[k].group_id]) m.screens[k].group_id = null; });
+    return m;
   }
 
-  // [저장] — 비밀번호 확인 → 바뀐 행 계산 → sl_save 호출 (전부 성공 or 전부 취소)
+  var _syncing = false;
+  // 서버 최신을 가져와 내 변경과 합친다. 충돌이 있으면 고르는 창을 띄운다.
+  // 반환: true(반영됨) / false(취소됨)
+  function syncFromServer(opts){
+    opts = opts || {};
+    if(_syncing) return Promise.resolve(false);
+    if(!_pulled || !BASE || !_hasLocalChanges()){
+      return pullAll().then(function(){ return true; }, function(){ return false; });
+    }
+    _syncing = true;
+    _sbChip("서버 최신과 합치는 중…","#ffd166");
+    return fetchServer().then(function(d){
+      var r = rebase(BASE, rowsFromState(STATE), d.rows);
+      var go = r.conflicts.length ? openConflictModal(r, d, opts) : Promise.resolve([]);
+      return go.then(function(choices){
+        if(!choices){ _sbChip("합치기 취소 · 내 화면 그대로","#ffd166"); return false; }
+        _applyServer(d, applyChoices(r, choices));
+        _sbChip("서버 최신과 합침 · "+new Date().toLocaleTimeString(),"#8fe3ab");
+        toast(r.conflicts.length ? "충돌 "+r.conflicts.length+"건을 정리해서 합쳤어요" : "서버 최신 내용과 내 변경을 합쳤어요");
+        return true;
+      });
+    }).catch(function(e){
+      console.warn("[sync]", e);
+      _sbChip("서버 연결 실패 · 내 화면 그대로","#ff9c96");
+      toast(_missingTableMsg(e) || "서버 최신을 가져오지 못했어요", true);
+      return false;
+    }).then(function(v){ _syncing = false; return v; });
+  }
+
+  // ── 충돌 선택 창
+  var FIELD_LABELS = {
+    groups:  { code:"약칭", name:"그룹명", sort_order:"순서" },
+    screens: { title:"제목", subtitle:"목적/개요", link:"URL 링크", tags:"연계 구분", mock_image:"화면 이미지", group_id:"그룹", seq:"순번", status:"진행 상황" },
+    sections:{ title:"구역 이름", sec_type:"구역 종류", status:"진행 상황", author:"작성자", description:"기능 설명", target:"관련 자료",
+               images:"관련 자료 이미지", requirement:"고려 요소", exception_note:"예외", feedback:"광고주 요청", note:"메모",
+               out_url:"이동 URL", out_label:"표시 라벨", linked_screen_id:"연결할 화면", related:"연관 화면 ID", sort_order:"순서", screen_id:"화면" }
+  };
+  function _fieldLabel(t, f){ return (FIELD_LABELS[t] && FIELD_LABELS[t][f]) || f; }
+  function _showVal(t, f, v){
+    if(v===null || v===undefined || v==="" || (Array.isArray(v) && !v.length)) return "(비어 있음)";
+    if(f==="images") return "이미지 " + v.length + "개" + (v.length ? " · " + v.map(function(x){return x && x.name;}).filter(Boolean).join(", ") : "");
+    if(f==="mock_image") return (v && v.name) || "이미지";
+    if(f==="group_id"){ var g = (STATE.groups||[]).find(function(x){return x.id===v;}); return g ? _fmtGroup(g,"tree") : v; }
+    if(Array.isArray(v)) return v.join(", ");
+    var s = String(v);
+    return s.length > 400 ? s.slice(0,400) + "…" : s;
+  }
+  function _rowTitle(x){
+    var r = x.mine || x.server || {};
+    if(x.t==="groups") return "그룹 " + ((r.code||"") + " " + (r.name||"")).trim();
+    if(x.t==="screens") return "#" + x.id + " 화면 '" + (r.title||"") + "'";
+    return "#" + (r.screen_id||"") + " › 구역 '" + (r.title||"") + "'";
+  }
+  function _whoAt(meta){
+    if(!meta) return "";
+    var t = meta.at ? new Date(meta.at) : null;
+    return (meta.by ? meta.by + "님" : "다른 사람") + (t && !isNaN(t) ? " · " + t.toLocaleString() : "");
+  }
+  function openConflictModal(r, d, opts){
+    return new Promise(function(resolve){
+      var KIND_MSG = {
+        dup:"같은 ID 를 다른 사람이 먼저 추가했어요.",
+        delEdited:"내가 삭제했는데, 다른 사람이 그 사이 수정했어요.",
+        editDeleted:"내가 수정했는데, 다른 사람이 그 사이 삭제했어요."
+      };
+      var ROW_OPTS = {
+        dup:["내 내용으로 덮어쓰기","서버 것 유지"],
+        delEdited:["삭제하기 (내 선택)","서버 것 유지"],
+        editDeleted:["내 것으로 되살리기","삭제 유지 (서버)"]
+      };
+      var html = r.conflicts.map(function(x, i){
+        var meta = d.meta[x.t] && d.meta[x.t][x.id];
+        var head = '<div class="cf-h"><b>'+esc(_rowTitle(x))+'</b><span>'+esc(x.kind==="field" ? "서버: "+_whoAt(meta) : KIND_MSG[x.kind] + (meta ? " ("+_whoAt(meta)+")" : ""))+'</span></div>';
+        if(x.kind==="field"){
+          return '<div class="cf-item">'+head + x.fields.map(function(f){
+            var nm = "cf_"+i+"_"+f;
+            return '<div class="cf-field"><div class="cf-fl">'+esc(_fieldLabel(x.t,f))+'</div><div class="cf-opts">'
+              + '<label class="cf-opt"><input type="radio" name="'+nm+'" value="mine" data-i="'+i+'" data-f="'+esc(f)+'"><span class="cf-tag">내 값</span><span class="cf-val">'+esc(_showVal(x.t,f,x.mine[f]))+'</span></label>'
+              + '<label class="cf-opt"><input type="radio" name="'+nm+'" value="server" data-i="'+i+'" data-f="'+esc(f)+'" checked><span class="cf-tag srv">서버 값</span><span class="cf-val">'+esc(_showVal(x.t,f,x.server[f]))+'</span></label>'
+              + '</div></div>';
+          }).join("") + '</div>';
+        }
+        var nm2 = "cf_"+i+"_row", o = ROW_OPTS[x.kind];
+        return '<div class="cf-item">'+head+'<div class="cf-opts">'
+          + '<label class="cf-opt"><input type="radio" name="'+nm2+'" value="mine" data-i="'+i+'" data-f="row"><span class="cf-tag">'+esc(o[0])+'</span></label>'
+          + '<label class="cf-opt"><input type="radio" name="'+nm2+'" value="server" data-i="'+i+'" data-f="row" checked><span class="cf-tag srv">'+esc(o[1])+'</span></label>'
+          + '</div></div>';
+      }).join("");
+      var bg = document.createElement("div"); bg.className = "modalbg show"; bg.id = "conflictBg";
+      bg.innerHTML = '<div class="modal" style="width:760px">'
+        + '<h3>다른 사람과 같은 곳을 고쳤어요 <span class="sp"></span><span style="font-size:12.5px;color:var(--sub);font-weight:700">'+r.conflicts.length+'건</span></h3>'
+        + '<div class="cf-guide">겹치지 않는 변경은 이미 자동으로 합쳤어요. 아래 항목만 어느 쪽을 남길지 골라 주세요. (기본값: 서버 값)</div>'
+        + '<div class="body" style="padding:6px 16px 12px">'+html+'</div>'
+        + '<div class="ft"><button type="button" data-act="cf-all-mine" style="margin-right:auto">모두 내 값</button>'
+        +   '<button type="button" data-act="cf-all-srv" style="margin-right:auto">모두 서버 값</button>'
+        +   '<button type="button" data-act="cf-cancel">취소</button>'
+        +   '<button type="button" class="primary" data-act="cf-ok">'+(opts.thenSave ? "적용 후 저장" : "적용")+'</button></div></div>';
+      document.body.appendChild(bg);
+      bg.addEventListener("click", function(e){
+        var a = e.target.dataset && e.target.dataset.act; if(!a) return;
+        if(a==="cf-all-mine" || a==="cf-all-srv"){
+          var v = a==="cf-all-mine" ? "mine" : "server";
+          bg.querySelectorAll('input[type=radio][value="'+v+'"]').forEach(function(x){ x.checked = true; });
+          return;
+        }
+        if(a==="cf-cancel"){ bg.remove(); resolve(null); return; }
+        if(a==="cf-ok"){
+          var choices = r.conflicts.map(function(){ return {}; });
+          bg.querySelectorAll("input[type=radio]:checked").forEach(function(x){ choices[+x.dataset.i][x.dataset.f] = x.value; });
+          bg.remove(); resolve(choices);
+        }
+      });
+    });
+  }
+
+  /* ===================== 새 변경 알림 (1분마다, 탭이 보일 때만) ===================== */
+  var META = { groups:{}, screens:{}, sections:{} };
+  var _lastChangeId = null;   // 마지막으로 서버와 맞춘 시점의 변경 번호
+  var _myTx = [];             // 내가 저장한 묶음 번호 (내 변경은 알림에서 제외)
+  var POLL_MS = 60*1000;
+  function _isEditing(){
+    var a = document.activeElement;
+    if(document.querySelector(".modalbg.show")) return true;
+    return !!(a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && a.closest("#mainView, #historyScreen"));
+  }
+  function pollOnce(){
+    if(!SB.url || !_pulled || _lastChangeId===null || _saving || _syncing || document.visibilityState!=="visible") return;
+    fetch(SB.url+"/rest/v1/sl_changes?select=id,txid,by_user&id=gt."+_lastChangeId+"&order=id.asc&limit=1000", { headers:_sbH() })
+      .then(_readJson).then(function(rows){
+        if(!Array.isArray(rows) || !rows.length){ _hideSyncBanner(); return; }
+        var foreign = rows.filter(function(r){ return _myTx.indexOf(String(r.txid))<0; });
+        if(!foreign.length){ _lastChangeId = Number(rows[rows.length-1].id); _hideSyncBanner(); return; }
+        var who = []; foreign.forEach(function(r){ if(r.by_user && who.indexOf(r.by_user)<0) who.push(r.by_user); });
+        if(!_hasLocalChanges() && !_isEditing()){
+          // 내 미저장 변경이 없고 입력 중도 아니면 조용히 최신으로 맞춘다
+          pullAll().then(function(){ toast((who.join(", ")||"다른 사람")+"님의 변경 "+foreign.length+"건을 반영했어요"); }, function(){});
+        } else {
+          _showSyncBanner(foreign.length, who);
+        }
+      }).catch(function(e){ console.warn("[poll]", e); });
+  }
+  function _showSyncBanner(n, who){
+    var b = document.getElementById("syncBanner"); if(!b) return;
+    b.textContent = "🔄 새 변경 "+n+"건 · 불러오기";
+    b.title = (who.length ? who.join(", ")+"님이 수정했어요. " : "") + "누르면 내 변경은 유지한 채 합쳐요.";
+    b.style.display = "inline-flex";
+  }
+  function _hideSyncBanner(){ var b = document.getElementById("syncBanner"); if(b) b.style.display = "none"; }
+
+  // [저장] — 이름·비밀번호 확인 → 바뀐 행 계산 → sl_save 호출 (전부 성공 or 전부 취소)
   function saveToServer(){
     if(_saving){ toast("저장 중이에요…"); return; }
     if(!SB.url){ toast("서버 설정이 없어요", true); return; }
-    _checkSavePassword().then(function(ok){
+    ensureName().then(function(n){ if(!n) return false; return _checkSavePassword(); }).then(function(ok){
       if(!ok) return;
       var ready = _pulled && BASE ? Promise.resolve(true) : _prepareBaseWithoutPull();
-      ready.then(function(go){ if(go) _doSave(); });
+      ready.then(function(go){ if(go) _doSave(0); });
     });
   }
-  // 서버 기준본 없이 작업한 경우(처음부터 오프라인이었던 경우 등): 확인을 받고 서버 버전만 받아와서 저장
+  // 서버 기준본 없이 작업한 경우(처음부터 오프라인이었던 경우 등): 서버 최신과 합친 뒤 저장
   function _prepareBaseWithoutPull(){
     if(!confirm("서버 최신 데이터를 확인하지 못한 상태에서 작업했어요.\n이대로 저장하면 서버 내용이 지금 화면과 똑같이 맞춰집니다\n(다른 사람의 변경이 덮어써질 수 있어요).\n\n계속할까요?")){
       return Promise.resolve(false);
     }
     _sbChip("서버 버전 확인 중…","#ffd166");
     return fetchServer().then(function(d){
-      var st = stateFromRows(d.g, d.s, d.c);
-      BASE = rowsFromState({ groups:st.groups, screens:st.screens });
-      VER = d.ver; _pulled = true;
+      BASE = d.rows; VER = d.ver; META = d.meta; _pulled = true;
+      if(d.lastId !== null) _lastChangeId = d.lastId;
       return true;
     }).catch(function(e){
       _sbChip("서버 연결 실패 · 저장 안 됨","#ff9c96");
@@ -892,7 +1219,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       return false;
     });
   }
-  function _doSave(){
+  function _doSave(attempt){
     var cur = rowsFromState(STATE);
     var built = buildChanges(BASE, cur, VER);
     if(built.count === 0){
@@ -914,29 +1241,162 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       built.changes.groups_delete.forEach(function(x){ delete VER.groups[x.id]; });
       built.changes.screens_delete.forEach(function(x){ delete VER.screens[x.id]; });
       built.changes.sections_delete.forEach(function(x){ delete VER.sections[x.id]; });
+      if(res.txid != null){ _myTx.push(String(res.txid)); if(_myTx.length > 100) _myTx.shift(); }
       BASE = cur;   // 저장 버튼을 누른 시점의 내용이 새 기준본 (저장 도중 고친 내용은 다음 저장에 반영됨)
       _unsynced = buildChanges(BASE, rowsFromState(STATE), VER).count > 0;
       _updateUnsavedBadge(); persistLocal();
+      flushDeletes();
       _sbChip("서버 저장됨 · "+SB.user+" · "+new Date().toLocaleTimeString(),"#8fe3ab");
       toast("저장됨 · "+built.count+"건 반영");
+      _saving = false;
+      showDraftAfterSave();
     }).catch(function(e){
+      _saving = false;
       console.warn("[save]", e);
       var body = e && e.body;
       if(body && body.message === "SL_CONFLICT"){
-        var list = []; try{ list = JSON.parse(body.details||"[]"); }catch(_){}
-        _sbChip("저장 충돌 · 아무것도 저장 안 됨","#ff9c96");
-        alert("다른 사람이 먼저 수정한 항목이 있어서 이번 저장은 전부 취소됐어요.\n(서버 데이터는 그대로입니다)\n\n" + _conflictText(list));
-        if(confirm("내 작업을 JSON 파일로 백업한 뒤, 서버 최신 데이터를 불러올까요?\n\n불러온 뒤 백업 파일을 보면서 필요한 부분만 다시 입력해 주세요.\n[취소]를 누르면 지금 화면을 그대로 유지합니다.")){
-          exportJson("미저장백업");
-          pullAll().catch(function(){});
-        }
+        // 서버 데이터는 그대로. 서버 최신과 합친 뒤(충돌은 선택) 한 번 더 저장한다
+        if(attempt >= 2){ _sbChip("저장 충돌 반복 · 잠시 후 다시 저장해 주세요","#ff9c96"); return; }
+        _sbChip("다른 사람 변경과 겹침 · 합치는 중…","#ffd166");
+        toast("다른 사람이 먼저 저장한 내용이 있어서 합친 뒤 다시 저장할게요");
+        syncFromServer({ thenSave:true }).then(function(ok){
+          if(ok) _doSave(attempt + 1);
+          else _sbChip("저장 안 됨 · 합치기 취소","#ff9c96");
+        });
         return;
       }
       var msg = _missingTableMsg(e);
       _sbChip(msg ? "설정 필요 · 저장 안 됨" : "서버 저장 실패 · 브라우저엔 보관됨","#ff9c96");
       if(msg) alert(msg);
       else toast("저장 실패: " + ((body && body.message) || (e && e.message) || "알 수 없는 오류"), true);
-    }).then(function(){ _saving = false; });
+    });
+  }
+
+  /* ===================== 이력 자동 초안 =====================
+     "내가 마지막으로 이력을 등록(또는 '기록 안 함')한 뒤 생긴 내 변경" 을 변경 기록에서 모아 문장으로 만든다.
+     [나중에] 를 누르면 그대로 쌓여서 다음 저장 때 합쳐진 초안이 나온다. (서버 기준이라 다른 PC 에서도 이어짐) */
+  function _enc(v){ return encodeURIComponent(v); }
+  function fetchMark(){
+    return fetch(SB.url+"/rest/v1/sl_user_marks?select=change_id&author=eq."+_enc(SB.user), { headers:_sbH() })
+      .then(_readJson).then(function(rows){ return (rows && rows[0]) ? Number(rows[0].change_id)||0 : 0; });
+  }
+  function setMark(id){
+    return fetch(SB.url+"/rest/v1/sl_user_marks", {
+      method:"POST",
+      headers:Object.assign({}, _sbH(), { "Prefer":"resolution=merge-duplicates,return=minimal" }),
+      body:JSON.stringify([{ author:SB.user, change_id:id, updated_at:new Date().toISOString() }])
+    }).then(_readJson);
+  }
+  function fetchDraft(){
+    if(!SB.url || !SB.user) return Promise.resolve({ text:"", maxId:0, count:0 });
+    return fetchMark().then(function(mark){
+      var sel = "id,tbl,row_id,screen_id,op,fields,nt:new->>title,ot:old->>title,nn:new->>name,onm:old->>name,nc:new->>code,oc:old->>code,nst:new->>status";
+      return fetch(SB.url+"/rest/v1/sl_changes?select="+sel+"&by_user=eq."+_enc(SB.user)+"&id=gt."+mark+"&order=id.asc&limit=2000", { headers:_sbH() })
+        .then(_readJson);
+    }).then(function(rows){ return buildDraft(rows || []); });
+  }
+  function buildDraft(rows){
+    var maxId = 0, byRow = {}, order = [];
+    rows.forEach(function(r){
+      maxId = Math.max(maxId, Number(r.id)||0);
+      var k = r.tbl + "|" + r.row_id;
+      if(!byRow[k]){ byRow[k] = { tbl:r.tbl, id:r.row_id, sid:r.screen_id, first:r.op, last:r.op, fields:{}, title:"", st:"" }; order.push(k); }
+      var x = byRow[k];
+      x.last = r.op;
+      if(r.screen_id) x.sid = r.screen_id;
+      (r.fields||[]).forEach(function(f){ x.fields[f] = 1; });
+      if(r.tbl==="group") x.title = ((r.nc||r.oc||"") + " " + (r.nn||r.onm||"")).trim() || x.title;
+      else x.title = r.nt || r.ot || x.title;
+      if(r.nst) x.st = r.nst;
+    });
+    var SKIP = { screen:{ status:1, seq:1 }, section:{}, group:{} };
+    var LBL = { screen:FIELD_LABELS.screens, section:FIELD_LABELS.sections, group:FIELD_LABELS.groups };
+    function what(x){
+      if(x.first==="I" && x.last==="D") return null;          // 추가했다가 지운 것 → 생략
+      if(x.first==="I") return "추가";
+      if(x.last==="D") return "삭제";
+      var fs = Object.keys(x.fields).filter(function(f){ return !SKIP[x.tbl][f]; });
+      if(!fs.length) return null;
+      return fs.map(function(f){
+        var l = LBL[x.tbl][f] || f;
+        return (x.tbl==="section" && f==="status" && x.st) ? l + " → " + x.st : l;
+      }).join("·") + " 수정";
+    }
+    var groupLines = [], screens = {}, scrDeleted = {};
+    order.forEach(function(k){ var x = byRow[k]; if(x.tbl==="screen" && what(x)==="삭제") scrDeleted[x.id] = 1; });
+    order.forEach(function(k){
+      var x = byRow[k], w = what(x);
+      if(!w) return;
+      if(x.tbl==="group"){ groupLines.push("그룹 '"+x.title+"' "+w); return; }
+      var sid = x.tbl==="screen" ? x.id : (x.sid||"");
+      if(x.tbl==="section" && w==="삭제" && scrDeleted[sid]) return;   // 화면 삭제에 딸려 지워진 구역은 생략
+      if(!screens[sid]) screens[sid] = { head:"", parts:[] };
+      if(x.tbl==="screen"){
+        screens[sid].head = (w==="추가" || w==="삭제") ? "화면 '"+x.title+"' "+w : w;
+      } else {
+        screens[sid].parts.push("구역 '"+x.title+"' "+w);
+      }
+    });
+    var sids = Object.keys(screens).sort(function(a,b){ return _byScreenIdNum({screenId:a},{screenId:b}); });
+    var lines = groupLines.concat(sids.map(function(sid){
+      var s = screens[sid];
+      return "#" + sid + " " + [s.head].concat(s.parts).filter(Boolean).join(", ");
+    }));
+    return { text:lines.join("\n"), maxId:maxId, count:rows.length };
+  }
+  function _postHistory(text){
+    var entry = { id:uid("hist"), text:text, author:SB.user||"익명", ts:Date.now(), dateStr:_histTimeStr() };
+    return fetch(SB.url + "/rest/v1/" + T_HISTORY, {
+      method:"POST", headers:_sbH(),
+      body: JSON.stringify([{ id:entry.id, content:entry.text, author:entry.author, ts:entry.ts, date_str:entry.dateStr }])
+    }).then(_readJson).then(function(){
+      STATE.changelog = STATE.changelog || [];
+      STATE.changelog.unshift(entry);
+      return entry;
+    });
+  }
+  function showDraftAfterSave(){
+    fetchDraft().then(function(d){
+      if(!d.text) return;
+      openDraftModal(d);
+    }).catch(function(e){ console.warn("[draft]", e); });
+  }
+  function openDraftModal(d){
+    if(document.getElementById("draftBg")) return;
+    var bg = document.createElement("div"); bg.className = "modalbg show"; bg.id = "draftBg";
+    bg.innerHTML = '<div class="modal" style="width:640px">'
+      + '<h3>이력 초안 <span class="sp"></span><span style="font-size:12.5px;color:var(--sub);font-weight:700">'+esc(SB.user)+' · 변경 '+d.count+'건</span></h3>'
+      + '<div class="cf-guide">마지막으로 이력을 등록한 뒤 내가 저장한 변경을 모았어요. 필요하면 고친 뒤 등록하세요.<br>[나중에]를 누르면 다음 저장 내용과 합쳐져서 쌓여요.</div>'
+      + '<div class="body" style="padding:10px 16px 14px"><textarea id="draftText" maxlength="'+HISTORY_TEXT_MAX+'" style="width:100%;min-height:180px;padding:10px;border:1px solid var(--line);border-radius:6px;font-family:inherit;font-size:13.5px;line-height:1.6;resize:vertical">'+esc(d.text)+'</textarea></div>'
+      + '<div class="ft"><button type="button" data-act="dr-skip" style="margin-right:auto;color:var(--sub)" title="이번까지의 변경은 이력으로 남기지 않고 초안에서 비워요">기록 안 함</button>'
+      +   '<button type="button" data-act="dr-later">나중에</button>'
+      +   '<button type="button" class="primary" data-act="dr-ok">등록</button></div></div>';
+    document.body.appendChild(bg);
+    bg.addEventListener("click", function(e){
+      var a = e.target.dataset && e.target.dataset.act; if(!a) return;
+      if(a==="dr-later"){ bg.remove(); toast("초안은 쌓아 둘게요 · 이력 화면에서도 불러올 수 있어요"); return; }
+      if(a==="dr-skip"){
+        if(!confirm("이번까지의 변경을 이력으로 남기지 않고 초안을 비울까요?")) return;
+        setMark(d.maxId).then(function(){ bg.remove(); toast("초안을 비웠어요"); }, function(){ toast("처리하지 못했어요 · 잠시 후 다시 시도해 주세요", true); });
+        return;
+      }
+      if(a==="dr-ok"){
+        var txt = (document.getElementById("draftText").value||"").trim();
+        if(!txt){ toast("내용을 입력해 주세요", true); return; }
+        _checkSavePassword().then(function(ok){
+          if(!ok) return;
+          _postHistory(txt.slice(0, HISTORY_TEXT_MAX)).then(function(){
+            return setMark(d.maxId).catch(function(){ toast("이력은 등록됐지만 초안 비우기에 실패했어요", true); });
+          }).then(function(){
+            bg.remove(); toast("이력 등록됨");
+            if(document.getElementById("historyScreen").classList.contains("show")) renderHistoryList();
+          }, function(e){
+            console.warn("[draft post]", e);
+            toast(_missingTableMsg(e) || "이력 등록 실패 · 잠시 후 다시 시도해 주세요", true);
+          });
+        });
+      }
+    });
   }
 
   // ── 클립보드 복사
@@ -963,7 +1423,9 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       return Array.from(new Uint8Array(hashBuf)).map(function(b){ return b.toString(16).padStart(2,"0"); }).join("");
     });
   }
+  var _pwOkUntil = 0;   // 비밀번호를 한 번 맞히면 10분 동안은 다시 묻지 않는다
   function _checkSavePassword(){
+    if(Date.now() < _pwOkUntil) return Promise.resolve(true);
     var pw = prompt("저장하려면 비밀번호를 입력하세요.");
     if(pw===null) return Promise.resolve(false);
     if(!(window.crypto && window.crypto.subtle)){
@@ -972,6 +1434,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     }
     return _sha256Hex(pw).then(function(hex){
       if(hex !== SAVE_PASSWORD_HASH){ toast("비밀번호가 올바르지 않습니다", true); return false; }
+      _pwOkUntil = Date.now() + 10*60*1000;
       return true;
     });
   }
@@ -1022,24 +1485,32 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     });
   }
   var HISTORY_TEXT_MAX = 5000;
+  var _draftLoadedMax = 0;   // 이력 입력창에 불러온 초안의 마지막 변경 번호 (등록 시 초안 비우기에 사용)
+  function loadDraftIntoHistory(){
+    ensureName().then(function(n){
+      if(!n) return;
+      fetchDraft().then(function(d){
+        if(!d.text){ toast("쌓인 변경이 없어요"); return; }
+        var ta = document.getElementById("historyInput");
+        ta.value = d.text; ta.focus(); _draftLoadedMax = d.maxId;
+        toast("초안을 불러왔어요 · 고친 뒤 등록하세요");
+      }).catch(function(e){ console.warn("[draft load]", e); toast(_missingTableMsg(e) || "초안을 불러오지 못했어요", true); });
+    });
+  }
   function addHistoryEntry(){
     var ta = document.getElementById("historyInput"); if(!ta) return;
     var txt = (ta.value||"").trim();
     if(!txt){ toast("내용을 입력해 주세요", true); return; }
     if(txt.length > HISTORY_TEXT_MAX){ txt = txt.slice(0, HISTORY_TEXT_MAX); toast("이력 내용은 최대 "+HISTORY_TEXT_MAX+"자까지 저장돼요", true); }
-    _checkSavePassword().then(function(ok){
+    ensureName().then(function(n){ if(!n) return false; return _checkSavePassword(); }).then(function(ok){
       if(!ok) return;
-      var entry = { id:uid("hist"), text:txt, author:SB.user||"익명", ts:Date.now(), dateStr:_histTimeStr() };
-      fetch(SB.url + "/rest/v1/" + T_HISTORY, {
-        method:"POST", headers:_sbH(),
-        body: JSON.stringify([{ id:entry.id, content:entry.text, author:entry.author, ts:entry.ts, date_str:entry.dateStr }])
-      }).then(_readJson).then(function(){
-        STATE.changelog = STATE.changelog || [];
-        STATE.changelog.unshift(entry);
+      _postHistory(txt).then(function(){
+        var mk = _draftLoadedMax; _draftLoadedMax = 0;
         ta.value = "";
         var search = document.getElementById("historySearch"); if(search) search.value = "";
         renderHistoryList();
         toast("이력 등록됨");
+        if(mk) setMark(mk).catch(function(){ toast("이력은 등록됐지만 초안 비우기에 실패했어요", true); });
       }).catch(function(e){
         console.warn("[history add]",e);
         toast(_missingTableMsg(e) || "이력 서버 저장 실패 · 잠시 후 다시 시도해 주세요", true);
@@ -1100,6 +1571,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 
   function renderAll(){
     var _log=function(e){ console.warn("[renderAll]",e); };
+    try{ if(!document.getElementById("tfQ")) renderFilterBar(); }catch(e){ _log(e); }
     try{ renderTree();   }catch(e){ _log(e); }
     try{ renderMid();    }catch(e){ _log(e); }
     try{ renderDetail(); }catch(e){ _log(e); }
@@ -1108,7 +1580,55 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   }
   function _updateTreeInfo(){
     var el = document.getElementById("treeInfo"); if(!el) return;
-    el.textContent = "전체 " + ((STATE.screens||[]).length);
+    var total = (STATE.screens||[]).length;
+    el.textContent = filterActive() ? ("표시 " + (STATE.screens||[]).filter(matchScreen).length + " / " + total) : ("전체 " + total);
+  }
+
+  // ── LEFT: 검색·필터
+  function filterActive(){ return !!(FILTER.q.trim() || FILTER.tags.length || FILTER.st.length); }
+  function matchScreen(s){
+    var q = FILTER.q.trim().toLowerCase();
+    if(q && (s.screenId+" "+(s.title||"")).toLowerCase().indexOf(q)<0) return false;
+    if(FILTER.tags.length){
+      var tags = normTags(s.tags);
+      var hit = FILTER.tags.some(function(k){ return k==="NONE" ? !tags.length : tags.indexOf(k)>=0; });
+      if(!hit) return false;
+    }
+    if(FILTER.st.length && FILTER.st.indexOf(screenStatus(s))<0) return false;
+    return true;
+  }
+  function renderFilterBar(){
+    var box = document.getElementById("treeFilter"); if(!box) return;
+    var ST_COLORS = {"작성중":"#5a6b85","검토중":"#b7791f","확정":"#2e7d32"};
+    var chip = function(kind, key, label, color){
+      var on = FILTER[kind].indexOf(key)>=0;
+      return '<button type="button" class="tf-chip'+(on?" on":"")+'" data-f="'+kind+'" data-k="'+esc(key)+'" style="--c:'+color+'"><i></i>'+esc(label)+'</button>';
+    };
+    box.innerHTML =
+        '<input class="tf-q" id="tfQ" type="search" placeholder="화면 ID · 이름 검색" value="'+esc(FILTER.q)+'">'
+      + '<div class="tf-row"><span class="tf-lbl">연계</span>'
+      +   PAGE_TAGS.map(function(t){ return chip("tags", t.key, t.key, t.color); }).join("")
+      +   chip("tags", "NONE", "미지정", "#9aa4b8")
+      + '</div>'
+      + '<div class="tf-row"><span class="tf-lbl">진행</span>'
+      +   STATUSES.map(function(v){ return chip("st", v, v, ST_COLORS[v]); }).join("")
+      +   (filterActive() ? '<button type="button" class="tf-reset" id="tfReset">초기화</button>' : '')
+      + '</div>';
+    var qEl = document.getElementById("tfQ");
+    qEl.addEventListener("input", function(){
+      FILTER.q = qEl.value; renderTree(); _updateTreeInfo(); saveUi();
+      var r = document.getElementById("tfReset");
+      if(!!r !== filterActive()){ var pos = qEl.selectionStart; renderFilterBar(); var q2=document.getElementById("tfQ"); q2.focus(); try{ q2.setSelectionRange(pos,pos); }catch(_){} }
+    });
+    box.querySelectorAll(".tf-chip").forEach(function(b){
+      b.addEventListener("click", function(){
+        var arr = FILTER[b.dataset.f], i = arr.indexOf(b.dataset.k);
+        if(i>=0) arr.splice(i,1); else arr.push(b.dataset.k);
+        renderFilterBar(); renderTree(); _updateTreeInfo(); saveUi();
+      });
+    });
+    var rs = document.getElementById("tfReset");
+    if(rs) rs.addEventListener("click", function(){ FILTER = {q:"", tags:[], st:[]}; renderFilterBar(); renderTree(); _updateTreeInfo(); saveUi(); });
   }
 
   // ── LEFT
@@ -1116,41 +1636,52 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     var tree = document.getElementById("tree");
     var groups = (STATE.groups||[]).slice().sort(function(a,b){return (a.order||0)-(b.order||0);});
     var html = "";
+    var fa = filterActive();
     groups.forEach(function(g){
-      var items = (STATE.screens||[]).filter(function(s){return s.groupId===g.id;});
-      var arrow = g._open===false ? "▸" : "▾";
+      var all = (STATE.screens||[]).filter(function(s){return s.groupId===g.id;});
+      var items = fa ? all.filter(matchScreen) : all;
+      if(fa && !items.length) return;
+      var nOk = all.filter(function(s){return screenStatus(s)==="확정";}).length;
+      var nWr = all.filter(function(s){return screenStatus(s)==="검토중";}).length;
+      var pct = all.length ? Math.round(nOk*100/all.length) : 0;
+      var arrow = (g._open===false && !fa) ? "▸" : "▾";
       html += '<div class="grp-row" data-gid="'+esc(g.id)+'" data-act="toggle-grp">'
             +   '<span class="arrow">'+arrow+'</span>'
             +   '<span data-act="toggle-grp" data-gid="'+esc(g.id)+'">'+esc(_fmtGroup(g, "tree"))+'</span>'
-            +   '<span class="n">'+items.length+'</span>'
+            +   '<span class="n" title="확정 '+nOk+' · 검토중 '+nWr+' · 작성중 '+(all.length-nOk-nWr)+' (화면 기준)">'
+            +     (fa ? items.length+' / ' : '') + '확정 '+nOk+'/'+all.length
+            +     '<span class="prog"><b style="width:'+pct+'%"></b></span></span>'
             +   '<span class="act">'
             +     '<span data-act="rename-grp" data-gid="'+esc(g.id)+'" title="이름 변경">✎</span>'
             +     '<span data-act="del-grp" data-gid="'+esc(g.id)+'" title="삭제">🗑</span>'
             +   '</span>'
             + '</div>';
-      if(g._open!==false){
+      if(g._open!==false || fa){
         items.slice().sort(_byScreenIdNum).forEach(function(s){
-          html += '<div class="scr-row '+(STATE.selectedScreenId===s.screenId?'active':'')+'" data-sid="'+esc(s.screenId)+'" data-act="sel-scr">'
+          html += '<div class="scr-row '+_stCls(s)+' '+(STATE.selectedScreenId===s.screenId?'active':'')+'" data-sid="'+esc(s.screenId)+'" data-act="sel-scr" title="진행: '+screenStatus(s)+'">'
                 +   '<span class="sid">'+esc(s.screenId)+'</span>'
                 +   '<span class="nm">'+esc(s.title||"")+'</span>'
                 +   _tagDots(s)
                 + '</div>';
         });
-        if(!items.length) html += '<div class="empty" style="padding:14px 12px">빈 그룹 · "+ 화면"</div>';
+        if(!items.length && !fa) html += '<div class="empty" style="padding:14px 12px">빈 그룹 · "+ 화면"</div>';
       }
     });
     var orphans = (STATE.screens||[]).filter(function(s){return !(STATE.groups||[]).some(function(g){return g.id===s.groupId;});});
+    if(fa) orphans = orphans.filter(matchScreen);
     if(orphans.length){
       html += '<div class="grp-row"><span class="arrow">▾</span><span>분류 미지정</span><span class="n">'+orphans.length+'</span></div>';
       orphans.slice().sort(_byScreenIdNum).forEach(function(s){
-        html += '<div class="scr-row '+(STATE.selectedScreenId===s.screenId?'active':'')+'" data-sid="'+esc(s.screenId)+'" data-act="sel-scr">'
+        html += '<div class="scr-row '+_stCls(s)+' '+(STATE.selectedScreenId===s.screenId?'active':'')+'" data-sid="'+esc(s.screenId)+'" data-act="sel-scr" title="진행: '+screenStatus(s)+'">'
               +   '<span class="sid">'+esc(s.screenId)+'</span>'
               +   '<span class="nm">'+esc(s.title||"")+'</span>'+_tagDots(s)+'</div>';
       });
     }
     if(!groups.length && !orphans.length) html='<div class="empty">그룹이 없습니다. "+ 그룹" 으로 추가해 주세요.</div>';
+    else if(fa && !html) html='<div class="empty">조건에 맞는 화면이 없어요.</div>';
     tree.innerHTML = html;
   }
+  function _stCls(s){ var v = screenStatus(s); return v==="확정" ? "st-ok" : v==="검토중" ? "st-wr" : ""; }
   function _tagDots(s){
     var tags = normTags(s.tags);
     if(!tags.length) return "";
@@ -1340,6 +1871,25 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       method:"DELETE", headers:{ "apikey":SB.key, "Authorization":"Bearer "+SB.key }
     }).catch(function(){ /* 서버 파일 삭제 실패는 무시 */ });
   }
+  // 이미지를 지워도 바로 서버 파일을 지우지 않고 목록에 모아 둔다.
+  // 저장이 성공한 뒤, 지금 화면과 서버 기준본 어디에서도 쓰지 않는 파일만 실제로 지운다.
+  // (저장 안 하고 끄거나 충돌로 저장이 취소돼도 서버 데이터의 이미지가 깨지지 않게)
+  function queueDelete(path){
+    if(path && PENDING_DEL.indexOf(path)<0){ PENDING_DEL.push(path); persistLocalSoon(); }
+  }
+  function _fileRefs(rows, into){
+    if(!rows) return into;
+    Object.keys(rows.screens||{}).forEach(function(k){ var m = rows.screens[k].mock_image; if(m && m.path) into[m.path]=1; });
+    Object.keys(rows.sections||{}).forEach(function(k){ (rows.sections[k].images||[]).forEach(function(im){ if(im && im.path) into[im.path]=1; }); });
+    return into;
+  }
+  function flushDeletes(){
+    if(!PENDING_DEL.length || !SB.url) return;
+    var refs = _fileRefs(BASE, _fileRefs(rowsFromState(STATE), {}));
+    var keep = [];
+    PENDING_DEL.forEach(function(p){ if(refs[p]) keep.push(p); else _storageDelete(p); });
+    PENDING_DEL = keep; persistLocal();
+  }
   function _storageUpload(path, f){
     return fetch(SB.url + "/storage/v1/object/" + SB_BUCKET + "/" + path, {
       method:"POST",
@@ -1373,7 +1923,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       if(!confirm("화면 이미지를 삭제할까요?")) return;
       var old = s.mockImage; s.mockImage = null;
       save(); renderMid(); toast("화면 이미지 삭제됨 · 저장을 눌러야 서버에 반영돼요");
-      if(old) _storageDelete(old.path);
+      if(old) queueDelete(old.path);
     };
     var previewImg = shot.querySelector(".preview img");
     if(previewImg) previewImg.onclick = function(e){ e.stopPropagation(); openShotLightbox(s.mockImage); };
@@ -1391,8 +1941,8 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     var ext = extMatch ? extMatch[1].toLowerCase() : "png";
     var path = "screens/" + s.screenId + "." + ext;
     var old = s.mockImage;
-    var pre = (old && old.path && old.path !== path) ? _storageDelete(old.path) : Promise.resolve();
-    pre.then(function(){ return _storageUpload(path, f); }).then(function(){
+    if(old && old.path && old.path !== path) queueDelete(old.path);
+    _storageUpload(path, f).then(function(){
       var publicUrl = SB.url + "/storage/v1/object/public/" + SB_BUCKET + "/" + path + "?v=" + Date.now();
       s.mockImage = { id:uid("shot"), name:f.name, path:path, url:publicUrl };
       save(); renderMid();
@@ -1565,7 +2115,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       };
     });
     box.querySelectorAll("[data-act='set-status']").forEach(function(el){
-      el.onclick=function(){ if(sec.status===el.dataset.v) return; sec.status=el.dataset.v; save(); renderMid(); renderDetail(); };
+      el.onclick=function(){ if(sec.status===el.dataset.v) return; sec.status=el.dataset.v; save(); renderTree(); renderMid(); renderDetail(); };
     });
     var addBtn = box.querySelector("[data-act='chip-add']");
     if(addBtn) addBtn.onclick = function(e){ e.preventDefault(); e.stopPropagation(); openAddRelatedModal(sec); };
@@ -1583,7 +2133,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
           var delImg = (sec.images||[]).find(function(x){return x.id===t.dataset.img;});
           sec.images = (sec.images||[]).filter(function(x){return x.id!==t.dataset.img;});
           save(); renderDetail(); toast("이미지 삭제됨 · 저장을 눌러야 서버에 반영돼요");
-          if(delImg) _storageDelete(delImg.path);
+          if(delImg) queueDelete(delImg.path);
           return;
         }
         if(a==="goto-screen"){
@@ -1683,7 +2233,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   }
   function newSection(title, order){
     return { id:uid("sec"), title:title||"구역", type:"기능", desc:"", target:"", requirement:"", exception:"",
-             feedback:"", author:"", outUrl:"", outLabel:"", linkedScreenId:"", images:[], related:[], note:"",
+             feedback:"", author:SB.user||"", outUrl:"", outLabel:"", linkedScreenId:"", images:[], related:[], note:"",
              order:order||0, status:"작성중" };
   }
   function newGrp(){
@@ -1783,8 +2333,28 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     var cnt = screens.filter(function(x){return x.groupId===firstGrp.id;}).length;
     return String(screens.length+1).padStart(3,"0")+"-SL-"+firstGrp.code+"-"+String(cnt+1).padStart(2,"0");
   }
+  // 삭제하려는 화면들을 다른 화면의 구역이 가리키고 있는지 찾는다 (연관 화면 / 페이지연결)
+  function _refsTo(sids){
+    var out = [];
+    (STATE.screens||[]).forEach(function(s){
+      if(sids.indexOf(s.screenId)>=0) return;
+      (s.sections||[]).forEach(function(sec){
+        sids.forEach(function(t){
+          if((sec.related||[]).indexOf(t)>=0) out.push("· #"+s.screenId+" › '"+(sec.title||"구역")+"' 연관 화면 → "+t);
+          if(normType(sec.type)==="페이지연결" && sec.linkedScreenId===t) out.push("· #"+s.screenId+" › '"+(sec.title||"구역")+"' 페이지연결 → "+t);
+        });
+      });
+    });
+    return out;
+  }
+  function _refsWarn(sids){
+    var refs = _refsTo(sids);
+    if(!refs.length) return "";
+    return "\n\n⚠ 이 화면을 가리키는 구역이 "+refs.length+"곳 있어요. 삭제하면 연결이 끊긴 채로 남습니다.\n"
+         + refs.slice(0,10).join("\n") + (refs.length>10 ? "\n… 외 "+(refs.length-10)+"곳" : "");
+  }
   function delScr(sid){
-    if(!confirm("'"+sid+"' 화면을 삭제할까요?\n(안의 구역도 함께 삭제되며, 저장을 눌러야 서버에 반영돼요)")) return;
+    if(!confirm("'"+sid+"' 화면을 삭제할까요?\n(안의 구역도 함께 삭제되며, 저장을 눌러야 서버에 반영돼요)" + _refsWarn([sid]))) return;
     STATE.screens = STATE.screens.filter(function(x){return x.screenId!==sid;});
     if(STATE.selectedScreenId===sid){ STATE.selectedScreenId=null; STATE.selectedSectionId=null; }
     resyncAllScreenIds(); save(); renderAll();
@@ -1808,8 +2378,9 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     g.name = n.trim(); save(); renderAll();
   }
   function delGrp(gid){
-    var cnt = (STATE.screens||[]).filter(function(s){return s.groupId===gid;}).length;
-    if(!confirm("이 그룹을 삭제할까요?"+(cnt?" 안에 화면 "+cnt+"개도 같이 삭제됩니다.":""))) return;
+    var inGrp = (STATE.screens||[]).filter(function(s){return s.groupId===gid;}).map(function(s){return s.screenId;});
+    var cnt = inGrp.length;
+    if(!confirm("이 그룹을 삭제할까요?"+(cnt?" 안에 화면 "+cnt+"개도 같이 삭제됩니다.":"") + _refsWarn(inGrp))) return;
     STATE.groups = STATE.groups.filter(function(x){return x.id!==gid;});
     STATE.screens = STATE.screens.filter(function(x){return x.groupId!==gid;});
     if(STATE.selectedScreenId && !findScreen(STATE.selectedScreenId)){ STATE.selectedScreenId = null; STATE.selectedSectionId = null; }
@@ -1863,7 +2434,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       (STATE.screens||[]).slice().sort(_byScreenIdNum).forEach(function(s){
         var g = groups[s.groupId];
         var secs = (s.sections||[]).slice().sort(function(a,b){return (a.order||0)-(b.order||0);});
-        lines.push([ q(s.screenId), q(s.title), q(g ? (g.code+" "+(g.name||"")) : ""), q(normTags(s.tags).join(" ")), q(s.status||""),
+        lines.push([ q(s.screenId), q(s.title), q(g ? (g.code+" "+(g.name||"")) : ""), q(normTags(s.tags).join(" ")), q(screenStatus(s)),
                      secs.length, q(secs.map(function(x){return x.title;}).join(" / ")) ].join(","));
       });
       _download("samsung_lions_"+todayStr()+".csv", new Blob(["﻿" + lines.join("\r\n") + "\r\n"], {type:"text/csv;charset=utf-8"}));
@@ -1887,8 +2458,9 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     r.readAsText(f);
   }
   function reloadFromServer(){
-    if(_unsynced && !confirm("저장하지 않은 변경사항이 있어요.\n\n불러오면 지금 변경사항은 사라집니다. (버리기 전에 JSON 백업 파일을 내려받습니다)\n계속할까요?")) return;
-    if(_unsynced) exportJson("미저장백업");
+    var dirty = _hasLocalChanges() || (!BASE && _unsynced);
+    if(dirty && !confirm("저장하지 않은 내 변경을 버리고 서버 데이터로 되돌릴까요?\n(버리기 전에 JSON 백업 파일을 내려받습니다)")) return;
+    if(dirty) exportJson("미저장백업");
     pullAll().catch(function(){});
   }
 
@@ -1900,6 +2472,9 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     document.getElementById("btnDelScr2").onclick = function(){ if(STATE.selectedScreenId) delScr(STATE.selectedScreenId); };
     document.getElementById("imp").onchange = importJson;
     document.getElementById("btnSave").onclick = saveToServer;
+    document.getElementById("syncBanner").onclick = function(){ syncFromServer(); };
+    document.getElementById("btnHistoryDraft").onclick = loadDraftIntoHistory;
+    document.getElementById("btnUser").onclick = function(){ askName(); };
     document.getElementById("btnRequest").onclick = function(){ window.open("https://nick-kim-ptk.github.io/lions-request/ptkorea.html", "_blank", "noopener"); };
     document.getElementById("btnHistory").onclick = toggleHistoryScreen;
     document.getElementById("btnHistoryAdd").onclick = addHistoryEntry;
@@ -1907,7 +2482,8 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     var dMenu = document.getElementById("dataMenu");
     dMenu.onchange = function(){
       var v = dMenu.value; dMenu.value = "";
-      if(v === "pull") reloadFromServer();
+      if(v === "pull") syncFromServer();
+      else if(v === "discard") reloadFromServer();
       else if(v === "exp") exportJson();
       else if(v === "csv") exportCsv();
       else if(v === "imp") document.getElementById("imp").click();
@@ -1948,6 +2524,8 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   /* ===================== 시작 ===================== */
   function boot(){
     attachHeader();
+    _renderUserBtn();
+    if(!SB.user) setTimeout(function(){ askName({required:true}); }, 300);
     var local = readLocal();
     var hasLocal = !!(local && local.state && Array.isArray(local.state.screens));
     if(hasLocal){
@@ -1957,6 +2535,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       BASE = local.base || null;
       VER  = local.ver  || { groups:{}, screens:{}, sections:{} };
       _pulled = !!(local.pulled && local.base);
+      PENDING_DEL = Array.isArray(local.pendingDel) ? local.pendingDel : [];
       _unsynced = !!local.unsynced;
       applyUi(); _updateUnsavedBadge(); renderAll();
     } else {
@@ -1968,7 +2547,10 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       _sbChip("미저장 작업 복원됨 · 저장 필요","#ffd166");
       setTimeout(function(){
         var keep = confirm("지난번에 서버에 저장하지 않은 변경사항이 있어요 ("+when+").\n\n[확인] 이어서 작업하기 — 저장을 누르면 서버에 반영돼요\n[취소] 버리고 서버 최신 데이터 불러오기 (버리기 전에 JSON 백업 파일을 내려받습니다)");
-        if(keep){ toast("이전 작업을 복원했어요 · 저장을 눌러야 서버에 반영돼요"); }
+        if(keep){
+          toast("이전 작업을 복원했어요 · 서버 최신과 합치는 중…");
+          syncFromServer().then(function(ok){ if(ok) toast("이전 작업을 서버 최신과 합쳤어요 · 저장을 눌러야 서버에 반영돼요"); });
+        }
         else { exportJson("미저장백업"); pullAll().catch(function(){}); }
       }, 60);
     } else {
@@ -1977,6 +2559,9 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       });
     }
   }
+
+  setInterval(pollOnce, POLL_MS);
+  document.addEventListener("visibilitychange", function(){ if(document.visibilityState==="visible") pollOnce(); });
 
   window.addEventListener("beforeunload", function(e){
     try{
@@ -1991,7 +2576,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   window.addEventListener("unhandledrejection", function(ev){ console.warn("[rej]", ev.reason); });
 
   // 테스트용 진입점 (화면 동작에는 영향 없음)
-  window.__SL = { get STATE(){return STATE;}, get BASE(){return BASE;}, get VER(){return VER;}, rowsFromState:rowsFromState, buildChanges:buildChanges };
+  window.__SL = { get STATE(){return STATE;}, get BASE(){return BASE;}, get VER(){return VER;}, rowsFromState:rowsFromState, buildChanges:buildChanges, pollOnce:pollOnce, rebase:rebase, buildDraft:buildDraft, get PENDING_DEL(){return PENDING_DEL;} };
 
   if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
