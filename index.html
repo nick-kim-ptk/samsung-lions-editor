@@ -2575,7 +2575,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
      정의 하나 = "칸(열)을 자유롭게 정하는 표" 하나.
        · 정책형: 칸이 [항목 | 내용] 2개인 표 (Push 발송 정책, 금칙어 정책, 외부 연계 …)
        · 목록형: 칸을 직접 정한 표 (API 목록, 토스트·팝업 문구, Push 메시지 목록 …)
-     정의 ID(CD01)와 줄 ID(CD01-001)는 한번 정하면 바뀌지 않고, 지워진 번호도 재사용하지 않는다.
+     정의 ID(CD01)와 줄 ID(CD01-001)는 한번 정하면 바뀌지 않고, 지운 정의 번호는 재사용하지 않는다. (줄 번호는 구역에 연결된 적 없는 번호면 다시 쓸 수 있음)
      구역은 정의 전체(CD01) 또는 특정 줄(CD01-012)을 참조한다. 정의를 지워도 구역은 절대 지워지지 않는다. */
   var _defSel = null;          // 공통 정의 화면에서 선택된 정의 ID
   var _defQ = "";              // 공통 정의 목록 검색어
@@ -2785,7 +2785,21 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     box.querySelectorAll("textarea").forEach(_autoGrow);
   }
 
-  function _defRowId(d){ var id = d.prefix + "-" + String(d.nextRow).padStart(3,"0"); d.nextRow += 1; return id; }
+  // 새 줄 번호 = (지금 남아 있는 줄 번호, 구역에 연결된 적 있는 번호) 중 가장 큰 번호 + 1
+  //  · 실수로 만들었다 지운 줄은 번호를 다시 쓸 수 있음
+  //  · 단, 어떤 구역에 연결된 번호는 지웠더라도 다시 쓰지 않음 (다른 내용이 엉뚱한 구역에 붙는 걸 막기 위함)
+  function _defRowId(d){
+    var pre = d.prefix + "-", mx = 0;
+    function take(id){
+      if(typeof id !== "string" || id.indexOf(pre) !== 0) return;
+      var m = /^(\d+)$/.exec(id.slice(pre.length)); if(m) mx = Math.max(mx, parseInt(m[1], 10));
+    }
+    (d.rows||[]).forEach(function(r){ take(r.id); });
+    (STATE.screens||[]).forEach(function(s){ (s.sections||[]).forEach(function(sec){ (sec.defRefs||[]).forEach(take); }); });
+    var n = mx + 1;
+    d.nextRow = n + 1;
+    return pre + String(n).padStart(3,"0");
+  }
   function _parseTSV(text){
     // 엑셀 복사 형식: 탭으로 칸, 줄바꿈으로 줄. 칸 안의 줄바꿈·따옴표는 "..." 로 감싸져 온다
     var rows = [], row = [], cell = "", i = 0, q = false;
