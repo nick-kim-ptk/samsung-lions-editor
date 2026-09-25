@@ -327,7 +327,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .dtable .c-id{width:92px;white-space:nowrap}
 .dtable td.c-id{padding-top:10px}
 .dtable .rid{font-family:Consolas,monospace;font-weight:800;color:var(--clr-brand);font-size:12px}
-.dtable .ruse{display:inline-block;margin-left:4px;margin-top:4px;padding:0 6px;border-radius:9px;background:#e7f4ec;color:var(--ok);font-size:10.5px;font-weight:800;cursor:pointer}
+.dtable .ruse{display:table;margin-left:0;margin-top:4px;padding:0 6px;border-radius:9px;background:#e7f4ec;color:var(--ok);font-size:10.5px;font-weight:800;cursor:pointer}
 .dtable .c-act{width:62px;white-space:nowrap;text-align:center;color:var(--sub-2)}
 .dtable td.c-act{padding-top:9px}
 .dtable .c-act span{cursor:pointer;padding:0 3px;font-size:11px}
@@ -349,6 +349,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .dusage{margin-top:22px}
 .dusage .lbl{font-size:var(--fs-meta);font-weight:800;display:flex;align-items:center;gap:6px}
 .dcount{display:inline-flex;align-items:center;height:18px;padding:0 7px;border-radius:9px;background:#eef3fb;color:var(--clr-brand);font-size:11px}
+.scrlink .sl-scr{font-family:Consolas,monospace;font-size:12.5px;font-weight:700;color:var(--sub);flex:none}
 .scrlink .sl-nm em{font-style:normal;font-weight:600;color:var(--sub);font-size:12.5px}
 /* 화면 상단: 공통 정의 자동 모음 */
 .defchips{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin:6px 0 2px}
@@ -2609,7 +2610,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     return out;
   }
   // 표시용: "홈화면 / 기능명" , 정렬: 참조 ID(CD01 → CD01-001 → CD01-002 …) 순, 같으면 화면 순
-  function _usageName(u){ return (u.screen.title || u.screen.screenId) + " / " + (u.section.title || "구역"); }
+  function _usageName(u){ return u.screen.screenId + "  (화면) " + (u.screen.title || "-") + " - (구역) " + (u.section.title || "-"); }
   function _sortUsages(list){
     return list.map(function(u, i){ return { u:u, i:i }; })
       .sort(function(a, b){ return a.u.ref < b.u.ref ? -1 : a.u.ref > b.u.ref ? 1 : a.i - b.i; })
@@ -2777,7 +2778,8 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       + '<div class="dusage"><div class="lbl">사용 중인 화면·구역 <span class="dcount">'+used.length+'</span></div>'
       +   (used.length ? '<div class="scrlinks">' + _sortUsages(used).map(function(u){
             return '<div class="scrlink" data-goto-sec="'+esc(u.section.id)+'" data-goto-sid="'+esc(u.screen.screenId)+'" title="#'+esc(u.screen.screenId)+' 로 이동"><span class="sl-id">'+esc(u.ref)+'</span>'
-              + '<span class="sl-nm">'+esc(_usageName(u))+(u.ref===d.id ? ' <em>· 정의 전체</em>' : '')+'</span></div>';
+              + '<span class="sl-scr">'+esc(u.screen.screenId)+'</span>'
+              + '<span class="sl-nm"><em>(화면)</em> '+esc(u.screen.title||"-")+' <em>-</em> <em>(구역)</em> '+esc(u.section.title||"-")+(u.ref===d.id ? ' <em>· 정의 전체</em>' : '')+'</span></div>';
           }).join("") + '</div>'
           : '<div class="tip">아직 이 공통 정의를 참조하는 구역이 없어요. 구역 상세 → "연관 공통 정의"에서 연결할 수 있어요.</div>')
       + '</div>';
