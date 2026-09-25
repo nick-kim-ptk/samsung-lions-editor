@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>삼성라이온즈 기능 정의 및 화면 설계서</title>
+<!-- Pretendard 웹폰트 (화면에 쓰인 글자만 나눠 받는 방식이라 가볍다) -->
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
 :root{
   --clr-brand:#0a3d91;
@@ -45,7 +48,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{
-  font-family:"Pretendard","Malgun Gothic","Apple SD Gothic Neo",sans-serif;
+  font-family:"Pretendard Variable","Pretendard","Malgun Gothic","Apple SD Gothic Neo",sans-serif;
   background:linear-gradient(180deg,var(--bg-app) 0%,var(--bg-app-2) 100%);
   color:var(--ink);font-size:var(--fs-base);line-height:1.55;
   letter-spacing:-.1px;
@@ -53,13 +56,14 @@ body{
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{
-  font-family:"Pretendard","Malgun Gothic","Apple SD Gothic Neo",sans-serif;
+  font-family:"Pretendard Variable","Pretendard","Malgun Gothic","Apple SD Gothic Neo",sans-serif;
   background:linear-gradient(180deg,var(--bg-app) 0%,var(--bg-app-2) 100%);
   color:var(--ink);font-size:var(--fs-base);line-height:1.5;
 }
 .app{display:grid;grid-template-rows:50px 1fr;height:100vh}
 
 .app{display:grid;grid-template-rows:var(--h-hdr) 1fr;height:100vh}
+button,input,select,textarea{font-family:inherit}
 
 header{
   display:flex;align-items:center;gap:var(--sp-4);
@@ -76,6 +80,9 @@ header .credit{display:inline-flex;align-items:center;justify-content:center;ali
 header h1{align-self:center}
 header .pill{display:inline-flex;align-items:center;height:var(--pill-h);background:rgba(255,255,255,.12);padding:0 10px;border-radius:14px;color:#eaf0ff;font-size:var(--fs-mini);font-weight:600;letter-spacing:.1px}
 header .sp{flex:1;min-width:var(--sp-3)}
+/* 저장 필요 표시 — 제목 바로 오른쪽, 눈에 띄게 */
+#unsavedBadge{display:none;align-items:center;gap:6px;height:26px;padding:0 12px 0 10px;border-radius:13px;background:var(--clr-accent);color:var(--clr-brand-deep);font-size:12.5px;font-weight:900;white-space:nowrap;letter-spacing:-.1px;box-shadow:0 0 0 3px rgba(255,194,14,.28)}
+#unsavedBadge::before{content:"";width:8px;height:8px;border-radius:50%;background:#d7263d;animation:pulse 1.2s ease-in-out infinite}
 header button{display:inline-flex;align-items:center;justify-content:center;height:var(--pill-h);background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:5px;padding:0 14px;font-size:var(--fs-base);cursor:pointer;font-weight:600;letter-spacing:-.1px}
 header button:hover{background:rgba(255,255,255,.24)}
 header button.primary{background:var(--clr-accent);color:var(--clr-brand-deep);border-color:var(--clr-accent);font-weight:800}
@@ -124,7 +131,8 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .grp-row{font-size:14px;font-weight:800;padding:9px 12px;display:flex;align-items:center;gap:6px;border-radius:7px;cursor:pointer;background:var(--panel-2);margin-bottom:5px;color:var(--ink);border:1px solid var(--line)}
 .grp-row:hover{background:var(--acc-soft)}
 .grp-row .arrow{font-size:11px;color:var(--clr-brand);width:14px}
-.grp-row .n{color:var(--sub);font-weight:600;flex:1;text-align:right;font-size:var(--fs-mini)}
+.grp-row .gname{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.grp-row .n{color:var(--sub);font-weight:600;flex:none;text-align:right;font-size:var(--fs-mini);white-space:nowrap}
 .grp-row .act{opacity:0;display:flex;gap:5px;color:var(--sub);font-size:var(--fs-mini);font-weight:600}
 .grp-row:hover .act{opacity:1}
 .grp-row .act span{cursor:pointer;padding:0 3px}
@@ -157,7 +165,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .chip-sep{display:inline-flex;align-items:center;color:var(--sub);font-weight:700;margin:0 2px;font-size:13px}
 /* .meta-row 제거됨 — 우측 첫줄 ID chip 영역 삭제 */
 .screen-head .meta .gid{color:var(--clr-brand);font-weight:900;font-size:15px;background:transparent;padding:0}
-.screen-head .meta .grpName{color:var(--ink);font-family:"Pretendard","Malgun Gothic",sans-serif;font-weight:700;font-size:13px}
+.screen-head .meta .grpName{color:var(--ink);font-family:"Pretendard Variable","Pretendard","Malgun Gothic",sans-serif;font-weight:700;font-size:13px}
 .screen-head .title{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap}
 .screen-head .fid{font-family:Consolas,monospace;font-size:var(--fs-fid);font-weight:800;color:var(--clr-brand);background:transparent;padding:0}
 .screen-head .fnm{font-size:var(--fs-title);font-weight:800;color:var(--ink)}
@@ -179,7 +187,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .addsec{padding:0 16px;height:38px;display:flex;align-items:center;justify-content:space-between;gap:var(--sp-3);background:var(--panel-2);border-bottom:1px solid var(--line);flex:none}
 .addsec .addsec-tip{font-size:11.5px;color:var(--sub);font-weight:600;letter-spacing:-.1px;line-height:1.2}
 .addsec .addsec-tip b{color:var(--clr-brand)}
-.addsec button{display:inline-flex;align-items:center;height:26px;font-size:12.5px;background:var(--clr-brand);color:#fff;border:0;border-radius:5px;padding:0 14px;cursor:pointer;font-weight:800;letter-spacing:-.1px;flex:none}
+.addsec button{display:inline-flex;align-items:center;height:26px;font-size:var(--fs-meta);background:var(--clr-brand);color:#fff;border:1px solid var(--clr-brand);border-radius:13px;padding:0 12px;cursor:pointer;font-weight:700;flex:none}
 .addsec button:hover{background:var(--clr-brand-deep)}
 
 /* ── 가운데 컬럼 전체를 폰 목업으로 (1,3번 컬럼과 동일한 사이즈로 꽉 채움) ── */
@@ -211,12 +219,10 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 
 .sec-list{padding:14px 12px 22px;flex:1;overflow:auto;min-width:0;min-height:0}
 .midsplit{display:flex;align-items:stretch;gap:12px;padding:0 14px 14px;flex:1;min-height:0;overflow:hidden}
-.sec{position:relative;background:var(--panel-2);border:1.5px dashed var(--line-2);border-radius:14px;padding:16px 14px 14px;margin-bottom:14px;cursor:grab;display:flex;align-items:center;gap:10px;user-select:none;min-height:52px;box-shadow:0 2px 6px rgba(20,30,60,.06)}
+.sec{position:relative;background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin-bottom:8px;cursor:grab;display:flex;align-items:center;gap:10px;user-select:none;min-height:44px;box-shadow:0 1px 3px rgba(20,30,60,.06)}
+.sec:hover{border-color:var(--line-2)}
 /* 가운데 구역 카드 톤 — 진행상황(작성중/검토중/확정)에 맞춰 카드 전체 배경이 조화를 이루도록 함 */
-.sec.s-wd{background:linear-gradient(180deg,#fbfdff 0%,#eef3fb 100%);border-color:#c8d1e0}
-.sec.s-wr{background:linear-gradient(180deg,#fffaf0 0%,#ffe9c4 100%);border-color:#d9ab5c}
-.sec.s-ok{background:linear-gradient(180deg,#f7fbf6 0%,#e2f1e3 100%);border-color:#8fbf95}
-.sec.selected{background:var(--hl);border-color:var(--clr-brand);border-style:solid;outline:1px solid var(--clr-brand)}
+.sec.selected{background:var(--acc-soft);border-color:var(--clr-brand);outline:1px solid var(--clr-brand)}
 .sec.dragging{opacity:.4}
 .sec.drag-over{border-top:3px solid var(--clr-brand)}
 .sec .num{position:static;font-size:12.5px;color:#fff;font-weight:900;width:26px;height:26px;background:#bd3511;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 3px 8px rgba(10,61,145,.4);border:2px solid #fff;align-self:center}
@@ -311,8 +317,12 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .relimgs{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:8px;border:1px solid var(--line);border-radius:5px;background:#fff}
 .relimg{position:relative;display:block;max-width:100%;border:1px solid var(--line);border-radius:6px;overflow:hidden;cursor:zoom-in;background:var(--panel-2)}
 .relimg img{display:block;max-width:100%;height:auto}
-.relimg .tx{position:absolute;top:6px;right:6px;width:22px;height:22px;background:rgba(0,0,0,.62);color:#fff;border-radius:50%;font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;line-height:1}
-.relimg .tx:hover{background:var(--danger)}
+/* 이미지 위쪽 바: [파일명] ··· [삭제]  — 삭제 버튼이 이미지를 가리지 않게 */
+.imgcard{display:flex;flex-direction:column;gap:5px;max-width:100%}
+.imgbar{display:flex;align-items:center;gap:8px;min-height:26px}
+.imgbar .nm{flex:1;min-width:0;font-size:11.5px;font-weight:700;color:var(--sub);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.imgbar .img-rm{flex:none;display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 9px;border:1px solid var(--line);border-radius:5px;background:#fff;color:var(--sub);font-size:11.5px;font-weight:800;cursor:pointer;font-family:inherit}
+.imgbar .img-rm:hover{border-color:var(--danger);color:var(--danger);background:var(--danger-soft)}
 .imgadd{background:var(--acc-soft);color:var(--clr-brand);border:1px dashed var(--clr-brand);border-radius:6px;padding:10px 14px;font-size:13px;font-weight:700;cursor:pointer}
 .imgadd:hover{background:var(--clr-brand);color:#fff}
 
@@ -322,14 +332,13 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .scrshot .add .plus{font-size:26px;font-weight:400;line-height:1}
 .scrshot .preview{flex:1;min-height:0;position:relative;display:flex;justify-content:center;align-items:flex-start;padding:10px;background:var(--panel-2);border-radius:10px;overflow:auto}
 .scrshot .preview img{width:412px;max-width:100%;display:block;border:1px solid var(--line);border-radius:4px;background:#fff;cursor:zoom-in}
-.scrshot .preview .rm{position:absolute;top:16px;right:16px;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,.62);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;line-height:1;flex:none}
-.scrshot .preview .rm:hover{background:var(--danger)}
+.scrshot .preview .imgcard{width:412px}
 #secList.sec-list{flex:1}
 
 .imglb{position:fixed;inset:0;background:rgba(5,15,40,.86);display:none;align-items:center;justify-content:center;z-index:400;cursor:zoom-out;flex-direction:column}
 .imglb.show{display:flex}
 .imglb img{max-width:88vw;max-height:82vh;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.5);background:#fff}
-.imglb .cap{color:#cbd6ee;font-size:13px;margin-top:10px;font-family:"Pretendard","Malgun Gothic",sans-serif}
+.imglb .cap{color:#cbd6ee;font-size:13px;margin-top:10px;font-family:"Pretendard Variable","Pretendard","Malgun Gothic",sans-serif}
 
 .modalbg{position:fixed;inset:0;background:rgba(8,31,86,.78);display:none;align-items:center;justify-content:center;z-index:200}
 .modalbg.show{display:flex}
@@ -343,7 +352,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .modal .pick:hover{background:var(--acc-soft)}
 .modal .pick.checked{background:var(--hl)}
 .modal .pick .sid{color:var(--clr-brand);font-weight:800;width:170px;font-size:13.5px}
-.modal .pick .nm{font-family:"Pretendard","Malgun Gothic",sans-serif;color:var(--ink);font-size:var(--fs-base);font-weight:700}
+.modal .pick .nm{font-family:"Pretendard Variable","Pretendard","Malgun Gothic",sans-serif;color:var(--ink);font-size:var(--fs-base);font-weight:700}
 .modal .ft{padding:12px 18px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:6px;background:var(--panel-2)}
 .modal .ft button{padding:8px 18px;border-radius:5px;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:var(--fs-base);font-weight:700}
 .modal .ft button.primary{background:var(--clr-brand);color:#fff;border-color:var(--clr-brand)}
@@ -376,11 +385,11 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 
 
 /* 페이지 성향 뱃지 (STATIC / ADMIN / API / USER) */
-.screen-head .meta .ptags{margin-left:auto;display:flex;gap:5px;flex-wrap:wrap;font-family:"Pretendard","Malgun Gothic",sans-serif}
+.screen-head .meta .ptags{margin-left:auto;display:flex;gap:5px;flex-wrap:wrap;font-family:"Pretendard Variable","Pretendard","Malgun Gothic",sans-serif}
 .ptag{--c:#64748b;display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:12px;border:1px solid var(--c);color:var(--c);background:#fff;font-size:11px;font-weight:800;letter-spacing:.4px;cursor:pointer;opacity:.38;user-select:none;font-family:inherit;transition:opacity .12s,background .12s}
 .ptag:hover{opacity:.75}
 .ptag.on{opacity:1;background:var(--c);color:#fff}
-.screen-head .meta .ptag-lbl{margin-left:auto;display:inline-flex;align-items:center;gap:4px;font-family:"Pretendard","Malgun Gothic",sans-serif;font-size:12px;font-weight:800;color:var(--ink);white-space:nowrap}
+.screen-head .meta .ptag-lbl{margin-left:auto;display:inline-flex;align-items:center;gap:4px;font-family:"Pretendard Variable","Pretendard","Malgun Gothic",sans-serif;font-size:12px;font-weight:800;color:var(--ink);white-space:nowrap}
 .screen-head .meta{position:relative}
 .screen-head .meta .ptag-lbl + .ptags{margin-left:0}
 .ptag-help{width:18px;height:18px;border-radius:50%;border:1px solid var(--line-2);background:#fff;color:var(--sub);font-size:11px;font-weight:900;line-height:1;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;font-family:inherit}
@@ -394,13 +403,13 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 /* 충돌 선택 / 초안 창 */
 .cf-guide{padding:10px 18px;font-size:12.5px;color:var(--sub);background:#f8faff;border-bottom:1px solid var(--line);line-height:1.6}
 .cf-item{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-top:10px}
-.cf-h{display:flex;flex-direction:column;gap:2px;margin-bottom:6px;font-family:"Pretendard","Malgun Gothic",sans-serif}
+.cf-h{display:flex;flex-direction:column;gap:2px;margin-bottom:6px;font-family:"Pretendard Variable","Pretendard","Malgun Gothic",sans-serif}
 .cf-h b{font-size:13px;color:var(--ink)}
 .cf-h span{font-size:11.5px;color:var(--sub);font-weight:600}
 .cf-field{border-top:1px dashed var(--line);padding-top:6px;margin-top:6px}
 .cf-fl{font-size:11.5px;font-weight:800;color:var(--clr-brand);margin-bottom:4px}
 .cf-opts{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.cf-opt{display:flex;flex-direction:column;gap:3px;border:1px solid var(--line);border-radius:6px;padding:7px 9px;cursor:pointer;font-family:"Pretendard","Malgun Gothic",sans-serif;position:relative}
+.cf-opt{display:flex;flex-direction:column;gap:3px;border:1px solid var(--line);border-radius:6px;padding:7px 9px;cursor:pointer;font-family:"Pretendard Variable","Pretendard","Malgun Gothic",sans-serif;position:relative}
 .cf-opt:has(input:checked){border-color:var(--clr-brand);background:var(--acc-soft)}
 .cf-opt input{position:absolute;top:8px;right:8px}
 .cf-tag{font-size:11px;font-weight:800;color:#a25b00}
@@ -408,7 +417,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .cf-val{font-size:12.5px;color:var(--ink);white-space:pre-wrap;word-break:break-word;max-height:140px;overflow:auto;padding-right:18px}
 /* 연결 화면 한 줄 (연관 화면 ID · 페이지연결 공통) */
 .scrlinks{display:flex;flex-direction:column;gap:6px;margin-top:8px}
-.scrlink{display:flex;align-items:center;gap:10px;min-height:40px;padding:0 6px 0 12px;border:1px solid var(--clr-brand);border-radius:6px;background:var(--acc-soft);cursor:pointer;font-family:"Pretendard","Malgun Gothic",sans-serif}
+.scrlink{display:flex;align-items:center;gap:10px;min-height:40px;padding:0 6px 0 12px;border:1px solid var(--clr-brand);border-radius:6px;background:var(--acc-soft);cursor:pointer;font-family:"Pretendard Variable","Pretendard","Malgun Gothic",sans-serif}
 .scrlink:hover{background:var(--hl)}
 .scrlink .sl-id{font-family:Consolas,monospace;font-size:13px;font-weight:800;color:var(--clr-brand);flex:none}
 .scrlink .sl-nm{flex:1;min-width:0;font-size:14px;font-weight:700;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -440,6 +449,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 <div class="app">
   <header>
     <h1>삼성라이온즈 기능 정의 및 화면 설계서</h1>
+    <span id="unsavedBadge" title="서버에 아직 저장되지 않은 변경이 있어요 · 저장 버튼 또는 Ctrl+S">저장 필요</span>
     <span class="sp"></span>
     <button type="button" id="btnUser" title="내 영어 닉네임 변경 (저장·이력에 기록돼요)">👤 닉네임 입력</button>
     <button type="button" id="btnRequest">요청사항</button>
@@ -461,7 +471,6 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     </span>
     <input type="file" id="imp" accept=".json" style="display:none">
     <button type="button" id="syncBanner" style="display:none;margin-right:8px;background:#e6f0ff;color:var(--clr-brand-deep);border-color:#9fbdf0;font-size:12px;font-weight:800">🔄 새 변경</button>
-    <span id="unsavedBadge" style="display:none;align-items:center;height:26px;padding:0 10px;border-radius:13px;background:#ffe6b3;color:#7a4b00;font-size:12px;font-weight:800;margin-right:8px;white-space:nowrap">⚠ 저장 필요</span>
     <button type="button" id="btnSave" class="primary">저장</button>
   </header>
 
@@ -490,7 +499,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
           <div class="screen-head" id="screenHead" style="display:none"></div>
           <div class="addsec" id="addsec" style="display:none">
             <span class="addsec-tip">페이지 영역 내 구역 정보를 확인합니다.</span>
-            <button type="button" id="btnAddSec">+ 구역 추가</button>
+            <button type="button" id="btnAddSec">+ 구역</button>
           </div>
           <div class="sec-list" id="secList"></div>
         </div>
@@ -1764,14 +1773,14 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       var arrow = (g._open===false && !fa) ? "▸" : "▾";
       html += '<div class="grp-row" data-gid="'+esc(g.id)+'" data-act="toggle-grp">'
             +   '<span class="arrow">'+arrow+'</span>'
-            +   '<span data-act="toggle-grp" data-gid="'+esc(g.id)+'">'+esc(_fmtGroup(g, "tree"))+'</span>'
-            +   '<span class="n" title="확정 '+nOk+' · 검토중 '+nWr+' · 작성중 '+(all.length-nOk-nWr)+' (화면 기준)">'
-            +     (fa ? items.length+' / ' : '') + '확정 '+nOk+'/'+all.length
-            +     '<span class="prog"><b style="width:'+pct+'%"></b></span></span>'
+            +   '<span class="gname" data-act="toggle-grp" data-gid="'+esc(g.id)+'">'+esc(_fmtGroup(g, "tree"))+'</span>'
             +   '<span class="act">'
             +     '<span data-act="rename-grp" data-gid="'+esc(g.id)+'" title="이름 변경">✎</span>'
             +     '<span data-act="del-grp" data-gid="'+esc(g.id)+'" title="삭제">🗑</span>'
             +   '</span>'
+            +   '<span class="n" title="확정 '+nOk+' · 검토중 '+nWr+' · 작성중 '+(all.length-nOk-nWr)+' (화면 기준)">'
+            +     (fa ? items.length+' / ' : '') + '확정 '+nOk+'/'+all.length
+            +     '<span class="prog"><b style="width:'+pct+'%"></b></span></span>'
             + '</div>';
       if(g._open!==false || fa){
         items.slice().sort(_byScreenIdNum).forEach(function(s){
@@ -1787,7 +1796,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     var orphans = (STATE.screens||[]).filter(function(s){return !(STATE.groups||[]).some(function(g){return g.id===s.groupId;});});
     if(fa) orphans = orphans.filter(matchScreen);
     if(orphans.length){
-      html += '<div class="grp-row"><span class="arrow">▾</span><span>분류 미지정</span><span class="n">'+orphans.length+'</span></div>';
+      html += '<div class="grp-row"><span class="arrow">▾</span><span class="gname">분류 미지정</span><span class="n">'+orphans.length+'</span></div>';
       orphans.slice().sort(_byScreenIdNum).forEach(function(s){
         html += '<div class="scr-row '+_stCls(s)+' '+(STATE.selectedScreenId===s.screenId?'active':'')+'" data-sid="'+esc(s.screenId)+'" data-act="sel-scr" title="진행: '+screenStatus(s)+'">'
               +   '<span class="sid">'+esc(s.screenId)+'</span>'
@@ -2017,13 +2026,18 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     });
   }
 
+  var TRASH_SVG = '<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" aria-hidden="true"><path d="m4.015 5.494h-.253c-.413 0-.747-.335-.747-.747s.334-.747.747-.747h5.253v-1c0-.535.474-1 1-1h4c.526 0 1 .465 1 1v1h5.254c.412 0 .746.335.746.747s-.334.747-.746.747h-.254v15.435c0 .591-.448 1.071-1 1.071-2.873 0-11.127 0-14 0-.552 0-1-.48-1-1.071zm14.5 0h-13v15.006h13zm-4.25 2.506c-.414 0-.75.336-.75.75v8.5c0 .414.336.75.75.75s.75-.336.75-.75v-8.5c0-.414-.336-.75-.75-.75zm-4.5 0c-.414 0-.75.336-.75.75v8.5c0 .414.336.75.75.75s.75-.336.75-.75v-8.5c0-.414-.336-.75-.75-.75zm3.75-4v-.5h-3v.5z"/></svg>';
+  function _imgBar(name, attrs){
+    return '<div class="imgbar"><span class="nm" title="'+esc(name||"")+'">'+esc(name||"이미지")+'</span>'
+         + '<button type="button" class="img-rm" '+attrs+' title="이미지 삭제">'+TRASH_SVG+'삭제</button></div>';
+  }
   function renderScrShot(shot, s){
     if(s.mockImage && s.mockImage.url){
       shot.innerHTML =
-          '<div class="preview">'
+          '<div class="preview"><div class="imgcard">'
+        +   _imgBar(s.mockImage.name, 'data-act="scrshot-del"')
         +   '<img src="'+esc(s.mockImage.url)+'" alt="'+esc(s.mockImage.name||"")+'">'
-        +   '<span class="rm" data-act="scrshot-del" title="삭제">×</span>'
-        + '</div>';
+        + '</div></div>';
     } else {
       shot.innerHTML =
           '<label class="add"><span class="plus">+</span><span>화면을 등록하세요</span>'
@@ -2156,7 +2170,8 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
             ta("target")
           + '<div class="relimgs" style="margin-top:8px">'
           +   (sec.images||[]).map(function(im){
-                return '<span class="relimg" data-act="img-view" data-img="'+esc(im.id)+'" title="클릭하면 크게 보기"><img src="'+esc(im.dataUrl)+'" alt="'+esc(im.name||"")+'"><span class="tx" data-act="img-del" data-img="'+esc(im.id)+'" title="삭제">×</span></span>';
+                return '<div class="imgcard">' + _imgBar(im.name, 'data-act="img-del" data-img="'+esc(im.id)+'"')
+                     + '<span class="relimg" data-act="img-view" data-img="'+esc(im.id)+'" title="클릭하면 크게 보기"><img src="'+esc(im.dataUrl)+'" alt="'+esc(im.name||"")+'"></span></div>';
               }).join("")
           +   '<label class="imgadd">+ 이미지 첨부<input type="file" accept="image/*" multiple data-act="img-file" style="display:none"></label>'
           + '</div>')
@@ -2423,7 +2438,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       +   '<div class="body" style="padding:18px">'
       +     '<div class="rower"><div class="lbl">화면 ID <span class="req">*</span></div>'
       +       '<input id="addScrId" placeholder="예: 003-SL-HM-01" value="'+esc(defId)+'">'
-      +       '<div class="tip">비워두면 추천 ID('+esc(defId)+')로 자동 입력돼요. 세 번째 칸(HM 등)의 그룹으로 들어갑니다.</div></div>'
+      +       '<div class="tip">한번 설정된 ID는 수정할 수 없습니다.</div></div>'
       +     '<div class="rower"><div class="lbl">화면 이름 <span class="req">*</span></div>'
       +       '<input id="addScrTitle" placeholder="예: 결제 완료"><div class="tip">두 칸 모두 입력해야 추가돼요.</div></div>'
       +   '</div>'
