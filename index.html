@@ -545,12 +545,12 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 <div class="app">
   <header>
     <h1>삼성라이온즈 기능 정의 및 화면 설계서</h1>
+    <button type="button" id="btnUser" title="내 영어 닉네임 변경 (저장·이력에 기록돼요)">👤 닉네임 입력</button>
     <span id="unsavedBadge" title="서버에 아직 저장되지 않은 변경이 있어요 · 저장 버튼 또는 Ctrl+S">저장 필요</span>
     <span class="sp"></span>
-    <button type="button" id="btnUser" title="내 영어 닉네임 변경 (저장·이력에 기록돼요)">👤 닉네임 입력</button>
-    <button type="button" id="btnRequest">요청사항</button>
     <button type="button" id="btnDefs" title="Push·금칙어·API·토스트 등 여러 화면이 함께 쓰는 정의를 관리해요">공통 정의</button>
-    <button type="button" id="btnHistory">이력</button>
+    <button type="button" id="btnHistory">변경 이력</button>
+    <button type="button" id="btnRequest">요청사항</button>
     <span class="syncBlock" role="group" aria-label="서버 상태">
       <span class="syncDot" id="syncDot"></span>
       <span id="syncChip">연결 준비 중…</span>
@@ -1759,7 +1759,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     var btn = document.getElementById("btnHistory"); if(!btn) return;
     var hs = document.getElementById("historyScreen");
     var o = !!(hs && hs.classList.contains("show"));
-    btn.textContent = o ? "✕ 이력 닫기" : "이력"; btn.classList.toggle("closing", o);
+    btn.textContent = o ? "✕ 변경 이력 닫기" : "변경 이력"; btn.classList.toggle("closing", o);
   }
   function toggleHistoryScreen(){
     var hs = document.getElementById("historyScreen");
