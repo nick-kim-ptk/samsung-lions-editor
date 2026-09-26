@@ -417,9 +417,11 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .wf-btn.primary{background:var(--clr-brand);border-color:var(--clr-brand);color:#fff}
 .wf-btn.primary:hover{background:var(--clr-brand-deep);color:#fff}
 .imgcard{display:flex;flex-direction:column;gap:5px;max-width:100%}
-.relcard{width:100%}
+/* 관련 자료 이미지: 한 줄에 2장, 원본의 50% 크기(칸보다 크면 칸 너비에 맞춤) — 누르면 원본 크기로 보기 */
+.relimgs{flex-direction:row!important;flex-wrap:wrap}
+.relcard{width:calc(50% - 5px);min-width:0;padding:8px;border:1px solid var(--line);border-radius:6px;background:#fff}
+.relimgs .imgadd{flex-basis:100%}
 .relcard .relimg{align-self:flex-start}   /* 작은 이미지는 원래 크기, 큰 이미지만 영역 너비에 맞춰 축소 */
-.relcard + .relcard{padding-top:10px;border-top:1px dashed var(--line)}
 .imgdesc{width:100%;min-height:34px;border:1px solid var(--line);border-radius:5px;padding:7px 10px;font-size:13px;line-height:1.5;font-family:inherit;color:var(--ink);resize:none;overflow:hidden;background:#fff}
 .imgdesc:focus{outline:none;border-color:var(--clr-brand);box-shadow:0 0 0 2px rgba(10,61,145,.12)}
 .imgbar{display:flex;align-items:center;gap:8px;min-height:26px}
@@ -3116,7 +3118,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
           +   (sec.images||[]).map(function(im){
                 return '<div class="imgcard relcard">'
                      + '<div class="imgbar"><span class="sp" style="flex:1"></span><button type="button" class="img-rm" data-act="img-del" data-img="'+esc(im.id)+'" title="이미지 삭제">'+TRASH_SVG+'삭제</button></div>'
-                     + '<span class="relimg" data-act="img-view" data-img="'+esc(im.id)+'" title="클릭하면 크게 보기"><img src="'+esc(im.dataUrl)+'" alt="'+esc(im.desc||"")+'"></span>'
+                     + '<span class="relimg" data-act="img-view" data-img="'+esc(im.id)+'" title="클릭하면 크게 보기"><img src="'+esc(im.dataUrl)+'" alt="'+esc(im.desc||"")+'" onload="this.style.width=Math.max(1,Math.round(this.naturalWidth/2))+\'px\'"></span>'
                      + '<textarea class="imgdesc" data-imgdesc="'+esc(im.id)+'" rows="1" placeholder="이미지 설명 (예: 로그인 실패 시 노출되는 팝업)">'+esc(im.desc||"")+'</textarea></div>';
               }).join("")
           +   '<label class="imgadd">+ 이미지 첨부<input type="file" accept="image/*" multiple data-act="img-file" style="display:none"></label>'
