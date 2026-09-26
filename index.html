@@ -417,6 +417,10 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .wf-btn.primary{background:var(--clr-brand);border-color:var(--clr-brand);color:#fff}
 .wf-btn.primary:hover{background:var(--clr-brand-deep);color:#fff}
 .imgcard{display:flex;flex-direction:column;gap:5px;max-width:100%}
+.relcard{width:100%}
+.relcard + .relcard{padding-top:10px;border-top:1px dashed var(--line)}
+.imgdesc{width:100%;min-height:34px;border:1px solid var(--line);border-radius:5px;padding:7px 10px;font-size:13px;line-height:1.5;font-family:inherit;color:var(--ink);resize:none;overflow:hidden;background:#fff}
+.imgdesc:focus{outline:none;border-color:var(--clr-brand);box-shadow:0 0 0 2px rgba(10,61,145,.12)}
 .imgbar{display:flex;align-items:center;gap:8px;min-height:26px}
 .imgbar .nm{flex:1;min-width:0;font-size:11.5px;font-weight:700;color:var(--sub);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .scrshot .imgbar{flex-wrap:wrap;gap:4px}
@@ -815,6 +819,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   /* ===================== 상태 ↔ 테이블 행 변환 ===================== */
 
   // 편집기 상태 → 테이블 행 (저장·비교에 쓰는 유일한 변환 함수)
+  function _copyImgs(a){ return Array.isArray(a) ? a.map(function(x){ return (x && typeof x==="object") ? Object.assign({}, x) : x; }) : []; }
   function rowsFromState(st){
     var out = { groups:{}, screens:{}, sections:{}, defs:{} };
     var gids = {};
@@ -844,7 +849,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
           exception_note:str(c.exception), feedback:str(c.feedback), note:str(c.note),
           out_url:str(c.outUrl), out_label:str(c.outLabel), linked_screen_id:str(c.linkedScreenId),
           related: Array.isArray(c.related) ? c.related.filter(function(x){return typeof x==="string";}) : [],
-          images:  Array.isArray(c.images) ? c.images : [],
+          images:  _copyImgs(c.images),   // 복사본 — 화면 쪽에서 설명을 고쳐도 기준본(BASE)이 같이 바뀌지 않게
           area:    normArea(c.area),
           def_refs: normRefs(c.defRefs),
           sort_order:toInt(c.order, i)
@@ -872,7 +877,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         desc:str(r.description), target:str(r.target), requirement:str(r.requirement), exception:str(r.exception_note),
         feedback:str(r.feedback), note:str(r.note), outUrl:str(r.out_url), outLabel:str(r.out_label),
         linkedScreenId:str(r.linked_screen_id),
-        related:Array.isArray(r.related)?r.related:[], images:Array.isArray(r.images)?r.images:[],
+        related:Array.isArray(r.related)?r.related:[], images:_copyImgs(r.images),
         area:normArea(r.area), defRefs:normRefs(r.def_refs), order:toInt(r.sort_order,0)
       });
     });
@@ -926,7 +931,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
           exception:str(c.exception), feedback:str(c.feedback), note:str(c.note),
           outUrl:str(c.outUrl), outLabel:str(c.outLabel), linkedScreenId:str(c.linkedScreenId),
           related:Array.isArray(c.related)?c.related.filter(function(x){return typeof x==="string";}):[],
-          images:Array.isArray(c.images)?c.images:[], area:normArea(c.area), defRefs:normRefs(c.defRefs), order:toInt(c.order, i)
+          images:_copyImgs(c.images), area:normArea(c.area), defRefs:normRefs(c.defRefs), order:toInt(c.order, i)
         });
       });
       screens.push({
@@ -1284,7 +1289,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     if(f==="columns") return (v||[]).map(function(c){ return c.name; }).join(" | ");
     if(f==="rows") return (v||[]).length + "줄" + ((v||[]).length ? " · " + v.slice(0,3).map(function(r){ var c = r.cells||{}; var k = Object.keys(c)[0]; return r.id + (k ? " " + c[k] : ""); }).join(" / ") + (v.length>3 ? " …" : "") : "");
     if(f==="def_refs") return (v||[]).join(", ");
-    if(f==="images") return "이미지 " + v.length + "개" + (v.length ? " · " + v.map(function(x){return x && x.name;}).filter(Boolean).join(", ") : "");
+    if(f==="images") return "이미지 " + v.length + "개" + (v.length ? " · " + v.map(function(x){return x && (x.desc || x.name);}).filter(Boolean).join(", ") : "");
     if(f==="mock_image") return (v && v.name) || "이미지";
     if(f==="area") return "영역 지정됨 (가로 "+Math.round(v.x*100)+"% · 폭 "+Math.round(v.w*100)+"%)";
     if(f==="group_id"){ var g = (STATE.groups||[]).find(function(x){return x.id===v;}); return g ? _fmtGroup(g,"tree") : v; }
@@ -3108,8 +3113,10 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
             ta("target")
           + '<div class="relimgs" style="margin-top:8px">'
           +   (sec.images||[]).map(function(im){
-                return '<div class="imgcard">' + _imgBar(im.name, 'data-act="img-del" data-img="'+esc(im.id)+'"')
-                     + '<span class="relimg" data-act="img-view" data-img="'+esc(im.id)+'" title="클릭하면 크게 보기"><img src="'+esc(im.dataUrl)+'" alt="'+esc(im.name||"")+'"></span></div>';
+                return '<div class="imgcard relcard">'
+                     + '<div class="imgbar"><span class="sp" style="flex:1"></span><button type="button" class="img-rm" data-act="img-del" data-img="'+esc(im.id)+'" title="이미지 삭제">'+TRASH_SVG+'삭제</button></div>'
+                     + '<span class="relimg" data-act="img-view" data-img="'+esc(im.id)+'" title="클릭하면 크게 보기"><img src="'+esc(im.dataUrl)+'" alt="'+esc(im.desc||"")+'"></span>'
+                     + '<textarea class="imgdesc" data-imgdesc="'+esc(im.id)+'" rows="1" placeholder="이미지 설명 (예: 로그인 실패 시 노출되는 팝업)">'+esc(im.desc||"")+'</textarea></div>';
               }).join("")
           +   '<label class="imgadd">+ 이미지 첨부<input type="file" accept="image/*" multiple data-act="img-file" style="display:none"></label>'
           + '</div>')
@@ -3160,7 +3167,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     el.style.height = Math.max(h, 44) + "px";
     keep.forEach(function(k){ k[0].scrollTop = k[1]; });
   }
-  function _autoGrowAll(root){ if(root) root.querySelectorAll("textarea[data-pf2]").forEach(_autoGrow); }
+  function _autoGrowAll(root){ if(root) root.querySelectorAll("textarea[data-pf2], textarea.imgdesc").forEach(_autoGrow); }
   (function(){
     var box = document.getElementById("secEdit");
     if(!box || typeof ResizeObserver === "undefined") return;
@@ -3260,6 +3267,16 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         t = t.parentNode;
       }
     };
+    // 관련 자료 이미지 설명
+    box.querySelectorAll("[data-imgdesc]").forEach(function(el){
+      _autoGrow(el);
+      el.addEventListener("input", function(){
+        _autoGrow(el);
+        var im = (sec.images||[]).find(function(x){ return x.id===el.dataset.imgdesc; }); if(!im) return;
+        if(el.value) im.desc = el.value; else delete im.desc;
+        _markDirty();
+      });
+    });
     var fileInp = box.querySelector("[data-act='img-file']");
     if(fileInp) fileInp.onchange = function(e){ handleImgFiles(e.target.files, sec); e.target.value = ""; };
   }
@@ -3283,7 +3300,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   function openLightbox(sec, imgId){
     var im = (sec.images||[]).find(function(x){return x.id===imgId;}); if(!im) return;
     document.getElementById("imglbImg").src = im.dataUrl;
-    document.getElementById("imglbCap").textContent = (im.name||"이미지")+" · 클릭하면 닫힘";
+    document.getElementById("imglbCap").textContent = (im.desc ? im.desc.replace(/\s+/g," ") + " · " : "") + "클릭하면 닫힘";
     document.getElementById("imglb").classList.add("show");
   }
 
