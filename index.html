@@ -81,8 +81,10 @@ header h1{align-self:center}
 header .pill{display:inline-flex;align-items:center;height:var(--pill-h);background:rgba(255,255,255,.12);padding:0 10px;border-radius:14px;color:#eaf0ff;font-size:var(--fs-mini);font-weight:600;letter-spacing:.1px}
 header .sp{flex:1;min-width:var(--sp-3)}
 /* 저장 필요 표시 — 제목 바로 오른쪽, 눈에 띄게 */
-#unsavedBadge{display:none;align-items:center;gap:6px;height:26px;padding:0 12px 0 10px;border-radius:13px;background:var(--clr-accent);color:var(--clr-brand-deep);font-size:12.5px;font-weight:900;white-space:nowrap;letter-spacing:-.1px;box-shadow:0 0 0 3px rgba(255,194,14,.28)}
-#unsavedBadge::before{content:"";width:8px;height:8px;border-radius:50%;background:#d7263d;animation:pulse 1.2s ease-in-out infinite}
+#unsavedBadge{display:none;align-items:center;gap:6px;height:26px;padding:0 12px 0 10px;border-radius:13px;background:#d7263d;color:#fff;font-size:12.5px;font-weight:900;white-space:nowrap;letter-spacing:-.1px;box-shadow:0 0 0 3px rgba(215,38,61,.3)}
+#btnUser{gap:6px}
+#btnUser .uico{flex:none}
+#unsavedBadge::before{content:"";width:8px;height:8px;border-radius:50%;background:#fff;animation:pulse 1.2s ease-in-out infinite}
 header button{display:inline-flex;align-items:center;justify-content:center;height:var(--pill-h);background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:5px;padding:0 14px;font-size:var(--fs-base);cursor:pointer;font-weight:600;letter-spacing:-.1px}
 header button:hover{background:rgba(255,255,255,.24)}
 header button.primary{background:var(--clr-accent);color:var(--clr-brand-deep);border-color:var(--clr-accent);font-weight:800}
@@ -533,6 +535,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .scrlink .sl-nm{flex:1;min-width:0;font-size:14px;font-weight:700;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .scrlink.gone{border-color:var(--line-2);background:var(--panel-2);cursor:default}
 .scrlink.gone .sl-id,.scrlink.gone .sl-nm{color:var(--sub-2);font-weight:600}
+.scrlink .sl-tag{flex:none;padding:0 7px;border-radius:9px;background:var(--clr-brand);color:#fff;font-size:10.5px;font-weight:800;line-height:18px}
 .scrlink .sl-x{flex:none;width:28px;height:28px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;font-size:17px;line-height:1;color:var(--sub);cursor:pointer}
 .scrlink .sl-x:hover{background:var(--danger-soft);color:var(--danger)}
 /* 검색·필터 */
@@ -559,7 +562,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 <div class="app">
   <header>
     <h1>삼성라이온즈 기능 정의 및 화면 설계서</h1>
-    <button type="button" id="btnUser" title="닉네임 변경">👤 닉네임 입력</button>
+    <button type="button" id="btnUser" title="닉네임 변경"><svg class="uico" viewBox="0 0 24 24" width="14" height="14" fill="#fff" aria-hidden="true"><circle cx="12" cy="8" r="4.2"/><path d="M3.5 21c.6-4.4 4.1-7 8.5-7s7.9 2.6 8.5 7z"/></svg><span class="unm">닉네임 입력</span></button>
     <span id="unsavedBadge" title="서버에 아직 저장되지 않은 변경이 있어요 · 저장 버튼 또는 Ctrl+S">저장 필요</span>
     <span class="sp"></span>
     <button type="button" id="btnDefs" title="Push·금칙어·API·토스트 등 여러 화면이 함께 쓰는 정의를 관리해요">공통 정의</button>
@@ -763,7 +766,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   // ── 내 이름 (로그인 대신, 브라우저에 기억)
   function _renderUserBtn(){
     var b = document.getElementById("btnUser"); if(!b) return;
-    b.textContent = "👤 " + (SB.user || "닉네임 입력");
+    var nm = b.querySelector(".unm"); if(nm) nm.textContent = SB.user || "닉네임 입력"; else b.textContent = SB.user || "닉네임 입력";
     b.style.borderColor = SB.user ? "" : "var(--clr-accent)";
   }
   function askName(opts){
@@ -3059,11 +3062,22 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     return html + '</select>';
   }
   // 선택된 화면 한 줄: [화면 ID] [화면명] ··· [×]  (누르면 그 화면으로 이동)
-  function _screenLine(sid, xAct){
+  // 연관 화면 목록 (예전 '연결할 화면' 값이 있으면 맨 앞에 합쳐서 보여준다)
+  function _relList(sec){
+    var list = (sec.related||[]).slice();
+    if(sec.linkedScreenId && list.indexOf(sec.linkedScreenId) < 0) list.unshift(sec.linkedScreenId);
+    return list;
+  }
+  // 연관 화면 목록 저장 — '연결할 화면'(linkedScreenId)은 목록의 첫 번째 화면으로 맞춘다
+  function _setRel(sec, list){
+    sec.related = list;
+    sec.linkedScreenId = normType(sec.type)==="페이지연결" ? (list[0] || "") : (list.indexOf(sec.linkedScreenId) >= 0 ? sec.linkedScreenId : "");
+  }
+  function _screenLine(sid, xAct, tag){
     var t = findScreen(sid);
     var x = '<span class="sl-x" data-act="'+xAct+'" data-value="'+esc(sid)+'" title="삭제">×</span>';
     if(!t) return '<div class="scrlink gone" title="삭제되었거나 없는 화면"><span class="sl-id">'+esc(sid)+'</span><span class="sl-nm">(없는 화면)</span>'+x+'</div>';
-    return '<div class="scrlink" data-act="goto-screen" data-sid="'+esc(sid)+'" title="'+esc(sid)+' 화면으로 이동"><span class="sl-id">'+esc(sid)+'</span><span class="sl-nm">'+esc(t.title||"(제목 없음)")+'</span>'+x+'</div>';
+    return '<div class="scrlink" data-act="goto-screen" data-sid="'+esc(sid)+'" title="'+esc(sid)+' 화면으로 이동"><span class="sl-id">'+esc(sid)+'</span><span class="sl-nm">'+esc(t.title||"(제목 없음)")+'</span>'+(tag ? '<span class="sl-tag">'+esc(tag)+'</span>' : '')+x+'</div>';
   }
 
   function renderDetail(){
@@ -3109,6 +3123,17 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     var filled = function(v){ return !!(v && String(v).trim()); };
     var accHtml = "";
 
+    // 연관 화면 ID · 연관 공통 정의 — 모든 구역 종류에서 같이 쓴다
+    var isPage = currentType==="페이지연결";
+    var relList = _relList(sec);
+    var relBlock = accItem("related", isPage ? "연관 화면 ID <span class='req'>*</span>" : "연관 화면 ID", relList.length > 0,
+          (isPage ? '<div class="tip" style="margin:0 0 6px">눌렀을 때 이동하는 화면을 넣어 주세요. 여러 개면 첫 번째 화면이 기본 이동 화면이에요.</div>' : '')
+        + _screenSelect('data-act="rel-add"', isPage ? "— 이동할 화면 추가 —" : "— 연관 화면 추가 —", [s.screenId].concat(relList), "")
+        + (relList.length ? '<div class="scrlinks">' + relList.map(function(r, i){ return _screenLine(r, "rel-x", isPage && i===0 ? "이동" : ""); }).join("") + '</div>' : ''));
+    var defBlock = accItem("defrefs", "연관 공통 정의", !!(sec.defRefs && sec.defRefs.length) || (_defPick.sec===sec.id && !!_defPick.def),
+          ((STATE.defs||[]).length ? _defSelect(sec) : '<div class="tip" style="margin:0">아직 공통 정의가 없어요. 상단 "공통 정의"에서 먼저 만들어 주세요.</div>')
+        + ((sec.defRefs||[]).length ? '<div class="scrlinks">' + sec.defRefs.map(_defLine).join("") + '</div>' : ''));
+
     if(currentType==="기능"){
       accHtml =
           accItem("desc", "기능 설명 <span class='req'>*</span>", filled(sec.desc), ta("desc"))
@@ -3126,29 +3151,24 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         + accItem("requirement", "고려 요소", filled(sec.requirement), ta("requirement"))
         + accItem("exception", "예외", filled(sec.exception), ta("exception"))
         + accItem("feedback", "광고주 요청", filled(sec.feedback), ta("feedback"))
-        + accItem("related", "연관 화면 ID", !!(sec.related && sec.related.length),
-            _screenSelect('data-act="rel-add"', "— 연관 화면 추가 —", [s.screenId].concat(sec.related||[]), "")
-          + ((sec.related||[]).length ? '<div class="scrlinks">' + sec.related.map(function(r){ return _screenLine(r, "rel-x"); }).join("") + '</div>' : ''))
-        + accItem("defrefs", "연관 공통 정의", !!(sec.defRefs && sec.defRefs.length) || (_defPick.sec===sec.id && !!_defPick.def),
-            ((STATE.defs||[]).length ? _defSelect(sec) : '<div class="tip" style="margin:0">아직 공통 정의가 없어요. 상단 "공통 정의"에서 먼저 만들어 주세요.</div>')
-          + ((sec.defRefs||[]).length ? '<div class="scrlinks">' + sec.defRefs.map(_defLine).join("") + '</div>' : ''))
+        + relBlock + defBlock
         + accItem("note", "메모", filled(sec.note), ta("note"));
     } else if(currentType==="광고"){
       accHtml =
           '<div class="adbox">⚠ 광고 슬롯 모드입니다. 노출 위치·사이즈·소재 규격만 메모해 두세요.</div>'
-        + accItem("note", "광고 메모 <span class='req'>*</span>", filled(sec.note), ta("note"));
+        + accItem("note", "광고 메모 <span class='req'>*</span>", filled(sec.note), ta("note"))
+        + relBlock + defBlock;
     } else if(currentType==="아웃링크"){
       accHtml =
           accItem("outUrl", "이동 URL <span class='req'>*</span>", filled(sec.outUrl),
             '<input data-sec="'+esc(sec.id)+'" data-pf2="outUrl" value="'+esc(sec.outUrl||"")+'" style="font-family:Consolas,monospace">')
         + accItem("outLabel", "표시 라벨 (화면에 보이는 글자)", filled(sec.outLabel),
             '<input data-sec="'+esc(sec.id)+'" data-pf2="outLabel" value="'+esc(sec.outLabel||"")+'">')
+        + relBlock + defBlock
         + accItem("note", "메모", filled(sec.note), ta("note"));
     } else {
       accHtml =
-          accItem("linkedScreenId", "연결할 화면 <span class='req'>*</span>", !!sec.linkedScreenId,
-            _screenSelect('data-sec="'+esc(sec.id)+'" data-pf2="linkedScreenId"', "— 연결할 화면을 선택해 주세요 —", [s.screenId], sec.linkedScreenId)
-          + (sec.linkedScreenId ? '<div class="scrlinks">' + _screenLine(sec.linkedScreenId, "link-x") + '</div>' : ''))
+          relBlock + defBlock
         + accItem("note", "메모", filled(sec.note), ta("note"));
     }
 
@@ -3201,7 +3221,9 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     box.querySelectorAll("[data-act='set-type']").forEach(function(el){
       el.onclick=function(){
         if(sec.type===el.dataset.v) return;
-        sec.type = el.dataset.v; save();
+        sec.type = el.dataset.v;
+        if(normType(sec.type)==="페이지연결" && !sec.linkedScreenId && (sec.related||[]).length) sec.linkedScreenId = sec.related[0];
+        save();
         renderMid(); renderDetail(); toast("구역 종류: " + sec.type);
       };
     });
@@ -3226,8 +3248,8 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     var relAdd = box.querySelector("[data-act='rel-add']");
     if(relAdd) relAdd.onchange = function(){
       var v = relAdd.value; if(!v) return;
-      sec.related = (sec.related||[]).filter(function(x){return x!==v;}).concat([v]);
-      save(); renderDetail();
+      _setRel(sec, _relList(sec).filter(function(x){return x!==v;}).concat([v]));
+      save(); renderMid(); renderDetail();
     };
     box.onclick = function(e){
       var t=e.target;
@@ -3253,7 +3275,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
         }
         if(a==="rel-x"){        // 연관 화면 한 줄 삭제
           e.stopPropagation();
-          sec.related = (sec.related||[]).filter(function(x){return x!==t.dataset.value;});
+          _setRel(sec, _relList(sec).filter(function(x){return x!==t.dataset.value;}));
           save(); renderDetail(); return;
         }
         if(a==="link-x"){       // 페이지연결 해제
@@ -3475,7 +3497,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       (s.sections||[]).forEach(function(sec){
         sids.forEach(function(t){
           if((sec.related||[]).indexOf(t)>=0) out.push("· #"+s.screenId+" › '"+(sec.title||"구역")+"' 연관 화면 → "+t);
-          if(normType(sec.type)==="페이지연결" && sec.linkedScreenId===t) out.push("· #"+s.screenId+" › '"+(sec.title||"구역")+"' 페이지연결 → "+t);
+          else if(normType(sec.type)==="페이지연결" && sec.linkedScreenId===t) out.push("· #"+s.screenId+" › '"+(sec.title||"구역")+"' 페이지연결 → "+t);
         });
       });
     });
