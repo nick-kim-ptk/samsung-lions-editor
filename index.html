@@ -1723,7 +1723,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   function _checkSavePassword(){
     if(Date.now() < _pwOkUntil) return Promise.resolve(true);
     return uiPrompt({ title:"저장 비밀번호", label:"비밀번호", password:true, ok:"확인", width:380,
-                      tip:"한 번 맞히면 10분 동안은 다시 묻지 않아요." }).then(function(pw){
+                      tip:"저장 이후에는 10분 간 비밀번호를 다시 묻지 않아요." }).then(function(pw){
     if(pw===null) return false;
     if(!(window.crypto && window.crypto.subtle)){
       toast("이 브라우저에서는 비밀번호 확인을 할 수 없어요 (https 주소에서 열어 주세요)", true);
