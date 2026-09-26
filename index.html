@@ -2377,7 +2377,9 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   }
   function _uploadScreenImage(s, f){
     return _prepareUpload(f).then(function(p){
-      var path = "screens/" + s.screenId + "." + p.ext;
+      // 올릴 때마다 새 파일 이름 → 기존 파일 덮어쓰기(서버 '수정' 권한 필요)를 하지 않음.
+      // 예전 파일은 저장이 끝난 뒤 더 이상 쓰이지 않을 때 정리된다.
+      var path = "screens/" + s.screenId + "_" + Date.now().toString(36) + "." + p.ext;
       return fetch(SB.url + "/storage/v1/object/" + SB_BUCKET + "/" + path, {
         method:"POST",
         headers:{ "apikey":SB.key, "Authorization":"Bearer "+SB.key, "Content-Type":p.type||"application/octet-stream", "x-upsert":"true" },
@@ -2554,7 +2556,13 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       }).catch(function(err){
         console.warn("[upload]", err);
         btn.disabled = false; btn.textContent = "완료 · 업로드";
-        toast("업로드 실패 · 다시 시도해 주세요" + (/too big/.test(err && err.message) ? " (이미지가 너무 커요)" : ""), true);
+        var em = String((err && err.message) || "");
+        var why = /too big/.test(em) ? "이미지가 너무 커요"
+          : /row-level security|Unauthorized|403/i.test(em) ? "서버 저장소 권한 없음"
+          : /mime|content type/i.test(em) ? "지원하지 않는 이미지 형식"
+          : /exceeded|too large|413/i.test(em) ? "서버 용량 제한 초과"
+          : /Failed to fetch|NetworkError/i.test(em) ? "네트워크 연결 문제" : "";
+        uiAlert("이미지 업로드에 실패했어요." + (why ? "\n원인: " + why : "") + "\n\n서버 응답: " + (em.slice(0, 300) || "(없음)"), "업로드 실패");
       });
     }
     bg.querySelector(".ae-head").addEventListener("click", function(e){
