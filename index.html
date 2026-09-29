@@ -136,10 +136,13 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .grp-row{font-size:14px;font-weight:800;padding:9px 12px;display:flex;align-items:center;gap:6px;border-radius:7px;cursor:pointer;background:var(--panel-2);margin-bottom:5px;color:var(--ink);border:1px solid var(--line)}
 .grp-row:hover{background:var(--acc-soft)}
 .grp-row .arrow{font-size:11px;color:var(--clr-brand);width:14px}
-.grp-row .gname{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.grp-row .gname{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.grp-row .gcnt{flex:none;min-width:20px;height:18px;padding:0 6px;border-radius:9px;background:#e3e9f4;color:var(--clr-brand);font-size:11px;font-weight:800;display:inline-flex;align-items:center;justify-content:center}
+.grp-row .gcnt.f{background:var(--clr-brand);color:#fff}
+.grp-row .gsp{flex:1}
 .grp-row .n{color:var(--sub);font-weight:600;flex:none;text-align:right;font-size:var(--fs-mini);white-space:nowrap}
-.grp-row .act{opacity:0;display:flex;gap:5px;color:var(--sub);font-size:var(--fs-mini);font-weight:600}
-.grp-row:hover .act{opacity:1}
+.grp-row .act{opacity:0;display:none;gap:5px;color:var(--sub);font-size:var(--fs-mini);font-weight:600}
+.grp-row:hover .act{opacity:1;display:flex}
 .grp-row .act span{cursor:pointer;padding:0 3px}
 .grp-row .act span:hover{color:var(--danger)}
 
@@ -1283,7 +1286,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   // ── 충돌 선택 창
   var FIELD_LABELS = {
     groups:  { code:"약칭", name:"그룹명", sort_order:"순서" },
-    defs:    { name:"정의명", description:"설명", category:"분류", status:"진행 상황", columns:"칸 구성", rows:"항목 표", prefix:"줄 ID 앞부분", next_row:"줄 번호" },
+    defs:    { name:"정의명", description:"설명", category:"표 타입", status:"진행 상황", columns:"칸 구성", rows:"항목 표", prefix:"줄 ID 앞부분", next_row:"줄 번호" },
     screens: { title:"제목", subtitle:"목적/개요", link:"와이어프레임 화면 링크", tags:"연계 구분", mock_image:"화면 이미지", group_id:"그룹", seq:"순번", status:"진행 상황" },
     sections:{ title:"구역 이름", sec_type:"구역 종류", status:"진행 상황", author:"작성자", description:"기능 설명", target:"관련 자료",
                images:"관련 자료 이미지", requirement:"고려 요소", exception_note:"예외", feedback:"광고주 요청", note:"메모",
@@ -1291,6 +1294,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   };
   function _fieldLabel(t, f){ return (FIELD_LABELS[t] && FIELD_LABELS[t][f]) || f; }
   function _showVal(t, f, v){
+    if(t==="defs" && f==="category") return v==="plain" ? "일반형" : "화면 연결형";
     if(v===null || v===undefined || v==="" || (Array.isArray(v) && !v.length)) return "(비어 있음)";
     if(f==="columns") return (v||[]).map(function(c){ return c.name; }).join(" | ");
     if(f==="rows") return (v||[]).length + "줄" + ((v||[]).length ? " · " + v.slice(0,3).map(function(r){ var c = r.cells||{}; var k = Object.keys(c)[0]; return r.id + (k ? " " + c[k] : ""); }).join(" / ") + (v.length>3 ? " …" : "") : "");
@@ -1979,13 +1983,15 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       var arrow = (g._open===false && !fa) ? "▸" : "▾";
       html += '<div class="grp-row" data-gid="'+esc(g.id)+'" data-act="toggle-grp">'
             +   '<span class="arrow">'+arrow+'</span>'
-            +   '<span class="gname" data-act="toggle-grp" data-gid="'+esc(g.id)+'">'+esc(_fmtGroup(g, "tree"))+'</span>'
+            +   '<span class="gname" data-act="toggle-grp" data-gid="'+esc(g.id)+'" title="'+esc(_fmtGroup(g, "tree"))+'">'+esc(_fmtGroup(g, "tree"))+'</span>'
+            +   '<span class="gcnt'+(FILTER.st.length ? ' f' : '')+'" title="'+(fa ? '조건에 맞는 화면 수' : '화면 수')+'">'+items.length+'</span>'
+            +   '<span class="gsp"></span>'
             +   '<span class="act">'
             +     '<span data-act="rename-grp" data-gid="'+esc(g.id)+'" title="이름 변경">✎</span>'
             +     '<span data-act="del-grp" data-gid="'+esc(g.id)+'" title="삭제">🗑</span>'
             +   '</span>'
             +   '<span class="n" title="확정 '+nOk+' · 검토중 '+nWr+' · 작성중 '+(all.length-nOk-nWr)+' (화면 기준)">'
-            +     (fa ? items.length+' / ' : '') + '확정 '+nOk+'/'+all.length
+            +     '확정 '+nOk+'/'+all.length
             +     '<span class="prog"><b style="width:'+pct+'%"></b></span></span>'
             + '</div>';
       if(g._open!==false || fa){
@@ -2002,7 +2008,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     var orphans = (STATE.screens||[]).filter(function(s){return !(STATE.groups||[]).some(function(g){return g.id===s.groupId;});});
     if(fa) orphans = orphans.filter(matchScreen);
     if(orphans.length){
-      html += '<div class="grp-row"><span class="arrow">▾</span><span class="gname">분류 미지정</span><span class="n">'+orphans.length+'</span></div>';
+      html += '<div class="grp-row"><span class="arrow">▾</span><span class="gname">분류 미지정</span><span class="gcnt">'+orphans.length+'</span><span class="gsp"></span></div>';
       orphans.slice().sort(_byScreenIdNum).forEach(function(s){
         html += '<div class="scr-row '+_stCls(s)+' '+(STATE.selectedScreenId===s.screenId?'active':'')+'" data-sid="'+esc(s.screenId)+'" data-act="sel-scr" title="진행: '+screenStatus(s)+'">'
               +   '<span class="sid">'+esc(s.screenId)+'</span>'
@@ -2795,16 +2801,21 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     head.innerHTML = '<span class="pill">'+esc(d.id)+'</span><span class="dtitle">'+esc(d.name||"(이름 없음)")+'</span><span class="sp"></span>'
       + '<button type="button" data-dd="csv" title="이 표를 CSV 파일로 내려받기">CSV 내보내기</button>'
       + '<button type="button" class="icon-del-btn" data-dd="del" title="공통 정의 삭제">'+TRASH_SVG+'</button>';
+    var plain = _defPlain(d);   // 일반형: '연결 화면' 칸 없이 표만
     var used = defUsages(d);
     var usedBy = {}; used.forEach(function(u){ (usedBy[u.ref] = usedBy[u.ref] || []).push(u); });
     box.innerHTML =
         '<div class="rower"><div class="lbl">공통 정의명 <span class="req">*</span></div><input data-df="name" value="'+esc(d.name)+'"></div>'
+      + '<div class="rower"><div class="lbl">표 타입</div><div class="typebar">'
+      +   '<button type="button" class="typechip '+(plain?'':'on ')+'prog" data-dkind="" title="줄마다 연결된 화면 수를 보여줘요">화면 연결형</button>'
+      +   '<button type="button" class="typechip '+(plain?'on ':'')+'prog" data-dkind="plain" title="연결 화면 칸 없이 표만 보여줘요">일반형</button>'
+      + '</div></div>'
       + '<div class="rower"><div class="lbl">설명</div><textarea data-df="desc" class="dgrow" placeholder="이 공통 정의가 무엇을 정하는지 적어 주세요">'+esc(d.desc)+'</textarea></div>'
       + '<div class="dtable-head"><span class="lbl">항목 표</span><span class="dhint">'+esc(_defUpdatedText(d))+'</span>'
       +   ((usedBy[d.id]||[]).length ? '<span class="ruse" data-ruse="'+esc(d.id)+'" title="정의 전체를 연결한 구역 보기">정의 전체 사용 '+usedBy[d.id].length+'</span>' : '')
       +   '<span class="sp"></span>'
       +   '<button type="button" class="dbtn" data-dd="addcol">+ 칸</button><button type="button" class="dbtn primary" data-dd="addrow">+ 줄</button></div>'
-      + '<div class="dtable-wrap"><table class="dtable"><thead><tr><th class="c-id">ID</th><th class="c-use" title="이 줄을 연결한 구역 수 (자동으로 표시돼요 · 수정 불가)">연결 화면</th>'
+      + '<div class="dtable-wrap"><table class="dtable"><thead><tr><th class="c-id">ID</th>'+(plain ? '' : '<th class="c-use" title="이 줄을 연결한 구역 수 (자동으로 표시돼요 · 수정 불가)">연결 화면</th>')
       +   d.columns.map(function(c){
             return '<th><div class="colh"><input data-colname="'+esc(c.id)+'" value="'+esc(c.name)+'" placeholder="칸 이름">'
               + (d.columns.length > 1 ? '<span class="colx" data-coldel="'+esc(c.id)+'" title="이 칸 삭제">×</span>' : '') + '</div></th>';
@@ -2813,14 +2824,14 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       +   (d.rows.length ? d.rows.map(function(r, i){
             var u = usedBy[r.id] || [];
             return '<tr data-row="'+esc(r.id)+'"><td class="c-id"><span class="rid">'+esc(r.id)+'</span></td>'
-              + '<td class="c-use">' + (u.length ? '<span class="ruse" data-ruse="'+esc(r.id)+'" title="이 줄을 연결한 구역 보기">사용 '+u.length+'</span>' : '<span class="ruse0">사용 0</span>') + '</td>'
+              + (plain ? '' : '<td class="c-use">' + (u.length ? '<span class="ruse" data-ruse="'+esc(r.id)+'" title="이 줄을 연결한 구역 보기">사용 '+u.length+'</span>' : '<span class="ruse0">사용 0</span>') + '</td>')
               + d.columns.map(function(c){
                   return '<td><textarea class="dcell" rows="1" data-cell-row="'+esc(r.id)+'" data-cell-col="'+esc(c.id)+'">'+esc((r.cells||{})[c.id]||"")+'</textarea></td>';
                 }).join("")
               + '<td class="c-act"><span data-rmove="up" data-r="'+i+'" title="위로"'+(i===0?' class="dis"':'')+'>▲</span>'
               + '<span data-rmove="down" data-r="'+i+'" title="아래로"'+(i===d.rows.length-1?' class="dis"':'')+'>▼</span>'
               + '<span data-rdel="'+esc(r.id)+'" class="rx" title="줄 삭제">×</span></td></tr>';
-          }).join("") : '<tr><td colspan="'+(d.columns.length+3)+'" class="dempty">줄이 없어요. "+ 줄"로 추가하세요.</td></tr>')
+          }).join("") : '<tr><td colspan="'+(d.columns.length+(plain?2:3))+'" class="dempty">줄이 없어요. "+ 줄"로 추가하세요.</td></tr>')
       +   '</tbody></table></div>'
       + '<div class="tip" style="margin-top:6px">엑셀에서 여러 칸을 복사해서 표의 칸에 붙여넣으면 그 위치부터 한 번에 채워지고, 부족한 줄·칸은 자동으로 늘어나요.</div>'
       ;
@@ -2862,7 +2873,15 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     return rows;
   }
 
+  function _defPlain(d){ return !!d && d.category === "plain"; }
   function bindDefDetail(box, head, d){
+    // 표 타입 (화면 연결형 / 일반형) — 서버의 category 칸에 저장
+    box.querySelectorAll("[data-dkind]").forEach(function(b){
+      b.addEventListener("click", function(){
+        var v = b.dataset.dkind; if((d.category === "plain" ? "plain" : "") === v) return;
+        d.category = v; save(); renderDefDetail();
+      });
+    });
     // 기본 정보
     box.querySelectorAll("[data-df]").forEach(function(el){
       el.addEventListener("input", function(){
