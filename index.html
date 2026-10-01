@@ -311,6 +311,10 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
 .defs-screen.show{display:grid}
 .defs-screen .col{min-height:0}
 .defs-screen .grp-row.dcat{cursor:default}
+.defs-screen .dgrp{margin-top:4px}
+.defs-screen .dgrp .dg-add{flex:none;font-size:11.5px;font-weight:800;color:var(--clr-brand);padding:2px 8px;border:1px solid var(--clr-brand);border-radius:11px;background:#fff;cursor:pointer}
+.defs-screen .dgrp .dg-add:hover{background:var(--clr-brand);color:#fff}
+.defs-screen .col-h .dcatlbl{flex:none;font-size:11.5px;font-weight:800;color:var(--sub);margin-right:2px}
 .defs-screen .col-h .dtitle{font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .defs-screen .col-h .icon-del-btn{flex:none;width:26px;height:26px;padding:0;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;background:transparent;border:1px solid var(--danger);color:var(--danger)}
 .defs-screen .col-h .icon-del-btn:hover{background:var(--danger-soft)}
@@ -640,7 +644,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   <div class="defs-screen" id="defsScreen">
     <div class="col">
       <div class="col-h"><span class="info" id="defInfo">전체 0</span><span class="sp"></span>
-        <button type="button" id="btnAddDef" class="primary">+ 공통 정의</button></div>
+        <button type="button" id="btnAddDef" class="primary">+ 추가</button></div>
       <div class="tree-filter"><input class="tf-q" id="defQ" type="search" placeholder="ID · 이름 검색" autocomplete="off"></div>
       <div class="col-b" id="defList"></div>
     </div>
@@ -1109,16 +1113,21 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   // 서버 3개 테이블 + 마지막 변경 번호를 읽는다.
   // 변경 번호를 "먼저" 읽어야 그 사이 생긴 변경을 놓치지 않는다 (중복 알림은 괜찮고, 누락은 안 됨)
   var _schemaWarned = false;
-  var _defsReady = false, _defCodeMax = 0, _flowReady = false;
+  var _defsReady = false, _defCodeMax = { CD:0, UP:0 }, _flowReady = false;
+  // 공통 정의 화면의 대카테고리 — ID 앞 두 글자로 구분 (CD01 = 공통 정의, UP01 = 운영 정책)
+  var DEF_CATS = [ { k:"CD", name:"공통 정의", ex:"예: 금칙어 정책, 토스트·팝업 메시지, API 목록" },
+                   { k:"UP", name:"운영 정책", ex:"예: 회원 탈퇴 정책, 포인트 적립 정책, 게시물 신고 처리" } ];
+  function _defCat(id){ return /^UP/i.test(String(id||"")) ? "UP" : "CD"; }
+  function _defCatName(idOrK){ var k = /^(CD|UP)$/.test(idOrK) ? idOrK : _defCat(idOrK); return k==="UP" ? "운영 정책" : "공통 정의"; }
   // 지금까지 만들어진 공통 정의 번호 중 가장 큰 값 (지워진 번호도 재사용하지 않기 위해 변경 기록에서 찾는다)
   function fetchDefCodeMax(){
     // 정의가 "만들어진" 기록(op=I)만 읽는다 — 정의마다 한 번뿐이라 수정이 많아도 가볍다
     return fetch(SB.url+"/rest/v1/sl_changes?select=row_id&tbl=eq.def&op=eq.I&limit=10000", { headers:_sbH() })
       .then(_readJson).then(function(rows){
-        var mx = 0;
-        (rows||[]).forEach(function(r){ var m = /^CD-?(\d+)$/.exec(r.row_id||""); if(m) mx = Math.max(mx, parseInt(m[1],10)); });
+        var mx = { CD:0, UP:0 };
+        (rows||[]).forEach(function(r){ var m = /^(CD|UP)-?(\d+)$/.exec(r.row_id||""); if(m) mx[m[1]] = Math.max(mx[m[1]], parseInt(m[2],10)); });
         return mx;
-      }).catch(function(){ return 0; });
+      }).catch(function(){ return { CD:0, UP:0 }; });
   }
   function fetchLastChangeId(){
     return fetch(SB.url+"/rest/v1/sl_changes?select=id&order=id.desc&limit=1", { headers:_sbH() })
@@ -1139,7 +1148,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       ]);
     }).then(function(res){
       var ver = { groups:{}, screens:{}, sections:{}, defs:{} }, meta = { groups:{}, screens:{}, sections:{}, defs:{} };
-      _defsReady = res[3] !== null; _defCodeMax = res[4] || 0; _flowReady = !!res[5];
+      _defsReady = res[3] !== null; _defCodeMax = res[4] || { CD:0, UP:0 }; _flowReady = !!res[5];
       (res[3]||[]).forEach(function(r){ ver.defs[r.id] = r.version; meta.defs[r.id] = {by:r.updated_by, at:r.updated_at}; });
       res[0].forEach(function(r){ ver.groups[r.id] = r.version; meta.groups[r.id] = {by:r.updated_by, at:r.updated_at}; });
       res[1].forEach(function(r){ ver.screens[r.screen_id] = r.version; meta.screens[r.screen_id] = {by:r.updated_by, at:r.updated_at}; });
@@ -1333,7 +1342,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   function _rowTitle(x){
     var r = x.mine || x.server || {};
     if(x.t==="groups") return "그룹 " + ((r.code||"") + " " + (r.name||"")).trim();
-    if(x.t==="defs") return "공통 정의 " + x.id + " '" + (r.name||"") + "'";
+    if(x.t==="defs") return _defCatName(x.id) + " " + x.id + " '" + (r.name||"") + "'";
     if(x.t==="screens") return "#" + x.id + " 화면 '" + (r.title||"") + "'";
     return "#" + (r.screen_id||"") + " › 구역 '" + (r.title||"") + "'";
   }
@@ -1592,7 +1601,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       var x = byRow[k], w = what(x);
       if(!w) return;
       if(x.tbl==="group"){ groupLines.push("그룹 '"+x.title+"' "+w); return; }
-      if(x.tbl==="def"){ groupLines.push("#"+x.id+" 공통 정의 '"+x.title+"' "+w); return; }
+      if(x.tbl==="def"){ groupLines.push("#"+x.id+" "+_defCatName(x.id)+" '"+x.title+"' "+w); return; }
       var sid = x.tbl==="screen" ? x.id : (x.sid||"");
       if(x.tbl==="section" && w==="삭제" && scrDeleted[sid]) return;   // 화면 삭제에 딸려 지워진 구역은 생략
       if(!screens[sid]) screens[sid] = { head:"", parts:[] };
@@ -2697,10 +2706,12 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     return list.slice(0,10).map(function(u){ return "· " + u.ref + "  " + _usageName(u); }).join("\n")
       + (list.length > 10 ? "\n… 외 "+(list.length-10)+"곳" : "");
   }
-  function _nextDefCode(){
-    var mx = _defCodeMax;
-    (STATE.defs||[]).forEach(function(d){ var m = /^CD-?(\d+)$/.exec(d.id); if(m) mx = Math.max(mx, parseInt(m[1],10)); });
-    return "CD" + String(mx+1).padStart(2,"0");   // CD01, CD02 … (100번째부터는 CD100)
+  function _nextDefCode(cat){
+    cat = cat==="UP" ? "UP" : "CD";
+    var mx = (_defCodeMax && _defCodeMax[cat]) || 0;
+    var re = new RegExp("^" + cat + "-?(\\d+)$");
+    (STATE.defs||[]).forEach(function(d){ var m = re.exec(d.id); if(m) mx = Math.max(mx, parseInt(m[1],10)); });
+    return cat + String(mx+1).padStart(2,"0");   // CD01, CD02 … / UP01, UP02 … (100번째부터는 CD100)
   }
 
   // ── 화면 전환: 편집 화면 ↔ 공통 정의
@@ -3813,20 +3824,39 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
       box.innerHTML = '<div class="empty">서버 설정이 최신이 아니에요.<br>설정 SQL 을 한 번 더 실행하면 공통 정의를 쓸 수 있어요.</div>'; return;
     }
     var q = _defQ.trim().toLowerCase();
-    var list = (STATE.defs||[]).filter(function(d){
-      return !q || (d.id+" "+d.name+" "+d.prefix).toLowerCase().indexOf(q) >= 0;
-    }).sort(function(a,b){ return a.id<b.id?-1:1; });
-    if(!list.length){
-      box.innerHTML = '<div class="empty">' + (q ? "검색 결과가 없어요." : '아직 공통 정의가 없어요.<br>"+ 공통 정의"로 만들어 보세요.') + '</div>'; return;
-    }
-    box.innerHTML = list.map(function(d){
-      return '<div class="scr-row'+(d.id===_defSel?' active':'')+'" data-def-id="'+esc(d.id)+'">'
-        + '<span class="sid">'+esc(d.id)+'</span><span class="nm">'+esc(d.name||"(이름 없음)")+'</span></div>';
-    }).join("");
+    var html = "", shown = 0;
+    DEF_CATS.forEach(function(c){
+      var all = (STATE.defs||[]).filter(function(d){ return _defCat(d.id)===c.k; });
+      var list = all.filter(function(d){ return !q || (d.id+" "+d.name+" "+d.prefix).toLowerCase().indexOf(q) >= 0; })
+                    .sort(function(a,b){ return a.id<b.id?-1:1; });
+      if(q && !list.length) return;
+      shown += list.length;
+      var open = q || !_defCatClosed[c.k];
+      html += '<div class="grp-row dgrp" data-dcat="'+c.k+'" title="'+esc(c.name)+' ('+c.k+')">'
+        + '<span class="arrow">'+(open?"▾":"▸")+'</span><span class="gname">'+c.k+' '+esc(c.name)+'</span>'
+        + '<span class="gcnt'+(q?' f':'')+'">'+list.length+'</span><span class="gsp"></span>'
+        + '<span class="dg-add" data-dadd="'+c.k+'" title="'+esc(c.name)+' 추가">+ 추가</span></div>';
+      if(!open) return;
+      html += list.length ? list.map(function(d){
+        return '<div class="scr-row'+(d.id===_defSel?' active':'')+'" data-def-id="'+esc(d.id)+'">'
+          + '<span class="sid">'+esc(d.id)+'</span><span class="nm">'+esc(d.name||"(이름 없음)")+'</span></div>';
+      }).join("") : '<div class="empty" style="padding:12px 12px 16px">아직 '+esc(c.name)+'가 없어요 · "+ 추가"</div>';
+    });
+    if(q && !shown){ box.innerHTML = '<div class="empty">검색 결과가 없어요.</div>'; return; }
+    box.innerHTML = html;
     box.querySelectorAll("[data-def-id]").forEach(function(el){
       el.addEventListener("click", function(){ _defSel = el.dataset.defId; renderDefsScreen(); });
     });
+    box.querySelectorAll("[data-dcat]").forEach(function(el){
+      el.addEventListener("click", function(e){
+        var add = e.target.closest("[data-dadd]");
+        if(add){ e.stopPropagation(); openNewDefModal(add.dataset.dadd); return; }
+        if(q) return;
+        _defCatClosed[el.dataset.dcat] = !_defCatClosed[el.dataset.dcat]; renderDefList();
+      });
+    });
   }
+  var _defCatClosed = {};
   // 마지막 업데이트 = 서버에 마지막으로 저장된 시각 · 저장한 사람
   function _defUpdatedText(d){
     var m = META.defs && META.defs[d.id];
@@ -3838,35 +3868,50 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   function _defStCls(d){ return d.status==="확정" ? "st-ok" : d.status==="검토중" ? "st-wr" : ""; }
 
   // ── 새 공통 정의 만들기
-  function openNewDefModal(){
+  function openNewDefModal(cat){
     if(document.getElementById("newDefBg")) return;
     if(!_defsReady){ uiAlert("서버 설정이 최신이 아니에요.\n설정 SQL 을 한 번 더 실행하면 공통 정의를 쓸 수 있어요."); return; }
-    var code = _nextDefCode();
+    if(cat!=="CD" && cat!=="UP") cat = _defSel ? _defCat(_defSel) : "CD";
+    var code = _nextDefCode(cat);
     var bg = document.createElement("div"); bg.className = "modalbg show"; bg.id = "newDefBg";
     bg.innerHTML = '<div class="modal" style="width:540px">'
-      + '<h3>새 공통 정의 <span class="sp"></span><span style="font-family:Consolas,monospace;font-size:13px;color:var(--clr-brand)">'+esc(code)+'</span></h3>'
+      + '<h3><span id="ndTitle"></span> <span class="sp"></span><span id="ndCode" style="font-family:Consolas,monospace;font-size:13px;color:var(--clr-brand)"></span></h3>'
       + '<div class="body" style="padding:18px 20px 6px">'
-      +   '<div class="rower"><div class="lbl">공통 정의명 <span class="req">*</span></div><input id="ndName" placeholder="예: 금칙어 정책, 토스트·팝업 메시지, API 목록"></div>'
-      +   '<div class="tip" style="margin:4px 0 10px">줄마다 <b>'+esc(code)+'-001</b>처럼 번호가 자동으로 붙어요.<br>처음엔 <b>항목 | 내용</b> 두 칸으로 시작해요. 칸이 더 필요하면 "+ 칸"으로 늘리거나, 엑셀에서 붙여넣으면 자동으로 늘어나요.</div>'
+      +   '<div class="rower"><div class="lbl">대카테고리</div><div class="typebar">'
+      +     DEF_CATS.map(function(c){ return '<button type="button" class="typechip prog" data-ndcat="'+c.k+'">'+esc(c.name)+' <b style="font-family:Consolas,monospace;margin-left:4px">'+c.k+'</b></button>'; }).join("")
+      +   '</div></div>'
+      +   '<div class="rower"><div class="lbl"><span id="ndLbl"></span> <span class="req">*</span></div><input id="ndName"></div>'
+      +   '<div class="tip" style="margin:4px 0 10px">줄마다 <b id="ndRow"></b>처럼 번호가 자동으로 붙어요.<br>처음엔 <b>항목 | 내용</b> 두 칸으로 시작해요. 칸이 더 필요하면 "+ 칸"으로 늘리거나, 엑셀에서 붙여넣으면 자동으로 늘어나요.</div>'
       + '</div>'
       + '<div class="ft"><button type="button" data-nd="cancel">취소</button><button type="button" class="primary" data-nd="ok">만들기</button></div></div>';
     document.body.appendChild(bg);
     var $ = function(id){ return document.getElementById(id); };
+    function setCat(k){
+      cat = k; code = _nextDefCode(k);
+      var c = DEF_CATS.filter(function(x){ return x.k===k; })[0];
+      $("ndTitle").textContent = "새 " + c.name; $("ndCode").textContent = code; $("ndRow").textContent = code + "-001";
+      $("ndLbl").textContent = c.name + "명"; $("ndName").placeholder = c.ex;
+      bg.querySelectorAll("[data-ndcat]").forEach(function(b){ b.classList.toggle("on", b.dataset.ndcat===k); });
+    }
+    setCat(cat);
     _focusSoon(bg, $("ndName"));
     function close(){ bg.remove(); }
     function create(){
       var name = ($("ndName").value||"").trim();
       var prefix = code;   // 줄 ID = 정의 ID + 번호 (예: CD-001-001)
-      if(!name){ toast("공통 정의명을 입력해 주세요", true); $("ndName").focus(); return; }
+      if(!name){ toast(_defCatName(cat)+"명을 입력해 주세요", true); $("ndName").focus(); return; }
       var d = normDef({ id:code, prefix:prefix, name:name, desc:"", category:"", status:"작성중",
                         columns:[{ id:uid("c"), name:"항목" }, { id:uid("c"), name:"내용" }],
                         rows:[{ id:prefix+"-001", cells:{} }], nextRow:2 });
       STATE.defs = (STATE.defs||[]).concat([d]);
-      var m = /^CD-?(\d+)$/.exec(code); if(m) _defCodeMax = Math.max(_defCodeMax, parseInt(m[1],10));
+      var m = /^(CD|UP)-?(\d+)$/.exec(code); if(m) _defCodeMax[m[1]] = Math.max(_defCodeMax[m[1]]||0, parseInt(m[2],10));
+      _defCatClosed[cat] = false;
       _defSel = d.id; close(); save(); renderDefsScreen();
-      toast("공통 정의 "+code+" 만들어짐 · 저장을 눌러야 서버에 반영돼요");
+      toast(_defCatName(cat)+" "+code+" 만들어짐 · 저장을 눌러야 서버에 반영돼요");
     }
     bg.addEventListener("click", function(e){
+      var ck = e.target.closest && e.target.closest("[data-ndcat]");
+      if(ck){ setCat(ck.dataset.ndcat); $("ndName").focus(); return; }
       var a = e.target.dataset && e.target.dataset.nd;
       if(a==="cancel" || e.target===bg) close();
       if(a==="ok") create();
@@ -3880,12 +3925,14 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     var head = document.getElementById("defHead");
     var d = _defSel ? findDef(_defSel) : null;
     if(!d){
-      head.innerHTML = '<span class="pill">공통 정의</span><span class="dtitle">선택 필요</span>';
-      box.innerHTML = '<div class="placeholder">왼쪽에서 공통 정의를 고르거나 "+ 공통 정의"로 새로 만들어 주세요.<br><br>'
-        + '공통 정의는 <b>항목 | 내용</b> 표로 시작하고, 필요하면 칸을 더해 목록처럼 쓸 수 있어요.<br>예: 금칙어 정책, 외부 서비스 연계, 토스트·팝업 문구, API 목록, Push 메시지</div>';
+      head.innerHTML = '<span class="pill">공통 정의 · 운영 정책</span><span class="dtitle">선택 필요</span>';
+      box.innerHTML = '<div class="placeholder">왼쪽에서 항목을 고르거나 "+ 추가"로 새로 만들어 주세요.<br><br>'
+        + '<b>공통 정의(CD)</b> — 여러 화면이 함께 쓰는 정의. 예: 금칙어, 토스트·팝업 문구, API 목록, Push 메시지<br>'
+        + '<b>운영 정책(UP)</b> — 서비스 운영 규칙. 예: 회원 탈퇴, 포인트 적립, 게시물 신고 처리<br><br>'
+        + '모두 <b>항목 | 내용</b> 표로 시작하고, 필요하면 칸을 더해 목록처럼 쓸 수 있어요.</div>';
       return;
     }
-    head.innerHTML = '<span class="pill">'+esc(d.id)+'</span><span class="dtitle">'+esc(d.name||"(이름 없음)")+'</span><span class="sp"></span>'
+    head.innerHTML = '<span class="dcatlbl">'+_defCatName(d.id)+'</span><span class="pill">'+esc(d.id)+'</span><span class="dtitle">'+esc(d.name||"(이름 없음)")+'</span><span class="sp"></span>'
       + '<button type="button" class="dkind-tg'+(_defPlain(d)?'':' on')+'" data-dd="kind" role="switch" aria-checked="'+(_defPlain(d)?'false':'true')+'" title="켜면 항목 표에 줄마다 연결된 화면 수(연결 화면 칸)를 보여줘요"><span class="tg"><i></i></span>연결 화면</button>'
       + '<button type="button" data-dd="csv" title="이 표를 CSV 파일로 내려받기">CSV 내보내기</button>'
       + '<button type="button" class="icon-del-btn" data-dd="del" title="공통 정의 삭제">'+TRASH_SVG+'</button>';
@@ -3893,7 +3940,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     var used = defUsages(d);
     var usedBy = {}; used.forEach(function(u){ (usedBy[u.ref] = usedBy[u.ref] || []).push(u); });
     box.innerHTML =
-        '<div class="rower"><div class="lbl">공통 정의명 <span class="req">*</span></div><input data-df="name" value="'+esc(d.name)+'"></div>'
+        '<div class="rower"><div class="lbl">'+_defCatName(d.id)+'명 <span class="req">*</span></div><input data-df="name" value="'+esc(d.name)+'"></div>'
       + '<div class="rower"><div class="lbl">설명</div><textarea data-df="desc" class="dgrow" placeholder="이 공통 정의가 무엇을 정하는지 적어 주세요">'+esc(d.desc)+'</textarea></div>'
       + _defFlowBlock(d)
       + '<div class="dtable-head"><span class="lbl">항목 표</span><span class="dhint">'+esc(_defUpdatedText(d))+'</span>'
@@ -4134,9 +4181,13 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
   function _defSelect(sec){
     var refs = sec.defRefs||[];
     var cur = (_defPick.sec===sec.id && findDef(_defPick.def)) ? _defPick.def : "";
-    var h = '<div class="defpick"><select data-act="defref-def"><option value="">— 공통 정의 선택 —</option>'
-      + (STATE.defs||[]).slice().sort(function(a,b){ return a.id<b.id?-1:1; }).map(function(d){
-          return '<option value="'+esc(d.id)+'"'+(d.id===cur?' selected':'')+'>'+esc(d.id)+' · '+esc(d.name||"(이름 없음)")+'</option>';
+    var h = '<div class="defpick"><select data-act="defref-def"><option value="">— 공통 정의 · 운영 정책 선택 —</option>'
+      + DEF_CATS.map(function(c){
+          var ds = (STATE.defs||[]).filter(function(d){ return _defCat(d.id)===c.k; }).sort(function(a,b){ return a.id<b.id?-1:1; });
+          if(!ds.length) return "";
+          return '<optgroup label="'+esc(c.name)+' ('+c.k+')">' + ds.map(function(d){
+            return '<option value="'+esc(d.id)+'"'+(d.id===cur?' selected':'')+'>'+esc(d.id)+' · '+esc(d.name||"(이름 없음)")+'</option>';
+          }).join("") + '</optgroup>';
         }).join("") + '</select>';
     h += '<select data-act="defref-add"'+(cur?'':' disabled')+'>';
     if(!cur) h += '<option value="">← 먼저 공통 정의를 고르세요</option>';
@@ -4804,7 +4855,7 @@ header button.danger{background:rgba(255,255,255,.06);color:#ffd9c8;border-color
     document.getElementById("btnRequest").onclick = function(){ window.open("https://nick-kim-ptk.github.io/lions-request/ptkorea.html", "_blank", "noopener"); };
     document.getElementById("btnHistory").onclick = toggleHistoryScreen;
     document.getElementById("btnDefs").onclick = toggleDefsScreen;
-    document.getElementById("btnAddDef").onclick = openNewDefModal;
+    document.getElementById("btnAddDef").onclick = function(){ openNewDefModal(); };
     document.getElementById("defQ").oninput = function(){ _defQ = this.value; renderDefList(); };
     document.getElementById("btnHistoryAdd").onclick = addHistoryEntry;
     document.getElementById("historySearch").oninput = renderHistoryList;
